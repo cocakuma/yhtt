@@ -22,7 +22,6 @@ function love.load()
 		local pl = Payload(math.random() * 640, math.random() * 860)
 		table.insert(payloads, pl)
 	end
-
 end
 
 function love.update( dt)

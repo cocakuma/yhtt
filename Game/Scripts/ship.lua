@@ -74,11 +74,11 @@ function Ship:Update(dt)
 	end
 
 	if self.shoot and self.canShoot then
-		self.shoot = false
 		self.canShoot = false
 		local bullet = Bullet(self)
 		table.insert(bullets, bullet)
 	end
+	self.shoot = false
 
 	local velLen = self.velocity:Length()
 	local dragdenom = 1 - (velLen * (self.drag * dt))
