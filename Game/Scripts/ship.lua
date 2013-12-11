@@ -5,10 +5,12 @@ require("bullet")
 class("Ship")
 
 
-function Ship:init()
-	self.position = Vector2(100,100)
+function Ship:init(x, y, angle)
+	self.position = Vector2(x, y)
 	self.velocity = Vector2(0,0)
-	self.angle = 0 --rads
+	self.angle = angle --rads
+	
+	self.radius = 8
 
 	self.thrust = TUNING.SHIP.THRUST
 	self.drag = TUNING.SHIP.DRAG
@@ -84,13 +86,9 @@ function Ship:Update(dt)
 	local dragdenom = 1 - (velLen * (self.drag * dt))
 	local velLen = dragdenom == 0 and 0 or velLen / dragdenom
 	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
-	print("vel", self.velocity)
 
 	self.position = self.position + (self.velocity * dt)
 
-	print("pos", self.position)
-
-	
 	self:DoRotation()
 end
 
@@ -102,6 +100,12 @@ function Ship:Draw()
 									self.verts.y[2]+self.position.y,
 									self.verts.x[3]+self.position.x,
 									self.verts.y[3]+self.position.y )
+
+
+	love.graphics.circle("line", self.position.x, self.position.y, self.radius)
+
+
+
 	if false then -- draw velocity line
 		love.graphics.setColor(255,0,0,255)
 		love.graphics.line(self.position.x, self.position.y,
@@ -109,3 +113,15 @@ function Ship:Draw()
 	end
 end
 
+function Ship:GetCircle()
+	return Circle(self.position.x, self.position.y, self.radius)
+end
+
+function Ship:Collide(other)
+	local diff = self.position - other.position 
+	diff.x = diff.x + math.random()*0.002-0.001
+	diff.y = diff.y + math.random()*0.002-0.001
+	print(self.ID,"=>",other.ID,diff)
+	self.velocity = self.velocity + diff:GetNormalized() * 20
+	print("\t",self.velocity)
+end
