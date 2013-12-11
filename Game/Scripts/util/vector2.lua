@@ -23,6 +23,10 @@ function Vector2:__div( rhs )
     return Vector2(self.x / rhs, self.y / rhs)
 end
 
+function Vector2:CompDiv( rhs )
+	return Vector2(self.x / rhs.x, self.y / rhs.y )
+end
+
 function Vector2:__tostring( )
     return string.format("(%2.2f, %2.2f)", self.x, self.y)
 end

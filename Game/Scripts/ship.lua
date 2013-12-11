@@ -11,8 +11,11 @@ function Ship:init()
 
 	self.thrust = TUNING.SHIP.THRUST
 	self.drag = TUNING.SHIP.DRAG
+	self.turnSpeed = TUNING.SHIP.TURNSPEED
 
 	self.thrusting = false
+	self.turnLeft = false
+	self.turnRight = false
 
 	self.verts = 
 	{
@@ -30,13 +33,26 @@ function Ship:DoRotation()
 end
 
 function Ship:HandleInput( )
+	if love.keyboard.isDown("a") then
+		self.turnLeft = true
+	end
+	if love.keyboard.isDown("d") then
+		self.turnRight = true
+	end
 	if love.keyboard.isDown("w") then
 		self.thrusting = true
 	end
 end
 
 function Ship:Update(dt)
-
+	if self.turnLeft then
+		self.turnLeft = false
+		self.angle = self.angle + self.turnSpeed * dt
+	end
+	if self.turnRight then
+		self.turnRight = false
+		self.angle = self.angle - self.turnSpeed * dt
+	end
 	if self.thrusting then
 		self.thrusting = false
 
@@ -45,9 +61,20 @@ function Ship:Update(dt)
 		thrust = thrust * dt
 		self.velocity = self.velocity + thrust
 	end
-	self:DoRotation()
+
+	local dragdenom = Vector2(1 - (self.velocity.x * (self.drag * dt)),
+								1 - (self.velocity.y * (self.drag * dt))
+								)
+	self.velocity.x = dragdenom.x == 0 and 0 or self.velocity.x / dragdenom.x
+	self.velocity.y = dragdenom.y == 0 and 0 or self.velocity.y / dragdenom.y
+	print("vel", self.velocity)
+
 	self.position = self.position + (self.velocity * dt)
 
+	print("pos", self.position)
+
+	
+	self:DoRotation()
 end
 
 function Ship:Draw()
@@ -58,5 +85,8 @@ function Ship:Draw()
 									self.verts.y[2]+self.position.y,
 									self.verts.x[3]+self.position.x,
 									self.verts.y[3]+self.position.y )
+	love.graphics.setColor(255,0,0,255)
+	love.graphics.line(self.position.x, self.position.y,
+						self.position.x + self.velocity.x * 10, self.position.y + self.velocity.y * 10)
 end
 
