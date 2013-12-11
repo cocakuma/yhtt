@@ -1,4 +1,4 @@
-local server = nil
+local gServer = nil
 
 function updateserverinternal(server)
 	local coroutine = require('coroutine')
@@ -34,11 +34,11 @@ function updateserver(server)
 end
 
 function love.load()	
-	server = startserver()
+	gServer = startserver()
 end
 
 function love.update(dt)
-	updateserver(server)
+	updateserver(gServer)
 end
 
 function love.draw()
