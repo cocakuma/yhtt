@@ -1,4 +1,4 @@
---require("util/vector2")
+require("util/vector2")
 
 function HandleInput( self )
 	if love.keyboard.isDown("w") then
@@ -10,20 +10,20 @@ function Update(self, dt)
 	if self.thrusting then
 		self.thrusting = false
 
-		--thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
-		--thrust = thrustVector * self.thrust
-		--thrust = thrust * dt
-		--self.velocity = self.velocity + thrust
+		local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
+		local thrust = thrustVector * self.thrust
+		thrust = thrust * dt
+		self.velocity = self.velocity + thrust
 	end
 
-	--ship.position = ship.position + (ship.velocity + dt)
+	self.position = self.position + (self.velocity * dt)
 end
 
 function MakeShip()
-	ship = {}
+	local ship = {}
 
-	ship.position = {x=0,y=0}
-	ship.velocity = {x=0,y=0}
+	ship.position = Vector2(0,0)
+	ship.velocity = Vector2(0,0)
 	ship.angle = 0
 
 	ship.thrust = 10

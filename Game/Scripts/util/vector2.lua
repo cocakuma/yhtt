@@ -2,51 +2,52 @@ require("util/class")
 
 class("Vector2")
 
-function Vector2.init(x, y)
-	return {["x"]=x, ["y"]=y}
+function Vector2:init(x, y)
+	self.x = x
+	self.y = y
 end
 
-function Vector2.__add( self, rhs )
-    return Vector2( self.x + rhs.x, self.y + rhs.y)
+function Vector2:__add( rhs )
+    return Vector2(self.x + rhs.x, self.y + rhs.y)
 end
 
-function Vector2.__sub( self, rhs )
-    return Vector2( self.x - rhs.x, self.y - rhs.y)
+function Vector2:__sub( rhs )
+    return Vector2(self.x - rhs.x, self.y - rhs.y)
 end
 
-function Vector2.__mul( self, rhs )
-    return Vector2( self.x * rhs, self.y * rhs)
+function Vector2:__mul( rhs )
+    return Vector2(self.x * rhs, self.y * rhs)
 end
 
-function Vector2.__div( self, rhs )
-    return Vector2( self.x / rhs, self.y / rhs)
+function Vector2:__div( rhs )
+    return Vector2(self.x / rhs, self.y / rhs)
 end
 
-function Vector2.__tostring( self )
+function Vector2:__tostring( )
     return string.format("(%2.2f, %2.2f)", self.x, self.y)
 end
 
-function Vector2.__eq( self, rhs )
+function Vector2:__eq( rhs )
     return self.x == rhs.x and self.y == rhs.y
 end
 
-function Vector2.DistSq( self,other)
+function Vector2:DistSq(other)
     return (self.x - other.x)*(self.x - other.x) + (self.y - other.y)*(self.y - other.y)
 end
 
-function Vector2.Dist( self,other)
+function Vector2:Dist(other)
     return math.sqrt(self:DistSq(other))
 end
 
-function Vector2.LengthSq( self )
+function Vector2:LengthSq( )
     return self.x*self.x + self.y*self.y
 end
 
-function Vector2.Length( self )
+function Vector2:Length( )
     return math.sqrt(self:LengthSq())
 end
 
-function Vector2.Normalize( self )
+function Vector2:Normalize( )
     local len = self:Length()
     if len > 0 then
         self.x = self.x / len
@@ -55,19 +56,19 @@ function Vector2.Normalize( self )
     return self
 end
 
-function Vector2.GetNormalized( self )
+function Vector2:GetNormalized( )
     return self / self:Length()
 end
 
-function Vector2.Get( self )
+function Vector2:Get( )
     return self.x, self.y, self.z
 end
 
-function Vector2.IsVector2( self )
+function Vector2:IsVector2( )
     return true
 end
 
-function Vector2.ToVector2( obj, y )
+function Vector2:ToVector2( obj, y )
     if not obj then
         return
     end

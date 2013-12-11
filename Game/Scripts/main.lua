@@ -1,4 +1,4 @@
-
+require("util/strict")
 require("ship")
 
 aShip = {}
