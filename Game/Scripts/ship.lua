@@ -27,10 +27,29 @@ function Ship:init(x, y, angle)
 	self.canShoot = true
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 
-	self.lookForAttach = false
-	self.lookForAttach_timer = 
+	self.tryAttach = false
+	self.tryDetach = false
+	self.canAttach = true
 	self.attached = false
-	
+	self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
+
+	self.children = {}
+	self.offset = Vector2(0,0)
+
+end
+
+function Ship:GetChild(child)
+
+	self.children[child] = child
+
+end
+
+function Ship:RemoveChild(child)
+
+	child.attached = false
+	child.canAttach = false
+	self.children[child] = nil
+
 end
 
 function Ship:DoRotation()
@@ -38,6 +57,68 @@ function Ship:DoRotation()
 		self.verts.x[i] = (SHIP_VERTS.x[i]*math.cos(self.angle)) - (SHIP_VERTS.y[i]*math.sin(self.angle))
 		self.verts.y[i] = (SHIP_VERTS.x[i]*math.sin(self.angle)) + (SHIP_VERTS.y[i]*math.cos(self.angle))
 	end
+end
+
+function Ship:AttachCooldown(dt)
+	self.attach_Timer = self.canShoot_timer - dt
+	if self.attach_Timer <= 0 then
+		self.canAttach = true
+		self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
+	end
+end
+
+function Ship:Attach()
+	pos = self.position
+	for k,v in pairs(payloads) do
+		if v and (v.friendly or v.neutral) then
+			local distsq = pos:DistSq(v.position)
+			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
+				--Congrats, you found something. Attach to it!
+				self.offset = v.position - pos
+				v:GetChild(self)
+				return
+			end
+		end
+	end
+
+	for k,v in pairs(ships) do
+		if v and v.friendly and not false --[[IS CHILD OF ME?]] then
+			local distsq = pos:DistSq(v.position)
+			local distsq = pos:DistSq(v.position)
+			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
+				--Congrats, you found something. Attach to it!
+				self.offset = v.position - pos
+				v:GetChild(self)
+				return
+			end
+		end
+	end
+end
+
+function Ship:Detach()
+
+end
+
+function Ship:GetVelocityFromChildren()
+	local vel = 0
+	for k,v in pairs(children) do
+
+	end
+	return vel
+end
+
+function Ship:ShootCooldown(dt)
+	self.canShoot_timer = self.canShoot_timer - dt
+	if self.canShoot_timer <= 0 then
+		self.canShoot = true
+		self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+	end
+end
+
+function Ship:Shoot()
+	self.canShoot = false
+	local bullet = Bullet(self)
+	table.insert(bullets, bullet)
 end
 
 function Ship:HandleInput( )
@@ -54,7 +135,11 @@ function Ship:HandleInput( )
 		self.shoot = true
 	end
 	if love.keyboard.isDown("f") then
-		self.lookForAttach = true
+		if not self.attached then
+			self.lookForAttach = true
+		else
+			self.detach = true
+		end
 	end
 end
 
@@ -77,18 +162,29 @@ function Ship:Update(dt)
 	end
 
 	if not self.canShoot then
-		self.canShoot_timer = self.canShoot_timer - dt
-		if self.canShoot_timer <= 0 then
-			self.canShoot = true
-			self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
-		end
+		self:ShootCooldown(dt)
 	end
 
 	if self.shoot and self.canShoot then
-		self.canShoot = false
-		local bullet = Bullet(self)
+		self:Shoot()
 	end
+	
 	self.shoot = false
+
+
+	if not self.canAttach then
+		self:AttachCooldown(dt)
+	end
+
+	if self.tryAttach and self.canAttach then
+		self:Attach()
+	elseif self.tryDetach and self.canAttach then
+		self:Detach()
+	end
+
+	self.tryAttach = false
+	self.tryDetach = false
+
 
 	local velLen = self.velocity:Length()
 	local dragdenom = 1 - (velLen * (self.drag * dt))
