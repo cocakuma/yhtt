@@ -3,10 +3,17 @@ require("util/class")
 
 class("Ship")
 
+DEGREES = 180/math.pi
+
+SHIP_VERTS = 
+{
+	x = {-5, -5, 5}, 
+	y = {-3, 3, 0}
+}
 function Ship:init()
-	self.position = Vector2(0,0)
+	self.position = Vector2(100,100)
 	self.velocity = Vector2(0,0)
-	self.angle = 0
+	self.angle = math.pi --rads
 
 	self.thrust = 10
 	self.drag = 0.99
@@ -15,12 +22,21 @@ function Ship:init()
 
 	self.verts = 
 	{
-		x = {0, 10, 5}, 
-		y = {0, 0, 10}
+		x = {-5, -5, 5}, 
+		y = {-3, 3, 0}
 	}
 
 end
 
+function Ship:DoRotation()
+
+	for i = 1, 3 do
+		self.verts.x[i] = (SHIP_VERTS.x[i]*math.cos(self.angle)) - (SHIP_VERTS.y[i]*math.sin(self.angle))
+		self.verts.y[i] = (SHIP_VERTS.x[i]*math.sin(self.angle)) + (SHIP_VERTS.y[i]*math.cos(self.angle))
+		print("x:", self.verts.x[i], "y:", self.verts.y[i])
+	end
+
+end
 
 function Ship:HandleInput( )
 	if love.keyboard.isDown("w") then
@@ -29,6 +45,7 @@ function Ship:HandleInput( )
 end
 
 function Ship:Update(dt)
+
 	if self.thrusting then
 		self.thrusting = false
 
@@ -37,8 +54,9 @@ function Ship:Update(dt)
 		thrust = thrust * dt
 		self.velocity = self.velocity + thrust
 	end
-
+	self:DoRotation()
 	self.position = self.position + (self.velocity * dt)
+
 end
 
 function Ship:Draw()
