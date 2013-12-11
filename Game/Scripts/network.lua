@@ -1,13 +1,13 @@
-local gMessageStart = ':>>\n' 
+local gMessageStart = ':>>\n'
 local gMessageEnd = '\n<<:' 
 
 function sendmessages(node)
-	local message = node.messages[#node.messages]
+	local message = node.out_messages[#node.out_messages]
 	if message then
 		local sent = node.conn:send(message.text, message.sent + 1)
 		message.sent = message.sent + sent
 		if message.sent == string.len(message.text) then
-			table.remove(node.messages, #node.messages)
+			table.remove(node.out_messages, #node.out_messages)
 			sendmessages(node)
 		end
 	end
@@ -46,7 +46,9 @@ function startclient()
 	conn:settimeout(0)
 	print('Connected!')		
 	client.conn = conn
-	client.messages = {}
+	client.in_messages = {}
+	client.out_messages = {}
+	client.receive_buffer = {}
 	client.co = coroutine.create(function() updateclientinternal(client) end)
 	return client
 end
@@ -59,7 +61,7 @@ function updateserverinternal(server)
 			client_conn:settimeout(0)
 			local client_ip, client_port = client_conn:getpeername()
 			print('New connection '..client_ip..':'..client_port..'.')
-			client = { conn = client_conn, messages = {} }
+			client = { conn = client_conn, in_messages = {}, out_messages = {}, receive_buffer = {} }
 			
 			table.insert(server.clients, client)
 		end
@@ -102,5 +104,5 @@ function send(node, text)
 		sent = 0,
 		text = gMessageStart..text..gMessageEnd
 	}
-	table.insert(node.messages, 1, message)	
+	table.insert(node.out_messages, 1, message)	
 end

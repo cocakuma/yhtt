@@ -7,7 +7,7 @@ end
 
 function love.update(dt)
 	updateclient(gClient)
-	--send(gClient, 'Test!')
+	send(gClient, 'Test!')
 end
 
 function love.draw()
