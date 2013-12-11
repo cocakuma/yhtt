@@ -1,1 +1,1 @@
-Love\love.exe game\scripts\client
+Love\love.exe --console game\scripts\client
