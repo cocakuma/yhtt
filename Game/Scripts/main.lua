@@ -1,9 +1,9 @@
 require("util/strict")
 require("constants")
-TUNING = require("tuning")
+require("util/util")
 require("ship")
+TUNING = require("tuning")
 
-ships = {}
 
 inputID = 1
 

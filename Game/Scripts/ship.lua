@@ -1,5 +1,6 @@
 require("util/vector2")
 require("util/class")
+require("bullet")
 
 class("Ship")
 
@@ -18,7 +19,6 @@ function Ship:init()
 	self.turnRight = false
 
 	self.verts = deepcopy(SHIP_VERTS)
-
 end
 
 function Ship:DoRotation()
@@ -38,6 +38,9 @@ function Ship:HandleInput( )
 	if love.keyboard.isDown("w") then
 		self.thrusting = true
 	end
+	if love.keyboard.isDown("space") then
+		self.shoot = true
+	end
 end
 
 function Ship:Update(dt)
@@ -56,6 +59,10 @@ function Ship:Update(dt)
 		local thrust = thrustVector * self.thrust
 		thrust = thrust * dt
 		self.velocity = self.velocity + thrust
+	end
+
+	if self.shoot then
+		
 	end
 
 	local velLen = self.velocity:Length()
