@@ -1,1 +1,1 @@
-Love\love.exe game\scripts
+Love\love.exe game\scripts\server
