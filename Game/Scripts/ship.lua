@@ -33,10 +33,10 @@ function Ship:DoRotation()
 end
 
 function Ship:HandleInput( )
-	if love.keyboard.isDown("a") then
+	if love.keyboard.isDown("d") then
 		self.turnLeft = true
 	end
-	if love.keyboard.isDown("d") then
+	if love.keyboard.isDown("a") then
 		self.turnRight = true
 	end
 	if love.keyboard.isDown("w") then
@@ -62,11 +62,10 @@ function Ship:Update(dt)
 		self.velocity = self.velocity + thrust
 	end
 
-	local dragdenom = Vector2(1 - (self.velocity.x * (self.drag * dt)),
-								1 - (self.velocity.y * (self.drag * dt))
-								)
-	self.velocity.x = dragdenom.x == 0 and 0 or self.velocity.x / dragdenom.x
-	self.velocity.y = dragdenom.y == 0 and 0 or self.velocity.y / dragdenom.y
+	local velLen = self.velocity:Length()
+	local dragdenom = 1 - (velLen * (self.drag * dt))
+	local velLen = dragdenom == 0 and 0 or velLen / dragdenom
+	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
 	print("vel", self.velocity)
 
 	self.position = self.position + (self.velocity * dt)
@@ -85,8 +84,10 @@ function Ship:Draw()
 									self.verts.y[2]+self.position.y,
 									self.verts.x[3]+self.position.x,
 									self.verts.y[3]+self.position.y )
-	love.graphics.setColor(255,0,0,255)
-	love.graphics.line(self.position.x, self.position.y,
-						self.position.x + self.velocity.x * 10, self.position.y + self.velocity.y * 10)
+	if false then -- draw velocity line
+		love.graphics.setColor(255,0,0,255)
+		love.graphics.line(self.position.x, self.position.y,
+							self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
+	end
 end
 
