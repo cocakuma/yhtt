@@ -3,20 +3,14 @@ require("util/class")
 
 class("Ship")
 
-DEGREES = 180/math.pi
 
-SHIP_VERTS = 
-{
-	x = {-5, -5, 5}, 
-	y = {-3, 3, 0}
-}
 function Ship:init()
 	self.position = Vector2(100,100)
 	self.velocity = Vector2(0,0)
-	self.angle = math.pi --rads
+	self.angle = 0 --rads
 
-	self.thrust = 10
-	self.drag = 0.99
+	self.thrust = TUNING.SHIP.THRUST
+	self.drag = TUNING.SHIP.DRAG
 
 	self.thrusting = false
 
