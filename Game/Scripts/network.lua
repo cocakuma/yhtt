@@ -1,21 +1,23 @@
 local gMessageStart = ':>>\n' 
 local gMessageEnd = '\n<<:' 
 
+function sendmessages(node)
+	local message = node.messages[#node.messages]
+	if message then
+		local sent = node.conn:send(message.text, message.sent + 1)
+		message.sent = message.sent + sent
+		if message.sent == string.len(message.text) then
+			table.remove(node.messages, #node.messages)
+			sendmessages(node)
+		end
+	end
+end
+
 function updateclientinternal(client)
 	local coroutine = require('coroutine')
 	while 1 do
-		local message = client.messages[#client.messages]
-		if message then
-			local sent = client.conn:send(message.text, message.sent + 1)
-			message.sent = message.sent + sent
-			if message.sent == string.len(message.text) then
-				table.remove(client.messages, #client.messages)
-			else				
-				coroutine.yield()
-			end
-		else
-			coroutine.yield()
-		end
+		sendmessages(client)
+		coroutine.yield()
 	end	
 end
 
@@ -49,12 +51,13 @@ function updateserverinternal(server)
 			client_conn:settimeout(0)
 			local client_ip, client_port = client_conn:getpeername()
 			print('New connection '..client_ip..':'..client_port..'.')
-			client = { conn = client_conn }
+			client = { conn = client_conn, messages = {} }
 			
 			table.insert(server.clients, client)
 		end
 
-		for i,client in pairs(server.clients) do			
+		for i,client in pairs(server.clients) do
+			sendmessages(client)
 			local a,b,text = client.conn:receive('*a')
 			if text then
 				print( text )
@@ -94,5 +97,5 @@ function send(node, text)
 		sent = 0,
 		text = gMessageStart..text..gMessageEnd
 	}
-	node.messages[#node.messages+1] = message
+	table.insert(node.messages, 1, message)	
 end
