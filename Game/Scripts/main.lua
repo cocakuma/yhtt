@@ -4,8 +4,10 @@ require("util/util")
 require("ship")
 TUNING = require("tuning")
 
-
 inputID = 1
+
+ships = {}
+bullets = {}
 
 function love.load()
 	for i=1,32 do
@@ -22,10 +24,19 @@ function love.update( dt)
 		end
 		ship:Update(dt)
 	end
+
+	for k,bullet in pairs(bullets) do
+		bullet:Update(dt)
+	end
+
 end
 
 function love.draw()
 	for k,ship in pairs(ships) do
 		ship:Draw()
+	end
+
+	for k,bullet in pairs(bullets) do
+		bullet:Draw()
 	end
 end

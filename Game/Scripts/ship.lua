@@ -17,6 +17,10 @@ function Ship:init()
 	self.thrusting = false
 	self.turnLeft = false
 	self.turnRight = false
+	self.shoot = false
+	self.canShoot = true
+
+	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 
 	self.verts = deepcopy(SHIP_VERTS)
 end
@@ -38,7 +42,7 @@ function Ship:HandleInput( )
 	if love.keyboard.isDown("w") then
 		self.thrusting = true
 	end
-	if love.keyboard.isDown("space") then
+	if love.keyboard.isDown(" ") then
 		self.shoot = true
 	end
 end
@@ -61,8 +65,19 @@ function Ship:Update(dt)
 		self.velocity = self.velocity + thrust
 	end
 
-	if self.shoot then
-		
+	if not self.canShoot then
+		self.canShoot_timer = self.canShoot_timer - dt
+		if self.canShoot_timer <= 0 then
+			self.canShoot = true
+			self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+		end
+	end
+
+	if self.shoot and self.canShoot then
+		self.shoot = false
+		self.canShoot = false
+		local bullet = Bullet(self)
+		table.insert(bullets, bullet)
 	end
 
 	local velLen = self.velocity:Length()
