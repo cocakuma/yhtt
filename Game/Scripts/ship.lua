@@ -8,6 +8,7 @@ function Ship:init(x, y, angle)
 	self.ID = NextID()
 	ships[self.ID] = self
 
+	self.verts = deepcopy(SHIP_VERTS)
 	self.position = Vector2(x, y)
 	self.velocity = Vector2(0,0)
 	self.angle = angle --rads
@@ -21,12 +22,15 @@ function Ship:init(x, y, angle)
 	self.thrusting = false
 	self.turnLeft = false
 	self.turnRight = false
+	
 	self.shoot = false
 	self.canShoot = true
-
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 
-	self.verts = deepcopy(SHIP_VERTS)
+	self.lookForAttach = false
+	self.lookForAttach_timer = 
+	self.attached = false
+	
 end
 
 function Ship:DoRotation()
@@ -48,6 +52,9 @@ function Ship:HandleInput( )
 	end
 	if love.keyboard.isDown(" ") then
 		self.shoot = true
+	end
+	if love.keyboard.isDown("f") then
+		self.lookForAttach = true
 	end
 end
 

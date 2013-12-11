@@ -6,6 +6,7 @@ return
 		DRAG = -0.01,
 		TURNSPEED = 3,
 		SHOOT_COOLDOWN = 0.33,
+		ATTACH_COOLDOWN = 1,
 	},
 	BULLET =
 	{
