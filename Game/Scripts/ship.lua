@@ -17,11 +17,7 @@ function Ship:init()
 	self.turnLeft = false
 	self.turnRight = false
 
-	self.verts = 
-	{
-		x = {-5, -5, 5}, 
-		y = {-3, 3, 0}
-	}
+	self.verts = deepcopy(SHIP_VERTS)
 
 end
 
