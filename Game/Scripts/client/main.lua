@@ -1,8 +1,11 @@
+local network = require('../../../Game/Scripts/network')
 local gClient = nil
+
 
 function updateclientinternal()	
 	local coroutine = require('coroutine')
 	while 1 do
+
 		coroutine.yield()
 	end	
 end
@@ -20,8 +23,10 @@ function startclient()
 	print('Connected!')		
 	client.conn = conn
 	client.co = coroutine.create(function() updateclientinternal(client) end)
+	client.messages = {}
 	return client
 end
+
 
 function love.load()	
 	gClient = startclient()
@@ -29,6 +34,7 @@ end
 
 function love.update(dt)
 	updateclient(gClient)
+	send(gClient, 'Test!')
 end
 
 function love.draw()
