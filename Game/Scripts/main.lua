@@ -1,3 +1,4 @@
+
 require("ship")
 
 aShip = {}
@@ -10,6 +11,7 @@ end
 
 function love.update( dt)
 
+	aShip.handleInput()
 	aShip.update(dt)
 
 end
