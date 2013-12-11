@@ -1,16 +1,30 @@
 local gMessageStart = ':>>\n' 
 local gMessageEnd = '<<:\n' 
 
-function updateclientinternal()	
+function updateclientinternal(client)
 	local coroutine = require('coroutine')
 	while 1 do
-
-		coroutine.yield()
+		local message = client.messages[#client.messages]
+		if message then
+			message.sent = message.sent + client.conn:send(message.text)
+			if message.sent == string.len(message.text) then
+				print('SEND SUCCESSFUL!')
+			else
+				print('SEND IN PROGRESS!')
+				coroutine.yield()
+			end
+		else
+			coroutine.yield()
+		end
 	end	
 end
 
 function updateclient(client)
-	coroutine.resume(client.co)
+	v,e = coroutine.resume(client.co)
+	if not v then
+		print(e)
+		assert()
+	end
 end
 
 function startclient()
@@ -19,10 +33,11 @@ function startclient()
 	local socket=require ("socket")
 	print('Connecting to '..settings.server_ip..':'..settings.server_port)
 	local conn = assert(socket.connect(settings.server_ip, settings.server_port))
+	conn:settimeout(0)
 	print('Connected!')		
 	client.conn = conn
-	client.co = coroutine.create(function() updateclientinternal(client) end)
 	client.messages = {}
+	client.co = coroutine.create(function() updateclientinternal(client) end)
 	return client
 end
 
@@ -36,6 +51,14 @@ function updateserverinternal(server)
 			table.insert(server.clients, client_conn)
 		end
 		coroutine.yield()
+	end
+end
+
+function updateserver(server)
+	v,e = coroutine.resume(server.co)
+	if not v then
+		print(e)
+		assert()
 	end
 end
 
@@ -57,8 +80,8 @@ end
 function send(node, text)
 	message = 
 	{ 
-		bytes_sent = 0,
+		sent = 0,
 		text = gMessageStart..text..gMessageEnd
 	}
-	table.insert(node.messages, message)
+	node.messages[#node.messages+1] = message
 end
