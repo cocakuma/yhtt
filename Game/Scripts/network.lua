@@ -6,11 +6,11 @@ function updateclientinternal(client)
 	while 1 do
 		local message = client.messages[#client.messages]
 		if message then
-			message.sent = message.sent + client.conn:send(message.text)
+			local sent = client.conn:send(message.text, message.sent + 1)
+			message.sent = message.sent + sent
 			if message.sent == string.len(message.text) then
-				print('SEND SUCCESSFUL!')
-			else
-				print('SEND IN PROGRESS!')
+				table.remove(client.messages, #client.messages)
+			else				
 				coroutine.yield()
 			end
 		else
