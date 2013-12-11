@@ -29,13 +29,10 @@ function Ship:init()
 end
 
 function Ship:DoRotation()
-
 	for i = 1, 3 do
 		self.verts.x[i] = (SHIP_VERTS.x[i]*math.cos(self.angle)) - (SHIP_VERTS.y[i]*math.sin(self.angle))
 		self.verts.y[i] = (SHIP_VERTS.x[i]*math.sin(self.angle)) + (SHIP_VERTS.y[i]*math.cos(self.angle))
-		print("x:", self.verts.x[i], "y:", self.verts.y[i])
 	end
-
 end
 
 function Ship:HandleInput( )

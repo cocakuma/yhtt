@@ -1,4 +1,6 @@
 require("util/strict")
+require("constants")
+TUNING = require("tuning")
 require("ship")
 
 aShip = {}
