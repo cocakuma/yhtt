@@ -11,7 +11,7 @@ aBullet = {}
 function love.load()
 
 	aShip = Ship()
-	aBullet = Bullet(nil, 100, 100, 0)
+	aBullet = Bullet()
 
 end
 
