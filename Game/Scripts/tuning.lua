@@ -2,8 +2,8 @@ return
 {
 	SHIP =
 	{
-		THRUST = 10,
-		DRAG = 0.99,
+		THRUST = 100,
+		DRAG = -0.01,
 		TURNSPEED = 3,
 	},
 	BULLET =
