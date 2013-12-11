@@ -1,3 +1,5 @@
+local network = require('../../../Game/Scripts/network')
+
 local gServer = nil
 
 function updateserverinternal(server)
