@@ -1,5 +1,5 @@
 local gMessageStart = ':>>\n' 
-local gMessageEnd = '<<:\n' 
+local gMessageEnd = '\n<<:' 
 
 function updateclientinternal(client)
 	local coroutine = require('coroutine')
@@ -46,10 +46,21 @@ function updateserverinternal(server)
 	while 1 do
 		local client_conn = server.conn:accept()
 		if client_conn then
+			client_conn:settimeout(0)
 			local client_ip, client_port = client_conn:getpeername()
 			print('New connection '..client_ip..':'..client_port..'.')
-			table.insert(server.clients, client_conn)
+			client = { conn = client_conn }
+			
+			table.insert(server.clients, client)
 		end
+
+		for i,client in pairs(server.clients) do			
+			local a,b,text = client.conn:receive('*a')
+			if text then
+				print( text )
+			end
+		end
+
 		coroutine.yield()
 	end
 end
