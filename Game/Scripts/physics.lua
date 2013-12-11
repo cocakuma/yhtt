@@ -16,3 +16,9 @@ function Physics.OverlapCircles( circ1, circ2 )
 	local r = circ1.rad + circ2.rad
 	return ((dx*dx) + (dy*dy)) < r*r
 end
+
+function Physics.PointInCircle( point, circ2 )
+	local dx = circ2.x - point.x
+	local dy = circ2.y - point.y
+	return ((dx*dx) + (dy*dy)) < circ2.rad*circ2.rad
+end

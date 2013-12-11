@@ -78,7 +78,6 @@ function Ship:Update(dt)
 	if self.shoot and self.canShoot then
 		self.canShoot = false
 		local bullet = Bullet(self)
-		table.insert(bullets, bullet)
 	end
 	self.shoot = false
 
@@ -118,10 +117,12 @@ function Ship:GetCircle()
 end
 
 function Ship:Collide(other)
-	local diff = self.position - other.position 
+	local diff = self.position - other.position
 	diff.x = diff.x + math.random()*0.002-0.001
 	diff.y = diff.y + math.random()*0.002-0.001
-	print(self.ID,"=>",other.ID,diff)
 	self.velocity = self.velocity + diff:GetNormalized() * 20
-	print("\t",self.velocity)
+end
+
+function Ship:Hit(bullet)
+	self.velocity = self.velocity + bullet.velocity:GetNormalized() * 20
 end

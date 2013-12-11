@@ -14,7 +14,7 @@ payloads = {}
 
 function love.load()
 	for i=1,32 do
-		local ship = Ship(100+10*i, 100, 0)
+		local ship = Ship(100+20*i, 100, 0)
 		ship.ID = i
 		table.insert(ships, ship)
 	end
@@ -64,15 +64,27 @@ function love.update( dt)
 
 	-- post-update
 	-- perform collisions, spawn/despawn entities
-	print("\n\nPHYSICS!!!\n")
 	for k=1,#ships-1 do
 		for n=k+1,#ships do
 			if Physics.OverlapCircles(ships[k]:GetCircle(), ships[n]:GetCircle() ) then
-				print("colliding ",k,"<+>",n)
 				ships[k]:Collide(ships[n])
 				ships[n]:Collide(ships[k])
 			end
 		end
+	end
+
+	local bulletToRemove = {}
+	for k,bullet in pairs(bullets) do
+		for n=1,#ships do
+			if bullet.ship ~= ships[n] and Physics.PointInCircle(bullet.position, ships[n]:GetCircle() ) then
+				ships[n]:Hit(bullet)
+				table.insert(bulletToRemove, bullet)
+			end
+		end
+	end
+
+	for i,b in pairs(bulletToRemove) do
+		b:Destroy()
 	end
 end
 

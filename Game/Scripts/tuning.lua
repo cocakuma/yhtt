@@ -9,7 +9,7 @@ return
 	},
 	BULLET =
 	{
-		SPEED = 33,
+		SPEED = 150,
 	},
 	PAYLOAD =
 	{
