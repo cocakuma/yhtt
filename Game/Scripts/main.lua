@@ -4,6 +4,7 @@ require("util/util")
 require("ship")
 require("physics")
 require("payload")
+require("obstacle")
 TUNING = require("tuning")
 
 inputID = 1
@@ -11,17 +12,28 @@ inputID = 1
 ships = {}
 bullets = {}
 payloads = {}
+obstacles = {}
+
+ENT_ID = 0
+function NextID()
+	ENT_ID = ENT_ID + 1
+	return ENT_ID
+end
+	
 
 function love.load()
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.ID = i
-		table.insert(ships, ship)
 	end
 
 	for i=1,3 do
 		local pl = Payload(math.random() * 640, math.random() * 860)
 		table.insert(payloads, pl)
+	end
+	
+	for i=1,10 do
+		Obstacle()
 	end
 end
 
@@ -64,6 +76,15 @@ function love.update( dt)
 
 	-- post-update
 	-- perform collisions, spawn/despawn entities
+	for k=1,#ships do
+		for n,obs in pairs(obstacles) do
+			if Physics.OverlapCircles(ships[k]:GetCircle(), obs:GetCircle()) then
+				ships[k]:Collide(obs)
+			end
+		end
+	end
+
+
 	for k=1,#ships-1 do
 		for n=k+1,#ships do
 			if Physics.OverlapCircles(ships[k]:GetCircle(), ships[n]:GetCircle() ) then
@@ -81,6 +102,12 @@ function love.update( dt)
 				table.insert(bulletToRemove, bullet)
 			end
 		end
+
+		for n,obs in pairs(obstacles) do
+			if Physics.PointInCircle(bullet.position, obs:GetCircle() ) then
+				table.insert(bulletToRemove, bullet)
+			end
+		end
 	end
 
 	for i,b in pairs(bulletToRemove) do
@@ -92,6 +119,10 @@ end
 
 
 function love.draw()
+	for k,obs in pairs(obstacles) do
+		obs:Draw()
+	end
+
 	for k,ship in pairs(ships) do
 		ship:Draw()
 	end

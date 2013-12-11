@@ -4,8 +4,10 @@ require("bullet")
 
 class("Ship")
 
-
 function Ship:init(x, y, angle)
+	self.ID = NextID()
+	ships[self.ID] = self
+
 	self.position = Vector2(x, y)
 	self.velocity = Vector2(0,0)
 	self.angle = angle --rads

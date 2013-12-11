@@ -3,12 +3,8 @@ require("util/class")
 
 class("Bullet")
 
-local bulletID = 0
-
 function Bullet:init(ship)
-	self.ID = bulletID
-	bulletID = bulletID + 1
-
+	self.ID = NextID()
 	bullets[self.ID] = self
 
 	self.size = deepcopy(BULLET_SIZE)
