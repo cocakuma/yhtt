@@ -13,10 +13,18 @@ function sendmessages(node)
 	end
 end
 
+function receivemessages(node)
+	local a,b,text = node.conn:receive('*a')
+	if text then
+		print( text )
+	end
+end
+
 function updateclientinternal(client)
 	local coroutine = require('coroutine')
 	while 1 do
 		sendmessages(client)
+		receivemessages(client)
 		coroutine.yield()
 	end	
 end
@@ -58,10 +66,7 @@ function updateserverinternal(server)
 
 		for i,client in pairs(server.clients) do
 			sendmessages(client)
-			local a,b,text = client.conn:receive('*a')
-			if text then
-				print( text )
-			end
+			receivemessages(client)
 		end
 
 		coroutine.yield()
