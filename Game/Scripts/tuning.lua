@@ -10,5 +10,10 @@ return
 	BULLET =
 	{
 		SPEED = 33,
+	},
+	PAYLOAD =
+	{
+		MASS = 100,
+		DRAG = -0.66,
 	}
 }

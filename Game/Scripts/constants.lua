@@ -11,3 +11,9 @@ BULLET_SIZE =
 	x = 3,
 	y = 3,
 }
+
+PAYLOAD_SIZE =
+{
+	rad = 30,
+	segs = 6,
+}

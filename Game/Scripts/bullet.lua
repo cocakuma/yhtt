@@ -25,4 +25,3 @@ function Bullet:Draw()
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.rectangle("fill", self.position.x - (self.size.x * .5), self.position.y- (self.size.y * .5), BULLET_SIZE.x, BULLET_SIZE.y )
 end
-
