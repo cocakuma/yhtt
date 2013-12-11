@@ -8,7 +8,7 @@ end
 function love.update(dt)
 	updateserver(gServer)
 	for i,client in pairs(gServer.clients) do
-		send(client, 'WTF!')
+		--send(client, 'WTF!')
 	end
 end
 
