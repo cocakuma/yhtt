@@ -1,12 +1,34 @@
 require("util/vector2")
+require("util/class")
 
-function HandleInput( self )
+class("Ship")
+
+function Ship:init()
+	self.position = Vector2(0,0)
+	self.velocity = Vector2(0,0)
+	self.angle = 0
+
+	self.thrust = 10
+	self.drag = 0.99
+
+	self.thrusting = false
+
+	self.verts = 
+	{
+		x = {0, 10, 5}, 
+		y = {0, 0, 10}
+	}
+
+end
+
+
+function Ship:HandleInput( )
 	if love.keyboard.isDown("w") then
 		self.thrusting = true
 	end
 end
 
-function Update(self, dt)
+function Ship:Update(dt)
 	if self.thrusting then
 		self.thrusting = false
 
@@ -19,39 +41,13 @@ function Update(self, dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function MakeShip()
-	local ship = {}
-
-	ship.position = Vector2(0,0)
-	ship.velocity = Vector2(0,0)
-	ship.angle = 0
-
-	ship.thrust = 10
-	ship.drag = 0.99
-
-	ship.thrusting = false
-
-	ship.handleInput = function() HandleInput(ship) end
-	ship.update = function(dt) Update(ship, dt) end
-
-
-	ship.verts = 
-	{
-		x = {0, 10, 5}, 
-		y = {0, 0, 10}
-	}
-
-	
-	ship.draw = function()
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.polygon("fill", ship.verts.x[1]+ship.position.x,
-										ship.verts.y[1]+ship.position.y,
-										ship.verts.x[2]+ship.position.x,
-										ship.verts.y[2]+ship.position.y,
-										ship.verts.x[3]+ship.position.x,
-										ship.verts.y[3]+ship.position.y )
-	end
-
-	return ship
+function Ship:Draw()
+	love.graphics.setColor(255,255,255,255)
+	love.graphics.polygon("fill", self.verts.x[1]+self.position.x,
+									self.verts.y[1]+self.position.y,
+									self.verts.x[2]+self.position.x,
+									self.verts.y[2]+self.position.y,
+									self.verts.x[3]+self.position.x,
+									self.verts.y[3]+self.position.y )
 end
 

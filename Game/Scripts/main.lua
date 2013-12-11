@@ -5,19 +5,19 @@ aShip = {}
 
 function love.load()
 
-	aShip = MakeShip()
+	aShip = Ship()
 
 end
 
 function love.update( dt)
 
-	aShip.handleInput()
-	aShip.update(dt)
+	aShip:HandleInput()
+	aShip:Update(dt)
 
 end
 
 function love.draw()
 	
-	aShip.draw()
+	aShip:Draw()
 
 end
