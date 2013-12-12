@@ -9,6 +9,7 @@ require("obstacle")
 require("render")
 require("arena")
 require("network")
+require("server")
 TUNING = require("tuning")
 
 arena = {}
