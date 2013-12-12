@@ -178,19 +178,19 @@ function Ship:Shoot()
 end
 
 function Ship:HandleInput( )
-	if love.keyboard.isDown("d") then
+	if self.input["d"] then
 		self.turnLeft = true
 	end
-	if love.keyboard.isDown("a") then
+	if self.input["a"] then
 		self.turnRight = true
 	end
-	if love.keyboard.isDown("w") then
+	if self.input["w"] then
 		self.thrusting = true
 	end
-	if love.keyboard.isDown(" ") then
+	if self.input[" "] then
 		self.shoot = true
 	end
-	if love.keyboard.isDown("f") then
+	if self.input["f"] then
 		if not self.parent then
 			self.tryAttach = true
 		else

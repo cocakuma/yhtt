@@ -40,9 +40,7 @@ function love.load()
 
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
-		if inputID == -1 then
-			inputID = ship.ID
-		end
+		ship.input = defaultinput()
 	end
 
 	for i=1,3 do
@@ -103,7 +101,10 @@ function receiveinput(client)
 		message = nextmessage(client)
 		if not client.ID then
 			local ship = Ship(10, 10, 0)
-			client.ID = ship.ID			
+			client.ID = ship.ID	
+			if inputID == -1 then
+				inputID = ship.ID
+			end		
 		end
 		ships[client.ID].input = input
 	end	
@@ -126,8 +127,8 @@ function love.update( dt)
 	-- pre-update
 	-- check input and synchronize states
 	for k,ship in pairs(ships) do
-		if ship.ID == inputID then
-			ship:HandleInput()
+		ship:HandleInput()
+		if ship.ID == inputID then			
 			Renderer:SetCameraPos(ship.position)
 		end
 	end
