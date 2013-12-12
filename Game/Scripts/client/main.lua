@@ -11,11 +11,9 @@ function sendinput(client)
 	input = {}
 	for i,k in pairs(keys) do
 		local down = love.keyboard.isDown(k)
-		if down then
-			print(k)
-		end
 		input[k] = down
 	end
+	local dmp = serpent.dump(input)
 	send(gClient, serpent.dump(input))
 end
 

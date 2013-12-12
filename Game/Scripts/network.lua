@@ -17,12 +17,13 @@ function receivemessages(node)
 	local a,b,text = node.conn:receive('*a')
 	if text then
 		node.receive_buffer = node.receive_buffer..text
-		local end_delim = string.find( node.receive_buffer, gMessageEnd)		
-		if end_delim then
+		local end_delim = string.find( node.receive_buffer, gMessageEnd)
+		while end_delim do
 			local message = string.sub(node.receive_buffer, string.len(gMessageStart), end_delim - 1)
 			node.in_messages[#node.in_messages+1] = message
 			node.receive_buffer = string.sub(node.receive_buffer, end_delim + string.len(gMessageEnd))
-		end		
+			end_delim = string.find( node.receive_buffer, gMessageEnd)
+		end
 	end
 end
 
@@ -115,4 +116,12 @@ function send(node, text)
 		text = gMessageStart..text..gMessageEnd
 	}
 	table.insert(node.out_messages, 1, message)	
+end
+
+function nextmessage(node)
+	local message = node.in_messages[1]
+	if message then
+		table.remove(node.in_messages, 1)
+	end
+	return message
 end

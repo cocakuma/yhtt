@@ -6,18 +6,15 @@ function love.load()
 end
 
 function receiveinput(client)
-	for k,message in pairs(client.in_messages) do
+	local message = nextmessage(client)
+	while message do
 		local fun, err = loadstring(message)		
 		if err then 
 			print(error)
 			assert()
 		end
 		local input = fun()
-		for k,v in pairs(input) do
-			if v then
-				print(k)
-			end
-		end
+		message = nextmessage(client)
 	end	
 end
 
