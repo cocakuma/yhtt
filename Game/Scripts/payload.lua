@@ -16,7 +16,9 @@ function Payload:Update(dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function Payload:Draw()
-	love.graphics.setColor(255,255,255,255)
-	love.graphics.circle("fill", self.position.x - (self.rad * .5), self.position.y - (self.rad * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+function Payload:Draw(view)
+	local payload_view = {}
+	payload_view.position = {self.position.x, self.position.y}
+	payload_view.rad = self.rad
+	table.insert(view.payloads, payload_view)
 end
