@@ -16,7 +16,7 @@ function Ship:init(x, y, angle, team)
 	self.velocity = Vector2(0,0)
 	self.angle = angle --rads
 
-	self.health = math.random()
+	self.health = 1 -- 100% always
 	
 	self.radius = 8
 
@@ -356,9 +356,22 @@ function Ship:Collide(other)
 	local parent = self:GetTrueParent()
 	parent.velocity = self.velocity + diff:GetNormalized() * 20
 
+	local impactVel = self.velocity:Length()
+	if other.velocity then impactVel = impactVel + other.velocity:Length() end
+
+	if other.obstacle then
+		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK )
+	else
+		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_SHIP )
+	end
 end
 
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
 	parent.velocity = parent.velocity + bullet.velocity:GetNormalized() * 20	
+	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP )
+end
+
+function Ship:TakeDamage(damage)
+	self.health = math.max(0, self.health - damage)
 end

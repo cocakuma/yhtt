@@ -18,5 +18,11 @@ return
 	{
 		MASS = 100,
 		DRAG = -0.66,
+	},
+	DAMAGE = 
+	{
+		SHIP_ON_SHIP = 0.001, -- damage per unit of speed
+		BULLET_ON_SHIP = 1/6, -- damage per bullet
+		SHIP_ON_ROCK = 0.01,  -- ship hitting obstacle
 	}
 }

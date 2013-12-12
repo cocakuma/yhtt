@@ -7,6 +7,8 @@ function Obstacle:init(x, y, radius)
 	self.ID = NextID()
 	obstacles[self.ID] = self
 
+	self.obstacle = true
+
 	self.radius = radius
 	
 	self.position = Vector2(x, y)
