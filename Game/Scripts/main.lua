@@ -42,7 +42,11 @@ function love.load()
 	Renderer:Load()
 
 	arena = Arena(1600, 1600)
+end
 
+local gIsLevelGenerated = false
+function GenerateLevel()
+	print('Generating Level.')
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.input = defaultinput()
@@ -51,12 +55,8 @@ function love.load()
 	for i=1,3 do
 		local pl = Payload(math.random() * 640, math.random() * 860)
 		table.insert(payloads, pl)
-	end
-	
-	GenerateLevel()
-end
+	end	
 
-function GenerateLevel()
 	local mirror = math.random() < 0.5
 	for i=1,10 do
 		local pos = Vector2(math.random()*arena.width, math.random()*arena.height)
@@ -113,6 +113,12 @@ function receiveinput(client)
 end
 
 function love.update( dt)	
+
+	if not gIsLevelGenerated and #gServer.clients > 0 then
+		GenerateLevel()
+		gIsLevelGenerated = true
+	end
+
 	gSimDt = dt
 	local start_time = socket.gettime()
 	if paused then
@@ -269,7 +275,6 @@ function love.draw()
 		local id_message = nextmessage(gClient, 'ID')
 		if id_message then
 			gRemoteID = id_message
-			print( id_message )
 		end
 		
 		local message, remaining = nextmessage(gClient, 'view')
