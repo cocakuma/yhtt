@@ -22,6 +22,7 @@ gServer = nil
 gClient = nil
 
 local gRemoteView = nil
+local gFrameID = 0
 
 ENT_ID = 0
 function NextID()
@@ -214,6 +215,8 @@ function love.draw()
 		local_view.bullets = {}
 		local_view.payloads = {}
 		local_view.obstacles = {}
+		local_view.frame_id = gFrameID
+		gFrameID = gFrameID + 1
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw(local_view)
