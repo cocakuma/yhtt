@@ -121,6 +121,21 @@ function send(node, text)
 	table.insert(node.out_messages, 1, message)	
 end
 
+function senddata(node, data)
+	local serpent = require("util/serpent")
+	local dmp = serpent.dump(data)
+	send(gClient, dmp)	
+end
+
+function unpack(message)
+	local fun, err = loadstring(message)		
+	if err then 
+		print(error)
+		assert()
+	end
+	return fun()
+end
+
 function nextmessage(node)
 	local message = node.in_messages[1]
 	if message then
