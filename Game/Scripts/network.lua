@@ -58,7 +58,10 @@ function startclient()
 	local settings = require("../../../settings")
 	local socket=require ("socket")
 	print('Connecting to '..settings.server_ip..':'..settings.server_port)
-	local conn = assert(socket.connect(settings.server_ip, settings.server_port))
+	local conn = nil
+	while nil == conn do
+		conn = socket.connect(settings.server_ip, settings.server_port)
+	end
 	conn:settimeout(0)
 	print('Connected!')		
 	local client = createnode(conn)
