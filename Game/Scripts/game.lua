@@ -195,6 +195,7 @@ function update( dt)
 		b:Destroy()
 	end
 	
+	server_update()
 
 	gUpdateDt = socket.gettime() - start_time
 end
@@ -206,8 +207,7 @@ function draw()
 	if id_message then
 		gRemoteID = id_message
 	end
-
-	server_update()	
+	
 	updateclient(gClient)		
 	
 	local message, remaining = nextmessage(gClient, 'view')
