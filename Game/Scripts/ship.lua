@@ -27,10 +27,19 @@ function Ship:init(x, y, angle, team)
 
 	self.mouse = nil
 	
+	self.maxAmmoClip = 10
+	self.minAmmoClip = 0
+	self.currentAmmoClip = 10
+	self.reloadSpeed = 0.5
 	self.shoot = false
 	self.canShoot = true
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 	self.shotoffset = Vector2(0, 4)
+
+end
+
+function Ship:ReloadClip()
+
 end
 
 function Ship:ShootCooldown(dt)
