@@ -230,9 +230,9 @@ function love.draw()
 			pl:Draw()
 		end
 
-		for i,client in pairs(gServer.clients) do
-			local dmp = serpent.dump(local_view)
-			send(client, dmp)
+		local view_dmp = serpent.dump(local_view)
+		for i,client in pairs(gServer.clients) do			
+			send(client, view_dmp)
 		end	
 
 		local message = nextmessage(gClient)

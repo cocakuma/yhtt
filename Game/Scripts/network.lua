@@ -4,7 +4,7 @@ local gMessageEnd = '\n<<:'
 function sendmessages(node)
 	local message = node.out_messages[#node.out_messages]
 	if message then
-		local sent = node.conn:send(message.text, message.sent + 1)
+		local sent, a, b = node.conn:send(message.text, message.sent + 1)
 		message.sent = message.sent + sent
 		if message.sent == string.len(message.text) then
 			table.remove(node.out_messages, #node.out_messages)
