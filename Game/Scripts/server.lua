@@ -9,6 +9,7 @@ require("obstacle")
 require("render")
 require("network")
 require("arena")
+require("input")
 TUNING = require("tuning")
 
 gServer = nil
