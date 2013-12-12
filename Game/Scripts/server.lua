@@ -16,7 +16,93 @@ function server_load()
 	GenerateLevel()
 end
 
-function server_update()
+function server_update(dt)
+	for i,client in pairs(gServer.clients) do
+		receiveinput(client)		
+	end		
+
+	-- pre-update
+	-- check input and synchronize states
+	for k,ship in pairs(ships) do
+		ship:HandleInput()
+	end
+
+
+
+	-- update
+	-- handle input, apply physics, gameplay
+	for k,ship in pairs(ships) do
+		ship:Update(dt)
+	end
+
+	for k,bullet in pairs(bullets) do
+		bullet:Update(dt)
+	end
+
+	for k,pl in pairs(payloads) do
+		pl:Update(dt)
+	end	
+
+	-- post-update
+	-- perform collisions, spawn/despawn entities
+	for k,ship in pairs(ships) do
+		for n,obs in pairs(obstacles) do
+			if circles_overlap(ship, obs) then
+				ship:Collide(obs)
+			end
+		end
+	end
+
+	-- this is n^2 right now, yucky!
+	for k, ship1 in pairs(ships) do
+		for n, ship2 in pairs(ships) do
+			if (n ~= k) then
+				if circles_overlap(ship1, ship2) then
+					ship1:Collide(ship2)
+				end
+			end
+		end
+		local oob = arena:OOB( ship1.position )
+		if oob then
+			local parent = ship1:GetTrueParent()
+			parent:SetVelocities(ship1.velocity * -1)
+			parent.position = ship1.position + oob + (parent.position - ship1.position)
+			parent:ClampOffsets()
+		end
+	end
+
+	local bulletToRemove = {}
+	for k,bullet in pairs(bullets) do
+		local hit = false
+		if arena:OOB( bullet.position ) then
+			table.insert(bulletToRemove, bullet)
+			hit = true
+		end
+
+		if not hit then
+			for k, ship in pairs(ships) do
+				if bullet.ship ~= ship and circles_overlap(bullet, ship) then
+					ship:Hit(bullet)
+					table.insert(bulletToRemove, bullet)
+					hit = true
+				end
+			end
+		end
+
+		if not hit then
+			for n,obs in pairs(obstacles) do
+				if circles_overlap(bullet, obs) then
+					table.insert(bulletToRemove, bullet)
+					hit = true
+				end
+			end
+		end
+	end
+
+	for i,b in pairs(bulletToRemove) do
+		b:Destroy()
+	end
+
 	package()
 	updateserver(gServer)
 	gFrameID = gFrameID + 1
