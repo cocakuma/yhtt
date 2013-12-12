@@ -24,6 +24,10 @@ gClient = nil
 local gRemoteView = nil
 local gFrameID = 0
 
+local gSimDt = 0
+local gUpdateDt = 0
+local gRenderDt = 0
+
 ENT_ID = 0
 function NextID()
 	ENT_ID = ENT_ID + 1
@@ -102,6 +106,8 @@ function receiveinput(client)
 end
 
 function love.update( dt)	
+	gSimDt = dt
+	local start_time = socket.gettime()
 	if paused then
 		return
 	end
@@ -204,11 +210,18 @@ function love.update( dt)
 	for i,b in pairs(bulletToRemove) do
 		b:Destroy()
 	end
+	gUpdateDt = socket.gettime() - start_time
+end
+
+function print_time(val)
+	val = val * 1000
+	local decimal = 3
+	print( math.floor( (val * 10^decimal) + 0.5) / (10^decimal) )
 end
 
 function love.draw()
-
-	Renderer:Draw(function()
+	local start_time = socket.gettime()
+	Renderer:Draw(function()		
 
 		local local_view = {}
 		local_view.ships = {}
@@ -255,8 +268,7 @@ function love.draw()
 				for i = 1, 3 do
 					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.angle)) - (SHIP_VERTS.y[i]*math.sin(ship.angle))
 					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.angle)) + (SHIP_VERTS.y[i]*math.cos(ship.angle))
-				end
-				--print(gFrameID - gRemoteView.frame_id)
+				end				
 
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
@@ -304,8 +316,27 @@ function love.draw()
 			end
 		end
 
+		
 	end)
+	--print_time( socket.gettime() - start_time)
+
+	gRenderDt = socket.gettime() - start_time
 
 	gFrameID = gFrameID + 1
-
+	local remote_frame_id = 0
+	if gRemoteView then
+		remote_frame_id = gRemoteView.frame_id
+	end
+	local x = 1100
+	local y = 50
+	local y_delta = 15
+	love.graphics.print("Frame Lag: "..gFrameID - remote_frame_id, x, y)	
+	y = y + y_delta
+	love.graphics.print("Sim Dt: "..gSimDt, x, y)	
+	y = y + y_delta
+	love.graphics.print("Update Dt: "..gUpdateDt, x, y)	
+	y = y + y_delta
+	love.graphics.print("Render Dt: "..gRenderDt, x, y)
+	
+	
 end
