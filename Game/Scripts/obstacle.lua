@@ -12,9 +12,11 @@ function Obstacle:init(x, y, radius)
 	self.position = Vector2(x, y)
 end
 
-function Obstacle:Draw()
-	love.graphics.setColor(155,155,155,255)
-	love.graphics.circle("fill", self.position.x, self.position.y, self.radius)
+function Obstacle:Draw(view)
+	local obstacle_view = {}
+	obstacle_view.position = {self.position.x, self.position.y}
+	obstacle_view.radius = self.radius
+	view.obstacles[self.ID] = obstacle_view
 end
 
 function Obstacle:GetCircle()

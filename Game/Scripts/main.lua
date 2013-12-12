@@ -213,9 +213,10 @@ function love.draw()
 		local_view.ships = {}
 		local_view.bullets = {}
 		local_view.payloads = {}
+		local_view.obstacles = {}
 
 		for k,obs in pairs(obstacles) do
-			obs:Draw()
+			obs:Draw(local_view)
 		end
 
 		arena:Draw()
@@ -292,6 +293,11 @@ function love.draw()
 			for k,payload in pairs(gRemoteView.payloads) do
 				love.graphics.setColor(255,255,255,255)
 				love.graphics.circle("fill", payload.position[1] - (payload.rad * .5), payload.position[2] - (payload.rad * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+			end
+
+			for k,obstacle in pairs(gRemoteView.obstacles) do
+				love.graphics.setColor(155,155,155,255)
+				love.graphics.circle("fill", obstacle.position[1], obstacle.position[2], obstacle.radius)				
 			end
 		end
 
