@@ -178,9 +178,15 @@ function Attachable:ClampOffset()
 end
 
 function Attachable:SetVelocities(override)
-	local thrust = sumThrusts(self:GetChildThrusts())
-	thrust = thrust + self.thrust
-	self.velocity = override or (self.velocity + thrust)
+	if override then
+		self.velocity = override
+	else
+		local childthrusts = self:GetChildThrusts()
+		local thrust = sumThrusts(childthrusts)
+		thrust = thrust + self.thrust
+		self.velocity = self.velocity + thrust / (#childthrusts+1)
+	end
+	print(self._classname,self.ID,"velocity",self.velocity)
 	for k,v in pairs(self.children) do
 		if v.child then
 			v.child.velocity = self.velocity

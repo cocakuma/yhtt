@@ -189,14 +189,13 @@ function GenerateLevel()
 
 	arena = Arena(1600, 1600)
 
-	for i=1,32 do
+	for i=1,2 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.input = defaultinput()
 	end
 
 	for i=1,3 do
 		local pl = Payload(math.random() * 640, math.random() * 860)
-		table.insert(payloads, pl)
 	end	
 
 	local mirror = math.random() < 0.5
