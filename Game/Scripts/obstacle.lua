@@ -18,7 +18,3 @@ function Obstacle:Pack(pkg)
 	pkg = pack(pkg, 'r', self.radius)
 	return pkg
 end
-
-function Obstacle:GetCircle()
-	return Circle(self.position.x, self.position.y, self.radius)
-end
