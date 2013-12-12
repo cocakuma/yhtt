@@ -11,6 +11,12 @@ obstacles = {}
 
 gFrameID = 0
 
+ENT_ID = 0
+function NextID()
+	ENT_ID = ENT_ID + 1
+	return ENT_ID
+end	
+
 function receiveinput(client)
 	local message = nextmessage(client, 'input')
 	while message do
@@ -31,6 +37,8 @@ function server_load()
 end
 
 function server_update(dt)
+	local start_time = socket.gettime()
+
 	for i,client in pairs(gServer.clients) do
 		receiveinput(client)		
 	end		
@@ -186,4 +194,19 @@ function GenerateLevel()
 		Obstacle(pos.x, pos.y, rad)
 		Obstacle(arena.width-pos.x, (mirror and arena.height-pos.y or pos.y), rad)
 	end
+end
+
+function circles_overlap(a, b)
+	local r_total = a.radius + b.radius
+	local delta_x = math.abs(a.position.x - b.position.x)
+	if delta_x > r_total then
+		return false
+	end
+	local delta_y = math.abs(a.position.y - b.position.y)
+	if delta_y > r_total then
+		return false
+	end
+	local r_total_sq = r_total * r_total
+	local dist_sq = delta_x * delta_x + delta_y * delta_y
+	return dist_sq <= r_total_sq
 end
