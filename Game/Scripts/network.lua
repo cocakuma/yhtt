@@ -4,7 +4,11 @@ local gMessageEnd = '\n<<:'
 function sendmessages(node)
 	local message = node.out_messages[#node.out_messages]
 	if message then
-		local sent, a, b = node.conn:send(message.text, message.sent + 1)
+		local sent, err, b = node.conn:send(message.text, message.sent + 1)
+		if sent == nil then
+			node.error = 'Disconnected!'
+			return
+		end
 		message.sent = message.sent + sent
 		if message.sent == string.len(message.text) then
 			table.remove(node.out_messages, #node.out_messages)
@@ -81,6 +85,10 @@ function updateserverinternal(server)
 		end
 
 		for i,client in pairs(server.clients) do
+			if client.error then
+				print('Connection lost: '..client.error)
+				server.clients[i] = nil
+			end
 			sendmessages(client)
 			receivemessages(client)
 		end

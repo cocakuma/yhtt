@@ -298,15 +298,9 @@ function Ship:Update(dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function Ship:DrawConnectionLines()
-
-end
-
 function Ship:Draw(view)
 
 	local ship_view = {}
-
-	self:DrawConnectionLines()
 	
 	if self.team == 0 then
 		ship_view.color = {55,255,155,255}
