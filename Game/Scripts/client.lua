@@ -1,3 +1,14 @@
+require("util/strict")
+require("constants")
+require("util/util")
+require("util/mathutil")
+require("ship")
+require("physics")
+require("payload")
+require("obstacle")
+require("render")
+require("network")
+TUNING = require("tuning")
 
 gClient = nil
 
@@ -42,7 +53,7 @@ function sendinput(client)
 	send(gClient, pkg, 'input')
 end
 
-function draw()
+function client_draw()
 	local start_time = socket.gettime()
 
 	local id_message = nextmessage(gClient, 'ID')
@@ -163,6 +174,14 @@ function draw()
 	love.graphics.print("Frame Lag: "..gFrameID - remote_frame_id, x, y)	
 	y = y + y_delta
 	love.graphics.print("Render Dt: "..gRenderDt, x, y)
-	
-	
+end
+
+function client_load()
+	gClient = startclient(getip(), getport())
+	Renderer:Load()	
+end
+
+function client_update()
+	sendinput(gClient)
+	updateclient(gClient)	
 end

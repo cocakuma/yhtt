@@ -1,13 +1,17 @@
-require 'game'
+require 'server'
+require 'client'
 
 function love.load()
-	load()
-end
-
-function love.draw()
-	draw()
+	server_load()
+	client_load()
 end
 
 function love.update(dt)
-	update(dt)
+	client_update(dt)
+	server_update(dt)
 end
+
+function love.draw()
+	client_draw()
+end
+

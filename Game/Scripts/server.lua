@@ -1,5 +1,15 @@
-require 'network'
-require 'arena'
+require("util/strict")
+require("constants")
+require("util/util")
+require("util/mathutil")
+require("ship")
+require("physics")
+require("payload")
+require("obstacle")
+require("render")
+require("network")
+require("arena")
+TUNING = require("tuning")
 
 gServer = nil
 
