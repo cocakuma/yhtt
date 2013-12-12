@@ -67,15 +67,12 @@ function Ship:CombineVelocities(other)
 	local my_Vel = self:GetChildVelocities()
 	table.insert(my_Vel, self.velocity)
 
-	if #my_Vel > #other_Vel then
-		velDelta = self.velocity - other.velocity * (#other_Vel / #my_Vel)
-	else
-		velDelta = other.velocity - self.velocity * (#other_Vel / #my_Vel)
-	end
+	local velDelta = self.velocity * #my_Vel
+	local otherDelta = other.velocity * #other_Vel
+	local newVelocity = (velDelta+otherDelta) / (#my_Vel + #other_Vel)
+	--print("final", newVelocity)
 
-	print(velDelta)
-
-	return self.velocity + velDelta
+	return newVelocity
 end
 
 function Ship:CheckChildrenForDetachment()
