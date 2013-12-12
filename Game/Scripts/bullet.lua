@@ -14,7 +14,7 @@ function Bullet:init(ship)
 	self.ship = ship
 	self.angle = ship.angle or 0 --rads
 
-	self.angle = self.angle + (math.random() * 0.1552) - (math.random() * 0.314)
+	self.angle = self.angle + (math.random() * TUNING.BULLET.RAND/2) - (math.random() * TUNING.BULLET.RAND)
 
 	local offset = deepcopy(ship.shotoffset)
 	offset.x = offset.x*math.cos(self.angle) - offset.y*math.sin(self.angle)
