@@ -72,6 +72,8 @@ function love.update( dt)
 		return
 	end
 
+	updateserver(gServer)
+
 	-- pre-update
 	-- check input and synchronize states
 	for k,ship in pairs(ships) do

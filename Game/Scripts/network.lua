@@ -37,7 +37,7 @@ function updateclientinternal(client)
 end
 
 function updateclient(client)
-	v,e = coroutine.resume(client.co)
+	local v,e = coroutine.resume(client.co)
 	if not v then
 		print(e)
 		assert()
@@ -87,7 +87,7 @@ function updateserverinternal(server)
 end
 
 function updateserver(server)
-	v,e = coroutine.resume(server.co)
+	local v,e = coroutine.resume(server.co)
 	if not v then
 		print(e)
 		assert()
