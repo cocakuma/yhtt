@@ -7,7 +7,8 @@ function sendmessages(node)
 	if message then
 		local sent, err, b = node.conn:send(message.text, message.sent + 1)
 		if sent == nil then
-			node.error = 'Disconnected!'
+			print(err)
+			node.error = err
 			return
 		end
 		message.sent = message.sent + sent
@@ -75,6 +76,7 @@ function startclient(ip)
 		conn = socket.connect(ip, settings.server_port)
 	end
 	conn:settimeout(0)
+	conn:setoption('keepalive', true)
 	print('Connected!')		
 	local client = createnode(conn)
 	client.co = coroutine.create(function() updateclientinternal(client) end)	
@@ -87,6 +89,7 @@ function updateserverinternal(server)
 		local client_conn = server.conn:accept()
 		if client_conn then
 			client_conn:settimeout(0)
+			client_conn:setoption('keepalive', true)
 			local client_ip, client_port = client_conn:getpeername()
 			print('New connection '..client_ip..':'..client_port..'.')			
 			table.insert(server.clients, createnode(client_conn))

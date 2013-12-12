@@ -23,7 +23,7 @@
 			"file": "Game/Scripts/main.lua",
 			"settings":
 			{
-				"buffer_size": 8277,
+				"buffer_size": 8451,
 				"line_ending": "Windows"
 			}
 		},
@@ -31,7 +31,24 @@
 			"file": "Game/Scripts/network.lua",
 			"settings":
 			{
-				"buffer_size": 4915,
+				"buffer_size": 4885,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "192.168.0.102",
+			"settings":
+			{
+				"buffer_size": 13,
+				"line_ending": "Windows",
+				"name": "192.168.0.102"
+			}
+		},
+		{
+			"file": "run_yog.bat",
+			"settings":
+			{
+				"buffer_size": 59,
 				"line_ending": "Windows"
 			}
 		}
@@ -103,6 +120,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"load",
 			"GenerateLevel",
 			"Obstacle",
 			"getcircle",
@@ -194,7 +212,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -228,15 +246,15 @@
 					"file": "Game/Scripts/main.lua",
 					"settings":
 					{
-						"buffer_size": 8277,
+						"buffer_size": 8451,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5972,
-								5972
+								597,
+								569
 							]
 						],
 						"settings":
@@ -245,7 +263,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3363.0,
+						"translation.y": 225.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -255,15 +273,15 @@
 					"file": "Game/Scripts/network.lua",
 					"settings":
 					{
-						"buffer_size": 4915,
+						"buffer_size": 4885,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1971,
-								1971
+								1851,
+								1851
 							]
 						],
 						"settings":
@@ -272,7 +290,59 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 645.0,
+						"translation.y": 678.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"settings":
+					{
+						"buffer_size": 13,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13,
+								13
+							]
+						],
+						"settings":
+						{
+							"auto_name": "192.168.0.102",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "run_yog.bat",
+					"settings":
+					{
+						"buffer_size": 59,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								59,
+								59
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Batch File/Batch File.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
