@@ -46,6 +46,19 @@ function Ship:DoRotation()
 	end
 end
 
+function Ship:IsChildOf(parent)
+
+	if self.parent == parent then
+		return true
+	end
+
+	for k,v in pairs(self.children) do
+		if v.child:IsChildOf(parent) then
+			return true
+		end		
+	end
+end
+
 function Ship:CheckChildrenForDetachment()
 	for k,v in pairs(self.children) do --Clean up any self.children that want to leave.
 		if v.child then
@@ -133,29 +146,34 @@ end
 
 function Ship:Attach()
 	local pos = self.position
-	for k,v in pairs(payloads) do
-		if v and (v.friendly or v.neutral) then
+	-- for k,v in pairs(payloads) do
+	-- 	if v and (v.friendly or v.neutral) then
+	-- 		local distsq = pos:DistSq(v.position)
+	-- 		if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
+	-- 			--Congrats, you found something. Attach to it!
+	-- 			local offset = v.position - pos
+	-- 			v:GetChild(self, offset)
+	-- 			break
+	-- 		end
+	-- 	end
+	-- end
+	local best = nil
+	local dist = TUNING.SHIP.MAX_ATTACH_DISTANCE^2
+	for k,v in pairs(ships) do
+		if v and v ~= self and not v:IsChildOf(self) then
 			local distsq = pos:DistSq(v.position)
-			if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
-				--Congrats, you found something. Attach to it!
-				local offset = v.position - pos
-				v:GetChild(self, offset)
-				break
+			if distsq <= dist then
+				best = v
+				dist = distsq
 			end
 		end
 	end
 
-	for k,v in pairs(ships) do
-		if v and v ~= self then-- and v.friendly and not false --[[IS CHILD OF ME?]] then
-			local distsq = pos:DistSq(v.position)
-			if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
-				--Congrats, you found something. Attach to it!
-				local offset = pos - v.position
-				v:GetChild(self, offset)
-				break
-			end
-		end
+	if best then
+		local offset = pos - best.position
+		best:GetChild(self, offset)
 	end
+
 end
 
 function Ship:Detach()
@@ -190,13 +208,13 @@ function Ship:HandleInput( )
 	if self.input[" "] then
 		self.shoot = true
 	end
-	if self.input["f"] then
-		if not self.parent then
-			self.tryAttach = true
-		else
-			self.tryDetach = true
-		end
-	end
+	-- if love.keyboard.isDown("f") then
+	-- 	if not self.parent then
+	-- 		self.tryAttach = true
+	-- 	else
+	-- 		self.tryDetach = true
+	-- 	end
+	-- end
 end
 
 function Ship:Update(dt)
