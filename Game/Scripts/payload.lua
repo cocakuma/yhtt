@@ -7,9 +7,6 @@ class("Payload", Attachable)
 function Payload:init(x, y)
 	self._base.init(self, x, y, PAYLOAD_SIZE.rad, TUNING.PAYLOAD.MASS)
 
-	self.ID = NextID()
-	payloads[self.ID] = self
-	
 	self.team = -1
 end
 
@@ -40,3 +37,22 @@ function Payload:OnDetached(other)
 	self.team = -1
 end
 
+function Payload:Collide(other)
+	local diff = self.position - other.position
+	-- random offset fixes two ships in the exact same position
+	diff.x = diff.x + math.random()*0.002-0.001
+	diff.y = diff.y + math.random()*0.002-0.001
+
+	local parent = self:GetTrueParent()
+	parent.velocity = self.velocity + diff:GetNormalized() * 20
+
+	local impactVel = self.velocity:Length()
+	if other.velocity then impactVel = impactVel + other.velocity:Length() end
+end
+
+function Payload:Hit(bullet)
+	local parent = self:GetTrueParent()
+	parent.velocity = parent.velocity + bullet.velocity:GetNormalized() * 20	
+
+	self.tryDetach = true
+end

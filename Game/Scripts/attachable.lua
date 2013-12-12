@@ -4,6 +4,10 @@ require("util/class")
 class("Attachable")
 
 function Attachable:init(x, y, radius, mass)
+
+	self.ID = NextID()
+	bodies[self.ID] = self
+	
 	self.radius = radius
 	self.mass = mass
 	self.drag = TUNING.SHIP.DRAG
@@ -241,17 +245,7 @@ function Attachable:Attach()
 	local best = nil
 	local dist = TUNING.SHIP.MAX_ATTACH_DISTANCE^2
 
-	for k,v in pairs(payloads) do
-		if v and v:IsOnTeam(self.team) and not v:IsChildOf(self) then
-			local distsq = pos:DistSq(v.position)
-			if distsq <= dist then
-				best = v
-				dist = distsq
-			end
-		end
-	end
-	
-	for k,v in pairs(ships) do
+	for k,v in pairs(bodies) do
 		if v and v ~= self and v:IsOnTeam(self.team) and not v:IsChildOf(self) then
 			local distsq = pos:DistSq(v.position)
 			if distsq <= dist then

@@ -99,7 +99,7 @@ function client_draw()
 				else
 					love.graphics.setColor(255,255,255,255)
 				end
-				love.graphics.circle("fill", payload.x - (payload.r * .5), payload.y - (payload.r * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 				
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()

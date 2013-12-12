@@ -15,9 +15,8 @@ TUNING = require("tuning")
 gServer = nil
 
 arena = nil
-ships = {}
+bodies = {} --ships, payloads, etc
 bullets = {}
-payloads = {}
 obstacles = {}
 
 gFrameID = 0
@@ -38,7 +37,7 @@ function receiveinput(client)
 			client.ID = ship.ID	
 			send(client, tostring(client.ID), 'ID')
 		end
-		ships[client.ID].input = input
+		bodies[client.ID].input = input
 	end	
 end
 
@@ -56,49 +55,45 @@ function server_update(dt)
 
 	-- pre-update
 	-- check input and synchronize states
-	for k,ship in pairs(ships) do
-		ship:HandleInput()
+	for k,ship in pairs(bodies) do
+		if ship.HandleInput then
+			ship:HandleInput()
+		end
 	end
 
 	-- update
 	-- handle input, apply physics, gameplay
-	for k,ship in pairs(ships) do
-		ship:Update(dt)
+	for k,body in pairs(bodies) do
+		body:Update(dt)
 	end
 
 	for k,bullet in pairs(bullets) do
 		bullet:Update(dt)
 	end
 
-	for k,pl in pairs(payloads) do
-		pl:Update(dt)
-	end	
-
 	-- post-update
 	-- perform collisions, spawn/despawn entities
-	for k,ship in pairs(ships) do
+	for k,body in pairs(bodies) do
 		for n,obs in pairs(obstacles) do
-			if circles_overlap(ship, obs) then
-				ship:Collide(obs)
+			if circles_overlap(body, obs) then
+				body:Collide(obs)
 			end
 		end
-	end
+		local oob = arena:OOB( body.position )
+		if oob then
+			local parent = body:GetTrueParent()
+			parent:SetVelocities(body.velocity * -1)
+			parent.position = body.position + oob + (parent.position - body.position)
+			parent:ClampOffsets()
+		end
 
-	-- this is n^2 right now, yucky!
-	for k, ship1 in pairs(ships) do
-		for n, ship2 in pairs(ships) do
-			if (n ~= k) then
-				if circles_overlap(ship1, ship2) then
-					ship1:Collide(ship2)
+		for n,otherbody in pairs(bodies) do
+			if otherbody.ID > body.ID then -- only test each pair once
+				if circles_overlap(body, otherbody) then
+					body:Collide(otherbody)
+					otherbody:Collide(body)
 				end
 			end
-		end
-		local oob = arena:OOB( ship1.position )
-		if oob then
-			local parent = ship1:GetTrueParent()
-			parent:SetVelocities(ship1.velocity * -1)
-			parent.position = ship1.position + oob + (parent.position - ship1.position)
-			parent:ClampOffsets()
 		end
 	end
 
@@ -111,9 +106,9 @@ function server_update(dt)
 		end
 
 		if not hit then
-			for k, ship in pairs(ships) do
-				if bullet.ship ~= ship and bullet.ship.team ~= ship.team and circles_overlap(bullet, ship) then
-					ship:Hit(bullet)
+			for k, body in pairs(bodies) do
+				if bullet.ship ~= body and bullet.ship.team ~= body.team and circles_overlap(bullet, body) then
+					body:Hit(bullet)
 					table.insert(bulletToRemove, bullet)
 					hit = true
 				end
@@ -155,10 +150,12 @@ function package()
 	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'ships')		
-	for k,ship in pairs(ships) do
-		pkg = beginpacktable(pkg, k)
-		pkg = ship:Pack(pkg)
-		pkg = endpacktable(pkg)
+	for k,body in pairs(bodies) do
+		if body._classname == "Ship" then
+			pkg = beginpacktable(pkg, k)
+			pkg = body:Pack(pkg)
+			pkg = endpacktable(pkg)
+		end
 	end
 	pkg = endpacktable(pkg)
 
@@ -171,10 +168,12 @@ function package()
 	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'plds')
-	for k,pl in pairs(payloads) do
-		pkg = beginpacktable(pkg, k)
-		pkg = pl:Pack(pkg)
-		pkg = endpacktable(pkg)
+	for k,body in pairs(bodies) do
+		if body._classname == "Payload" then
+			pkg = beginpacktable(pkg, k)
+			pkg = body:Pack(pkg)
+			pkg = endpacktable(pkg)
+		end
 	end
 	pkg = endpacktable(pkg)
 

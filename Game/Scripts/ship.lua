@@ -10,9 +10,6 @@ class("Ship", Attachable)
 function Ship:init(x, y, angle, team)
 	self._base.init(self, x, y, 8, 1)
 
-	self.ID = NextID()
-	ships[self.ID] = self
-
 	self.angle = angle --rads
 
 	self.team = self.ID % 2
