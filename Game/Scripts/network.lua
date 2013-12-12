@@ -66,14 +66,13 @@ function createnode(conn)
 	return node
 end
 
-function startclient(ip)
+function startclient(ip, port)
 	local client = {}
-	local settings = require("../../../settings")
 	local socket=require ("socket")
-	print('Connecting to '..ip..':'..settings.server_port)
+	print('Connecting to '..ip..':'..port)
 	local conn = nil
 	while nil == conn do
-		conn = socket.connect(ip, settings.server_port)
+		conn = socket.connect(ip, port)
 	end
 	conn:settimeout(0)
 	conn:setoption('keepalive', true)
@@ -116,12 +115,11 @@ function updateserver(server)
 	end
 end
 
-function startserver()
+function startserver(port)
 	local coroutine = require('coroutine')
 	local server = {}
-	local settings = require('../../../settings')
 	local socket=require ('socket')
-	local conn = assert(socket.bind('*', settings.server_port))
+	local conn = assert(socket.bind('*', port))
 	local ip, port = conn:getsockname()
 	print('Listening for connections at '..ip..':'..port..'.')
 	conn:settimeout(0)
@@ -203,4 +201,18 @@ end
 
 function pack(package, key, value)
 	return package..tostring(key)..'='..tostring(value)..','
+end
+
+function getip()
+	local ip = '127.0.0.1'
+	for k,v in pairs(arg) do
+		if string.len(v) > 3 and string.sub(v,1,3) == 'ip=' then
+			ip = string.sub(v,4)
+		end
+	end
+	return ip
+end
+
+function getport()
+	return '7500'
 end

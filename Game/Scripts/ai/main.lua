@@ -24,7 +24,7 @@ end
 
 function love.load()
 	for i=1,32 do
-		gClients[i] = startclient(require("../../../settings").server_ip)
+		gClients[i] = startclient(getip(), getport())
 	end
 end
 

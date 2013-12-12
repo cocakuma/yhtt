@@ -35,15 +35,8 @@ function NextID()
 end	
 
 function load()
-	local ip = require("../../../settings").server_ip
-	for k,v in pairs(arg) do
-		if string.len(v) > 3 and string.sub(v,1,3) == 'ip=' then
-			ip = string.sub(v,4)
-		end
-	end
-
-	gServer = startserver()
-	gClient = startclient(ip)
+	gServer = startserver(getport())
+	gClient = startclient(getip(), getport())
 
 	Renderer:Load()
 
