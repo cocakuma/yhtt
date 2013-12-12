@@ -5,6 +5,7 @@ require("ship")
 require("physics")
 require("payload")
 require("obstacle")
+require("render")
 TUNING = require("tuning")
 
 inputID = 1
@@ -22,6 +23,8 @@ end
 	
 
 function love.load()
+	Renderer:Load()
+
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.ID = i
@@ -55,6 +58,7 @@ function love.update( dt)
 	for k,ship in ipairs(ships) do
 		if ship.ID == inputID then
 			ship:HandleInput()
+			Renderer:SetCameraPos(ship.position)
 		end
 	end
 
@@ -119,20 +123,25 @@ end
 
 
 function love.draw()
-	for k,obs in pairs(obstacles) do
-		obs:Draw()
-	end
+	
+	Renderer:Draw(function()
 
-	for k,ship in pairs(ships) do
-		ship:Draw()
-	end
+		for k,obs in pairs(obstacles) do
+			obs:Draw()
+		end
 
-	for k,bullet in pairs(bullets) do
-		bullet:Draw()
-	end
+		for k,ship in pairs(ships) do
+			ship:Draw()
+		end
 
-	for k,pl in pairs(payloads) do
-		pl:Draw()
-	end
+		for k,bullet in pairs(bullets) do
+			bullet:Draw()
+		end
+
+		for k,pl in pairs(payloads) do
+			pl:Draw()
+		end
+
+	end)
 
 end
