@@ -7,9 +7,8 @@ function sendmessages(node)
 	if message then
 		local sent, err, b = node.conn:send(message.text, message.sent + 1)
 		if sent == nil then
+			sent = b
 			print(err)
-			node.error = err
-			return
 		end
 		message.sent = message.sent + sent
 		if message.sent == string.len(message.text) then
