@@ -6,10 +6,12 @@ require("physics")
 require("payload")
 require("obstacle")
 require("render")
+require("arena")
 TUNING = require("tuning")
 
-inputID = 1
+inputID = -1
 
+arena = {}
 ships = {}
 bullets = {}
 payloads = {}
@@ -25,9 +27,13 @@ end
 function love.load()
 	Renderer:Load()
 
+	arena = Arena(1600, 1600)
+
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
-		ship.ID = i
+		if inputID == -1 then
+			inputID = ship.ID
+		end
 	end
 
 	for i=1,3 do
@@ -55,7 +61,7 @@ function love.update( dt)
 
 	-- pre-update
 	-- check input and synchronize states
-	for k,ship in ipairs(ships) do
+	for k,ship in pairs(ships) do
 		if ship.ID == inputID then
 			ship:HandleInput()
 			Renderer:SetCameraPos(ship.position)
@@ -65,7 +71,7 @@ function love.update( dt)
 
 	-- update
 	-- handle input, apply physics, gameplay
-	for k,ship in ipairs(ships) do
+	for k,ship in pairs(ships) do
 		ship:Update(dt)
 	end
 
@@ -80,36 +86,56 @@ function love.update( dt)
 
 	-- post-update
 	-- perform collisions, spawn/despawn entities
-	for k=1,#ships do
+	for k,ship in pairs(ships) do
 		for n,obs in pairs(obstacles) do
-			if Physics.OverlapCircles(ships[k]:GetCircle(), obs:GetCircle()) then
-				ships[k]:Collide(obs)
+			if Physics.OverlapCircles(ship:GetCircle(), obs:GetCircle()) then
+				ship:Collide(obs)
 			end
 		end
 	end
 
 
-	for k=1,#ships-1 do
-		for n=k+1,#ships do
-			if Physics.OverlapCircles(ships[k]:GetCircle(), ships[n]:GetCircle() ) then
-				ships[k]:Collide(ships[n])
-				ships[n]:Collide(ships[k])
+	-- this is n^2 right now, yucky!
+	for k, ship1 in pairs(ships) do
+		for n, ship2 in pairs(ships) do
+			if (n ~= k) then
+				if Physics.OverlapCircles(ship1:GetCircle(), ship2:GetCircle() ) then
+					ship1:Collide(ship2)
+				end
 			end
+		end
+
+		local oob = arena:OOB( ship1.position )
+		if oob then
+			ship1.position = ship1.position + oob
+			ship1.velocity = ship1.velocity * -1
 		end
 	end
 
 	local bulletToRemove = {}
 	for k,bullet in pairs(bullets) do
-		for n=1,#ships do
-			if bullet.ship ~= ships[n] and Physics.PointInCircle(bullet.position, ships[n]:GetCircle() ) then
-				ships[n]:Hit(bullet)
-				table.insert(bulletToRemove, bullet)
+		local hit = false
+		if arena:OOB( bullet.position ) then
+			table.insert(bulletToRemove, bullet)
+			hit = true
+		end
+
+		if not hit then
+			for k, ship in pairs(ships) do
+				if bullet.ship ~= ship and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
+					ship:Hit(bullet)
+					table.insert(bulletToRemove, bullet)
+					hit = true
+				end
 			end
 		end
 
-		for n,obs in pairs(obstacles) do
-			if Physics.PointInCircle(bullet.position, obs:GetCircle() ) then
-				table.insert(bulletToRemove, bullet)
+		if not hit then
+			for n,obs in pairs(obstacles) do
+				if Physics.PointInCircle(bullet.position, obs:GetCircle() ) then
+					table.insert(bulletToRemove, bullet)
+					hit = true
+				end
 			end
 		end
 	end
@@ -125,6 +151,8 @@ end
 function love.draw()
 	
 	Renderer:Draw(function()
+		
+		arena:Draw()
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw()
