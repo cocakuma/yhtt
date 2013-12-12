@@ -88,12 +88,33 @@ function love.keypressed(key)
 
 end
 
+function receiveinput(client)
+	local message = nextmessage(client)
+	while message do
+		local fun, err = loadstring(message)		
+		if err then 
+			print(error)
+			assert()
+		end
+		local input = fun()
+		message = nextmessage(client)
+		if not client.ID then
+			local ship = Ship(0, 0, 0)
+			client.ID = ship.ID
+		end
+		ships[client.ID].input = input
+	end	
+end
+
 function love.update( dt)
 	if paused then
 		return
 	end
 
 	updateserver(gServer)
+	for i,client in pairs(gServer.clients) do
+		receiveinput(client)		
+	end	
 
 	-- pre-update
 	-- check input and synchronize states
