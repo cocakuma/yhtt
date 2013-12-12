@@ -211,8 +211,11 @@ function love.update( dt)
 end
 
 function love.draw()
-	
+
 	Renderer:Draw(function()
+
+		local view = {}
+		view.ships = {}
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw()
@@ -221,7 +224,7 @@ function love.draw()
 		arena:Draw()
 
 		for k,ship in pairs(ships) do
-			ship:Draw()
+			ship:Draw(view)
 		end
 
 		for k,bullet in pairs(bullets) do
@@ -230,6 +233,31 @@ function love.draw()
 
 		for k,pl in pairs(payloads) do
 			pl:Draw()
+		end
+
+		local verts = deepcopy(SHIP_VERTS)
+		for k,ship in pairs(view.ships) do
+			love.graphics.setColor(ship.color[1],ship.color[2],ship.color[3],ship.color[4])			
+			for i = 1, 3 do
+				verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.angle)) - (SHIP_VERTS.y[i]*math.sin(ship.angle))
+				verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.angle)) + (SHIP_VERTS.y[i]*math.cos(ship.angle))
+			end
+			love.graphics.polygon("fill", 	verts.x[1]+ship.position.x,
+											verts.y[1]+ship.position.y,
+											verts.x[2]+ship.position.x,
+											verts.y[2]+ship.position.y,
+											verts.x[3]+ship.position.x,
+											verts.y[3]+ship.position.y 	)
+
+			love.graphics.circle("line", ship.position.x, ship.position.y, ship.radius)
+
+			--[[
+			if false then -- draw velocity line
+				love.graphics.setColor(255,0,0,255)
+				love.graphics.line(ship.position.x, self.position.y,
+					self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
+			end	
+			]]--		
 		end
 
 	end)

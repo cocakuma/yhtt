@@ -10,7 +10,6 @@ function Ship:init(x, y, angle, team)
 
 	self.team = team
 
-	self.verts = deepcopy(SHIP_VERTS)
 	self.position = Vector2(x, y)
 	self.velocity = Vector2(0,0)
 	self.angle = angle --rads
@@ -37,13 +36,6 @@ function Ship:init(x, y, angle, team)
 
 	self.children = {}
 	self.parent = nil
-end
-
-function Ship:DoRotation()
-	for i = 1, 3 do
-		self.verts.x[i] = (SHIP_VERTS.x[i]*math.cos(self.angle)) - (SHIP_VERTS.y[i]*math.sin(self.angle))
-		self.verts.y[i] = (SHIP_VERTS.x[i]*math.sin(self.angle)) + (SHIP_VERTS.y[i]*math.cos(self.angle))
-	end
 end
 
 function Ship:IsChildOf(parent)
@@ -273,33 +265,24 @@ function Ship:Update(dt)
 	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
 
 	self.position = self.position + (self.velocity * dt)
-
-	self:DoRotation()
 end
 
-function Ship:Draw()
+function Ship:Draw(view)
+
+	local ship_view = {}
+
 	if self.team == 0 then
-		love.graphics.setColor(55,255,155,255)
+		ship_view.color = {55,255,155,255}
 	else
-		love.graphics.setColor(155,55,255,255)
+		ship_view.color = {155,55,255,255}
 	end
-	love.graphics.polygon("fill", self.verts.x[1]+self.position.x,
-									self.verts.y[1]+self.position.y,
-									self.verts.x[2]+self.position.x,
-									self.verts.y[2]+self.position.y,
-									self.verts.x[3]+self.position.x,
-									self.verts.y[3]+self.position.y )
 
 
-	love.graphics.circle("line", self.position.x, self.position.y, self.radius)
+	ship_view.position = self.position
+	ship_view.angle = self.angle
+	ship_view.radius = self.radius
 
-
-
-	if false then -- draw velocity line
-		love.graphics.setColor(255,0,0,255)
-		love.graphics.line(self.position.x, self.position.y,
-							self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
-	end
+	view.ships[self.ID] = ship_view
 end
 
 function Ship:GetCircle()
