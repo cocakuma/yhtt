@@ -12,7 +12,8 @@ return
 	},
 	BULLET =
 	{
-		SPEED = 150,
+		SPEED = 10,
+		THRUSTFORCE = 150,
 	},
 	PAYLOAD =
 	{

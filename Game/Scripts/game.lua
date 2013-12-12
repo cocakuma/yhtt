@@ -318,7 +318,12 @@ function draw()
 				else
 					love.graphics.setColor(155,255,155,255)
 				end
-				love.graphics.rectangle("fill", bullet.x - (bullet.sx * .5), bullet.y- (bullet.sy * .5), BULLET_SIZE.x, BULLET_SIZE.y )	
+				DrawRectangle(8,3,bullet.x, bullet.y, bullet.a)
+				local flameLen = math.random()*0.7+0.2
+				love.graphics.setColor(255,190,100,255)
+				DrawTriangle(15*flameLen, 3, bullet.x, bullet.y, bullet.a-math.pi, 7.2*flameLen+5, 0)
+				love.graphics.setColor(255,255,255,255)
+				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)				
 			end
 
 			for k,payload in pairs(gRemoteView.plds) do
