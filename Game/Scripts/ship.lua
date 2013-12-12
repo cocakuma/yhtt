@@ -133,7 +133,7 @@ end
 function Ship:ClampOffsets()
 	for k,v in pairs(self.children) do
 		if v.child then
-			v.child.position = self.position + v.offset
+			v.child:ClampOffset()
 			v.child:ClampOffsets()
 		end
 	end
@@ -309,16 +309,16 @@ function Ship:Update(dt)
 	self.tryDetach = false
 
 	if not self.parent then
-		--Parent will do it for you otherwise!
 		self:CheckChildrenForDetachment()
 		self:SetVelocities()
-		self:ClampOffsets()
-
 		local velLen = self.velocity:Length()
 		local dragdenom = 1 - (velLen * (self.drag * dt))
 		local velLen = dragdenom == 0 and 0 or velLen / dragdenom
 		self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
-		self.position = self.position + (self.velocity * dt)
+		self.position = self.position + (self.velocity * dt)		
+		self:ClampOffsets()
+	else
+		self:ClampOffset()
 	end
 end
 
@@ -359,5 +359,6 @@ function Ship:Collide(other)
 end
 
 function Ship:Hit(bullet)
-	self.velocity = self.velocity + bullet.velocity:GetNormalized() * 20
+	local parent = self:GetTrueParent()
+	parent.velocity = parent.velocity + bullet.velocity:GetNormalized() * 20	
 end
