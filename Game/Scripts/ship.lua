@@ -208,7 +208,7 @@ function Ship:HandleInput( )
 	if self.input[" "] then
 		self.shoot = true
 	end
-	-- if love.keyboard.isDown("f") then
+	-- if self.input["f"] then
 	-- 	if not self.parent then
 	-- 		self.tryAttach = true
 	-- 	else
