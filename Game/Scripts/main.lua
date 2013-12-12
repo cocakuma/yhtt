@@ -112,6 +112,21 @@ function receiveinput(client)
 	end	
 end
 
+function circles_overlap(a, b)
+	local r_total = a.radius + b.radius
+	local delta_x = math.abs(a.position.x - b.position.x)
+	if delta_x > r_total then
+		return false
+	end
+	local delta_y = math.abs(a.position.y - b.position.y)
+	if delta_y > r_total then
+		return false
+	end
+	local r_total_sq = r_total * r_total
+	local dist_sq = delta_x * delta_x + delta_y * delta_y
+	return dist_sq <= r_total_sq
+end
+
 function love.update( dt)	
 
 	if not gIsLevelGenerated and #gServer.clients > 0 then
@@ -134,11 +149,14 @@ function love.update( dt)
 
 	sendinput(gClient)
 
+	
+
 	-- pre-update
 	-- check input and synchronize states
 	for k,ship in pairs(ships) do
 		ship:HandleInput()
 	end
+
 
 
 	-- update
@@ -155,23 +173,23 @@ function love.update( dt)
 		pl:Update(dt)
 	end
 
+	
 
 	-- post-update
 	-- perform collisions, spawn/despawn entities
 	for k,ship in pairs(ships) do
 		for n,obs in pairs(obstacles) do
-			if Physics.OverlapCircles(ship:GetCircle(), obs:GetCircle()) then
+			if circles_overlap(ship, obs) then
 				ship:Collide(obs)
 			end
 		end
 	end
 
-
 	-- this is n^2 right now, yucky!
 	for k, ship1 in pairs(ships) do
 		for n, ship2 in pairs(ships) do
 			if (n ~= k) then
-				if Physics.OverlapCircles(ship1:GetCircle(), ship2:GetCircle() ) then
+				if circles_overlap(ship1, ship2) then
 					ship1:Collide(ship2)
 				end
 			end
@@ -223,6 +241,7 @@ function love.update( dt)
 	for i,b in pairs(bulletToRemove) do
 		b:Destroy()
 	end
+
 	gUpdateDt = socket.gettime() - start_time
 end
 
