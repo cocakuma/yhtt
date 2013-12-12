@@ -257,6 +257,16 @@ function love.draw()
 					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.angle)) - (SHIP_VERTS.y[i]*math.sin(ship.angle))
 					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.angle)) + (SHIP_VERTS.y[i]*math.cos(ship.angle))
 				end
+
+				local prevWidth = love.graphics.getLineWidth()
+				love.graphics.setLineWidth(2)
+
+				for k,v in pairs(ship.lines) do
+					love.graphics.line(ship.position[1], ship.position[2], v[1], v[2])
+				end
+
+				love.graphics.setLineWidth(prevWidth)
+
 				love.graphics.polygon("fill", 	verts.x[1]+ship.position[1],
 												verts.y[1]+ship.position[2],
 												verts.x[2]+ship.position[1],

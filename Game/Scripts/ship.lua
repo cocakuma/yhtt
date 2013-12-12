@@ -296,17 +296,10 @@ function Ship:Update(dt)
 	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
 
 	self.position = self.position + (self.velocity * dt)
-
-	self:DoRotation()
 end
 
 function Ship:DrawConnectionLines()
-	local prevWidth = love.graphics.getLineWidth()
-	love.graphics.setLineWidth(2)
-	for k,v in pairs(self.children) do
-		love.graphics.line(self.position.x, self.position.y, v.child.position.x, v.child.position.y)
-	end
-	love.graphics.setLineWidth(prevWidth)
+
 end
 
 function Ship:Draw(view)
@@ -320,26 +313,17 @@ function Ship:Draw(view)
 	else
 		ship_view.color = {155,55,255,255}
 	end
-	love.graphics.polygon("fill",   self.verts.x[1]+self.position.x,
-									self.verts.y[1]+self.position.y,
-									self.verts.x[2]+self.position.x,
-									self.verts.y[2]+self.position.y,
-									self.verts.x[3]+self.position.x,
-									self.verts.y[3]+self.position.y )
-
-
-	love.graphics.circle("line", self.position.x, self.position.y, self.radius)
 
 	ship_view.position = {self.position.x, self.position.y, self.position.z}
 	ship_view.angle = self.angle
 	ship_view.radius = self.radius
 
-	view.ships[self.ID] = ship_view
-	if false then -- draw velocity line
-		love.graphics.setColor(255,0,0,255)
-		love.graphics.line(self.position.x, self.position.y,
-							self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
+	ship_view.lines = {}
+	for k,v in pairs(self.children) do
+		table.insert(ship_view.lines, {v.child.position.x, v.child.position.y})
 	end
+
+	view.ships[self.ID] = ship_view
 end
 
 function Ship:GetCircle()
