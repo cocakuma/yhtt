@@ -31,6 +31,7 @@ function Ship:init(x, y, angle, team)
 	self.shoot = false
 	self.canShoot = true
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+	self.shotoffset = Vector2(0, 4)
 end
 
 function Ship:ShootCooldown(dt)
@@ -45,7 +46,6 @@ function Ship:Shoot()
 	self.canShoot = false
 	local bullet = Bullet(self)
 	self.shotoffset = self.shotoffset * -1
-	
 end
 
 function Ship:HandleInput( )
