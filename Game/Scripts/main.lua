@@ -45,10 +45,19 @@ function love.load()
 		table.insert(payloads, pl)
 	end
 	
+	GenerateLevel()
+end
+
+function GenerateLevel()
+	local mirror = math.random() < 0.5
 	for i=1,10 do
-		Obstacle()
+		local pos = Vector2(math.random()*arena.width, math.random()*arena.height)
+		local rad = math.random()*100+40
+		Obstacle(pos.x, pos.y, rad)
+		Obstacle(arena.width-pos.x, (mirror and arena.height-pos.y or pos.y), rad)
 	end
 end
+
 
 paused = false
 
@@ -155,12 +164,12 @@ end
 function love.draw()
 	
 	Renderer:Draw(function()
-		
-		arena:Draw()
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw()
 		end
+
+		arena:Draw()
 
 		for k,ship in pairs(ships) do
 			ship:Draw()

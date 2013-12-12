@@ -3,13 +3,13 @@ require("util/class")
 
 class("Obstacle")
 
-function Obstacle:init()
+function Obstacle:init(x, y, radius)
 	self.ID = NextID()
 	obstacles[self.ID] = self
 
-	self.radius = math.random()*80+40
+	self.radius = radius
 	
-	self.position = Vector2(math.random() * 1600, math.random()*1600)
+	self.position = Vector2(x, y)
 end
 
 function Obstacle:Draw()
