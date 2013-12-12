@@ -18,7 +18,6 @@ bullets = {}
 payloads = {}
 obstacles = {}
 
-gServer = nil
 gClient = nil
 
 local gRemoteView = nil
@@ -36,7 +35,7 @@ function NextID()
 end	
 
 function load()
-	gServer = startserver(getport())
+	server_load()	
 	gClient = startclient(getip(), getport())
 
 	Renderer:Load()
@@ -132,7 +131,7 @@ function circles_overlap(a, b)
 	return dist_sq <= r_total_sq
 end
 
-function update_network()
+function update_network()	
 	updateserver(gServer)
 	updateclient(gClient)	
 end
@@ -244,50 +243,6 @@ function update( dt)
 	gUpdateDt = socket.gettime() - start_time
 end
 
-function package()
-	local pkg = beginpack()
-
-	pkg = beginpacktable(pkg, 'obs')
-	for k,obs in pairs(obstacles) do
-		pkg = beginpacktable(pkg, k)
-		pkg = obs:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
-	pkg = beginpacktable(pkg, 'ships')		
-	for k,ship in pairs(ships) do
-		pkg = beginpacktable(pkg, k)
-		pkg = ship:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
-	pkg = beginpacktable(pkg, 'blts')
-	for k,bullet in pairs(bullets) do
-		pkg = beginpacktable(pkg, k)
-		pkg = bullet:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
-	pkg = beginpacktable(pkg, 'plds')
-	for k,pl in pairs(payloads) do
-		pkg = beginpacktable(pkg, k)
-		pkg = pl:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
-	pkg = pack(pkg, 'frame_id', gFrameID)
-	pkg = endpack(pkg)
-	for i,client in pairs(gServer.clients) do
-		send(client, pkg, 'view')
-	end
-
-	update_network()	
-end
-
 function draw()
 	local start_time = socket.gettime()
 
@@ -296,7 +251,8 @@ function draw()
 		gRemoteID = id_message
 	end
 
-	package()
+	server_update()	
+	updateclient(gClient)		
 	
 	local message, remaining = nextmessage(gClient, 'view')
 	while message do
