@@ -17,7 +17,8 @@ function Ship:init(x, y, angle, team)
 	
 	self.radius = 8
 
-	self.thrust = TUNING.SHIP.THRUST
+	self.thrustForce = TUNING.SHIP.THRUST
+	self.thrust = Vector2(0,0)
 	self.drag = TUNING.SHIP.DRAG
 	self.turnSpeed = TUNING.SHIP.TURNSPEED
 
@@ -32,10 +33,10 @@ function Ship:init(x, y, angle, team)
 	self.tryAttach = false
 	self.tryDetach = false
 	self.canAttach = true
-	self.attached = false
 	self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
 
 	self.children = {}
+	self.parent = nil
 end
 
 function Ship:DoRotation()
@@ -45,22 +46,24 @@ function Ship:DoRotation()
 	end
 end
 
-function Ship:PollChildren()
-	for k,v in pairs(children) do --Clean up any children that want to leave.
+function Ship:CheckChildrenForDetachment()
+	for k,v in pairs(self.children) do --Clean up any self.children that want to leave.
 		if v.child then
-			v.child:PollChildren()
+			v.child:CheckChildrenForDetachment()
 			if v.child.tryDetach then
 				self:RemoveChild(v.child)
 			end
 		end
 	end
+end
 
+function Ship:GetChildThrusts()
 	local c_Thrusts = {}
-
-	for k,v in pairs(children) do
-		if v.child and v.child.velocity then
-			local vels = child:PollChildren()
-			for k,v in pairs(vels) do
+	for k,v in pairs(self.children) do
+		if v.child then
+			local thrusts = v.child:GetChildThrusts()
+			table.insert(thrusts, v.child.thrust)
+			for k,v in pairs(thrusts) do
 				table.insert(c_Thrusts, v)
 			end
 		end
@@ -68,16 +71,55 @@ function Ship:PollChildren()
 	return c_Thrusts
 end
 
+function Ship:GetChildVelocities()
+	local c_Vels = {}
+	for k,v in pairs(self.children) do
+		if v.child then
+			local vels = v.child:GetChildVelocities()
+			table.insert(vels, v.child.velocity)
+			for k,v in pairs(vels) do
+				table.insert(c_Vels, v)
+			end
+		end
+	end
+	return c_Vels
+end
+
+function Ship:ClampOffsets()
+	for k,v in pairs(self.children) do
+		if v.child then
+			v.child.position = self.position + v.offset
+			v.child:ClampOffsets()
+		end
+	end
+end
+
+function Ship:SetVelocities()
+	local thrust = sumThrusts(self:GetChildThrusts())
+	thrust = thrust + self.thrust
+	self.velocity = self.velocity + thrust
+	for k,v in pairs(self.children) do
+		if v.child then
+			v.child.velocity = self.velocity
+		end
+	end
+end
+
 function Ship:GetChild(child, offset)
 
+	print(self.ID, "got new child", child.ID)
+
 	self.children[child] = {child = child, offset = offset}
+	child.parent = self
+	--add velocity up too
+	local deltaVel = sumVelocities(child:GetChildVelocities()) + child.velocity
 
 end
 
 function Ship:RemoveChild(child)
-	child.attached = false
 	child.canAttach = false
 	child.tryDetach = false
+	child.parent = nil
 	self.children[child] = nil
 end
 
@@ -90,35 +132,34 @@ function Ship:AttachCooldown(dt)
 end
 
 function Ship:Attach()
-	pos = self.position
+	local pos = self.position
 	for k,v in pairs(payloads) do
 		if v and (v.friendly or v.neutral) then
 			local distsq = pos:DistSq(v.position)
-			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
+			if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
 				--Congrats, you found something. Attach to it!
 				local offset = v.position - pos
 				v:GetChild(self, offset)
-				return
+				break
 			end
 		end
 	end
 
 	for k,v in pairs(ships) do
-		if v and v.friendly and not false --[[IS CHILD OF ME?]] then
+		if v and v ~= self then-- and v.friendly and not false --[[IS CHILD OF ME?]] then
 			local distsq = pos:DistSq(v.position)
-			local distsq = pos:DistSq(v.position)
-			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
+			if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
 				--Congrats, you found something. Attach to it!
-				local offset = v.position - pos
+				local offset = pos - v.position
 				v:GetChild(self, offset)
-				return
+				break
 			end
 		end
 	end
 end
 
 function Ship:Detach()
-	for k,v in pairs(children) do
+	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
 	end
 end
@@ -150,15 +191,13 @@ function Ship:HandleInput( )
 		self.shoot = true
 	end
 	if love.keyboard.isDown("f") then
-		if not self.attached then
-			self.lookForAttach = true
+		if not self.parent then
+			self.tryAttach = true
 		else
-			self.detach = true
+			self.tryDetach = true
 		end
 	end
 end
-
-
 
 function Ship:Update(dt)
 	if self.turnLeft then
@@ -171,11 +210,11 @@ function Ship:Update(dt)
 	end
 	if self.thrusting then
 		self.thrusting = false
-
 		local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
-		local thrust = thrustVector * self.thrust
-		thrust = thrust * dt
-		self.velocity = self.velocity + thrust
+		local thrust = thrustVector * self.thrustForce
+		self.thrust = thrust * dt
+	else
+		self.thrust = Vector2(0,0)
 	end
 
 	if not self.canShoot then
@@ -187,7 +226,6 @@ function Ship:Update(dt)
 	end
 	
 	self.shoot = false
-
 
 	if not self.canAttach then
 		self:AttachCooldown(dt)
@@ -201,6 +239,14 @@ function Ship:Update(dt)
 
 	self.tryAttach = false
 	self.tryDetach = false
+
+
+	if not self.parent then
+		--Parent will do it for you otherwise!
+		--self.velocity = self.velocity + self.thrust
+		self:SetVelocities()
+		self:ClampOffsets()
+	end
 
 
 	local velLen = self.velocity:Length()
@@ -246,7 +292,11 @@ function Ship:Collide(other)
 	local diff = self.position - other.position
 	diff.x = diff.x + math.random()*0.002-0.001
 	diff.y = diff.y + math.random()*0.002-0.001
-	self.velocity = self.velocity + diff:GetNormalized() * 20
+	if not self.parent then
+		self.velocity = self.velocity + diff:GetNormalized() * 20
+	else
+		self.parent.velocity = self.parent.velocity + diff:GetNormalized() * 20
+	end
 end
 
 function Ship:Hit(bullet)

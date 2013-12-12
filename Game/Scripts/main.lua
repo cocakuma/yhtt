@@ -1,6 +1,7 @@
 require("util/strict")
 require("constants")
 require("util/util")
+require("util/mathutil")
 require("ship")
 require("physics")
 require("payload")
@@ -201,9 +202,6 @@ function love.update( dt)
 		b:Destroy()
 	end
 end
-
-
-
 
 function love.draw()
 	
