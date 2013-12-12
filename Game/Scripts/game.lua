@@ -7,22 +7,14 @@ require("physics")
 require("payload")
 require("obstacle")
 require("render")
-require("arena")
 require("network")
 require("server")
 TUNING = require("tuning")
-
-arena = {}
-ships = {}
-bullets = {}
-payloads = {}
-obstacles = {}
 
 gClient = nil
 
 local gRemoteView = nil
 local gRemoteID = "0"
-local gFrameID = 0
 
 local gSimDt = 0
 local gUpdateDt = 0
@@ -39,32 +31,7 @@ function load()
 	gClient = startclient(getip(), getport())
 
 	Renderer:Load()
-
-	arena = Arena(1600, 1600)
 end
-
-local gIsLevelGenerated = false
-function GenerateLevel()
-	print('Generating Level.')
-	for i=1,32 do
-		local ship = Ship(100+20*i, 100, 0)
-		ship.input = defaultinput()
-	end
-
-	for i=1,3 do
-		local pl = Payload(math.random() * 640, math.random() * 860)
-		table.insert(payloads, pl)
-	end	
-
-	local mirror = math.random() < 0.5
-	for i=1,10 do
-		local pos = Vector2(math.random()*arena.width, math.random()*arena.height)
-		local rad = math.random()*100+40
-		Obstacle(pos.x, pos.y, rad)
-		Obstacle(arena.width-pos.x, (mirror and arena.height-pos.y or pos.y), rad)
-	end
-end
-
 
 paused = false
 
@@ -131,18 +98,7 @@ function circles_overlap(a, b)
 	return dist_sq <= r_total_sq
 end
 
-function update_network()	
-	updateserver(gServer)
-	updateclient(gClient)	
-end
-
 function update( dt)	
-
-	if not gIsLevelGenerated and #gServer.clients > 0 then
-		GenerateLevel()
-		gIsLevelGenerated = true
-	end
-
 	gSimDt = dt
 	local start_time = socket.gettime()
 	if paused then
@@ -150,8 +106,8 @@ function update( dt)
 	end
 
 	sendinput(gClient)
-
-	update_network()
+	updateserver(gServer)
+	updateclient(gClient)	
 
 	for i,client in pairs(gServer.clients) do
 		receiveinput(client)		
@@ -340,7 +296,7 @@ function draw()
 
 	gRenderDt = socket.gettime() - start_time
 
-	gFrameID = gFrameID + 1
+	
 	local remote_frame_id = 0
 	if gRemoteView then
 		remote_frame_id = gRemoteView.frame_id
