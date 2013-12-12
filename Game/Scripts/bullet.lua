@@ -24,7 +24,9 @@ function Bullet:init(ship)
 	local directionVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 	local dir = directionVector * self.speed
 	self.velocity = directionVector * self.speed
-	self.velocity = self.velocity + ship.velocity
+	local ship_Vel = deepcopy(ship.velocity)
+	ship.velocity = ship.velocity - (self.velocity * 2)
+	self.velocity = ship_Vel + ship.velocity
 end
 
 function Bullet:Update(dt)
