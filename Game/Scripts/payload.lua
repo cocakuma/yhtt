@@ -8,8 +8,11 @@ function Payload:init(x, y)
 	self.mass = TUNING.PAYLOAD.MASS
 	
 	self.position = Vector2(x or 0, y or 0)
-	self.angle = 0 --rads
 	self.velocity = Vector2(0,0)
+	self.angle = 0 --rads
+
+	self.PAYLOAD_STATE = "NEUTRAL"
+
 end
 
 function Payload:Update(dt)

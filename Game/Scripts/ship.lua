@@ -4,6 +4,8 @@ require("bullet")
 
 class("Ship")
 
+
+
 function Ship:init(x, y, angle, team)
 	self.ID = NextID()
 	ships[self.ID] = self
@@ -88,6 +90,18 @@ function Ship:CheckChildrenForDetachment()
 	end
 end
 
+function Ship:GetTrueParent()
+	if not self.parent then 
+		return self
+	else
+		if self.parent and not self.parent.parent then
+			return self.parent
+		else
+			return self.parent:GetTrueParent()
+		end
+	end
+end
+
 function Ship:GetChildThrusts()
 	local c_Thrusts = {}
 	for k,v in pairs(self.children) do
@@ -125,10 +139,16 @@ function Ship:ClampOffsets()
 	end
 end
 
-function Ship:SetVelocities()
+function Ship:ClampOffset()
+	if self.parent then
+		self.position = self.parent.position + self.parent.children[self].offset
+	end
+end
+
+function Ship:SetVelocities(override)
 	local thrust = sumThrusts(self:GetChildThrusts())
 	thrust = thrust + self.thrust
-	self.velocity = self.velocity + thrust
+	self.velocity = override or (self.velocity + thrust)
 	for k,v in pairs(self.children) do
 		if v.child then
 			v.child.velocity = self.velocity
@@ -247,6 +267,7 @@ function Ship:HandleInput( )
 end
 
 function Ship:Update(dt)
+
 	if self.turnLeft then
 		self.turnLeft = false
 		self.angle = self.angle + self.turnSpeed * dt
@@ -292,14 +313,17 @@ function Ship:Update(dt)
 		self:CheckChildrenForDetachment()
 		self:SetVelocities()
 		self:ClampOffsets()
+
+		local velLen = self.velocity:Length()
+		local dragdenom = 1 - (velLen * (self.drag * dt))
+		local velLen = dragdenom == 0 and 0 or velLen / dragdenom
+		self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
+		self.position = self.position + (self.velocity * dt)
 	end
+end
 
-	local velLen = self.velocity:Length()
-	local dragdenom = 1 - (velLen * (self.drag * dt))
-	local velLen = dragdenom == 0 and 0 or velLen / dragdenom
-	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
-
-	self.position = self.position + (self.velocity * dt)
+function Ship:HasParent()
+	return self.parent ~= nil
 end
 
 function Ship:Pack(pkg)
@@ -309,6 +333,7 @@ function Ship:Pack(pkg)
 	pkg = pack(pkg, 't', self.team)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'r', self.radius)
+	pkg = pack(pkg, 'p', self:HasParent() and 1 or 0)
 	pkg = pack(pkg, 'h', self.health)
 	pkg = pack(pkg, 'it', self.didThrust and 1 or 0) --"input: thrust"
 	self.didThrust = false;
@@ -328,11 +353,8 @@ function Ship:Collide(other)
 	diff.x = diff.x + math.random()*0.002-0.001
 	diff.y = diff.y + math.random()*0.002-0.001
 
-	if not self.parent then
-		self.velocity = self.velocity + diff:GetNormalized() * 20
-	else
-		self.parent.velocity = self.parent.velocity + diff:GetNormalized() * 20
-	end
+	local parent = self:GetTrueParent()
+	parent.velocity = self.velocity + diff:GetNormalized() * 20
 
 end
 

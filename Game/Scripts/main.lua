@@ -80,6 +80,11 @@ function love.keypressed(key)
 	if key == "p" then
 		paused = not paused
 	end
+	if key == "1" then
+
+	elseif key == "2" then
+
+	end
 end
 
 function defaultinput()
@@ -201,23 +206,17 @@ function love.update( dt)
 				end
 			end
 		end
-
 		local oob = arena:OOB( ship1.position )
 		if oob then
-
-			if not ship1.parent then
-				ship1.position = ship1.position + oob
-				ship1.velocity = ship1.velocity * -1
-			else
-				ship1.parent.position = ship1.position + oob + (ship1.parent.position - ship1.position)
-				ship1.parent:ClampOffsets()
-				ship1.parent.velocity = ship1.velocity * -1
+			local parent = ship1:GetTrueParent()
+			if ship1.parent then
+				print(parent.ID)
 			end
-
+			parent.position = ship1.position + oob + (parent.position - ship1.position)
+			parent:ClampOffsets()
+			parent:SetVelocities(ship1.velocity * -1)
 		end
 	end
-
-	
 
 	local bulletToRemove = {}
 	for k,bullet in pairs(bullets) do
@@ -326,6 +325,11 @@ function love.draw()
 				else
 					love.graphics.setColor(155,55,255,255)
 				end
+
+				if ship.p == 1 then
+					love.graphics.setColor(55,255,155,255)
+				end
+				
 				-- the ship
 				DrawTriangle(10, 6, ship.x, ship.y, ship.a)
 
