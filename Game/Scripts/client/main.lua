@@ -14,7 +14,7 @@ function sendinput(client)
 		input[k] = down
 	end
 	local dmp = serpent.dump(input)
-	send(gClient, serpent.dump(input))
+	send(gClient, serpent.dump(input), 'test')
 end
 
 function love.update(dt)

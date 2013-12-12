@@ -1,5 +1,6 @@
 local gMessageStart = ':>>\n'
 local gMessageEnd = '\n<<:' 
+local gMessageTypeDelim = '|' 
 
 function sendmessages(node)
 	local message = node.out_messages[#node.out_messages]
@@ -23,8 +24,15 @@ function receivemessages(node)
 		node.receive_buffer = node.receive_buffer..text
 		local end_delim = string.find( node.receive_buffer, gMessageEnd)
 		while end_delim do
-			local message = string.sub(node.receive_buffer, string.len(gMessageStart), end_delim - 1)
-			node.in_messages[#node.in_messages+1] = message
+			local type_delim = string.find(node.receive_buffer, gMessageTypeDelim)
+			local t = string.sub(node.receive_buffer, string.len(gMessageStart), type_delim - 1)
+			local message = string.sub(node.receive_buffer, type_delim + 1, end_delim - 1)
+			local message_queue = node.in_messages[t]
+			if message_queue == nil then
+				node.in_messages[t] = {}
+				message_queue = node.in_messages[t]
+			end
+			message_queue[#message_queue+1] = message
 			node.receive_buffer = string.sub(node.receive_buffer, end_delim + string.len(gMessageEnd))
 			end_delim = string.find( node.receive_buffer, gMessageEnd)
 		end
@@ -120,19 +128,19 @@ function startserver()
 	return server
 end
 
-function send(node, text)
+function send(node, text, type)
 	local message = 
 	{ 
 		sent = 0,
-		text = gMessageStart..text..gMessageEnd
+		text = gMessageStart..type..gMessageTypeDelim..text..gMessageEnd
 	}
 	table.insert(node.out_messages, 1, message)	
 end
 
-function senddata(node, data)
+function senddata(node, data, type)
 	local serpent = require("util/serpent")
 	local dmp = serpent.dump(data)
-	send(gClient, dmp)	
+	send(gClient, dmp, type)
 end
 
 function unpack(message)
@@ -144,10 +152,15 @@ function unpack(message)
 	return fun()
 end
 
-function nextmessage(node)
-	local message = node.in_messages[1]
-	if message then
-		table.remove(node.in_messages, 1)
+function nextmessage(node, t)
+	local message = nil
+	for k,v in pairs(node.in_messages) do
+		if string.find(k, t) > 0 then
+			message = v[1]
+			if message then
+				table.remove(v, 1)
+			end			
+		end
 	end
 	return message
 end

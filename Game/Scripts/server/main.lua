@@ -6,7 +6,7 @@ function love.load()
 end
 
 function receiveinput(client)
-	local message = nextmessage(client)
+	local message = nextmessage(client, 'test')
 	while message do
 		local fun, err = loadstring(message)		
 		if err then 
@@ -14,7 +14,7 @@ function receiveinput(client)
 			assert()
 		end
 		local input = fun()
-		message = nextmessage(client)
+		message = nextmessage(client, 'test')
 	end	
 end
 

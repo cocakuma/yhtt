@@ -84,14 +84,14 @@ function sendinput(client)
 	for k,v in pairs(input) do
 		input[k] = love.keyboard.isDown(k)
 	end
-	senddata(gClient, input)
+	senddata(gClient, input, 'input')
 end
 
 function receiveinput(client)
-	local message = nextmessage(client)
+	local message = nextmessage(client, 'input')
 	while message do
 		local input = unpack(message)
-		message = nextmessage(client)
+		message = nextmessage(client, 'input')
 		if not client.ID then
 			local ship = Ship(10, 10, 0)
 			client.ID = ship.ID	
@@ -237,13 +237,13 @@ function love.draw()
 		for i,client in pairs(gServer.clients) do	
 			local_view.ID = client.ID		
 			local view_dmp = serpent.dump(local_view)
-			send(client, view_dmp)
+			send(client, view_dmp, 'view')
 		end	
 
-		local message = nextmessage(gClient)
+		local message = nextmessage(gClient, 'view')
 		while message do 
 			gRemoteView = unpack(message)
-			message = nextmessage(gClient)
+			message = nextmessage(gClient, 'view')
 		end
 
 		if gRemoteView then
