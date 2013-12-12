@@ -13,6 +13,8 @@ function Ship:init(x, y, angle, team)
 	self.position = Vector2(x, y)
 	self.velocity = Vector2(0,0)
 	self.angle = angle --rads
+
+	self.health = math.random()
 	
 	self.radius = 8
 
@@ -305,6 +307,7 @@ function Ship:Pack(pkg)
 	pkg = pack(pkg, 't', self.team)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'r', self.radius)
+	pkg = pack(pkg, 'h', self.health)
 	pkg = beginpacktable(pkg, 'l')
 	for k,v in pairs(self.children) do
 		pkg = beginpacktable(pkg, k)

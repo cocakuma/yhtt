@@ -251,94 +251,96 @@ end
 
 function love.draw()
 	local start_time = socket.gettime()
-	Renderer:Draw(function()		
 
-		local pkg = beginpack()
+	local pkg = beginpack()
 
-		pkg = beginpacktable(pkg, 'obs')
-		for k,obs in pairs(obstacles) do
-			pkg = beginpacktable(pkg, k)
-			pkg = obs:Pack(pkg)
-			pkg = endpacktable(pkg)
-		end
+	pkg = beginpacktable(pkg, 'obs')
+	for k,obs in pairs(obstacles) do
+		pkg = beginpacktable(pkg, k)
+		pkg = obs:Pack(pkg)
 		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
 
-		arena:Draw()
+	arena:Draw()
 
-		pkg = beginpacktable(pkg, 'ships')		
-		for k,ship in pairs(ships) do
-			pkg = beginpacktable(pkg, k)
-			pkg = ship:Pack(pkg)
-			pkg = endpacktable(pkg)
-		end
+	pkg = beginpacktable(pkg, 'ships')		
+	for k,ship in pairs(ships) do
+		pkg = beginpacktable(pkg, k)
+		pkg = ship:Pack(pkg)
 		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
 
-		pkg = beginpacktable(pkg, 'blts')
-		for k,bullet in pairs(bullets) do
-			pkg = beginpacktable(pkg, k)
-			pkg = bullet:Pack(pkg)
-			pkg = endpacktable(pkg)
-		end
+	pkg = beginpacktable(pkg, 'blts')
+	for k,bullet in pairs(bullets) do
+		pkg = beginpacktable(pkg, k)
+		pkg = bullet:Pack(pkg)
 		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
 
-		pkg = beginpacktable(pkg, 'plds')
-		for k,pl in pairs(payloads) do
-			pkg = beginpacktable(pkg, k)
-			pkg = pl:Pack(pkg)
-			pkg = endpacktable(pkg)
-		end
+	pkg = beginpacktable(pkg, 'plds')
+	for k,pl in pairs(payloads) do
+		pkg = beginpacktable(pkg, k)
+		pkg = pl:Pack(pkg)
 		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
 
-		pkg = pack(pkg, 'frame_id', gFrameID)
-		pkg = endpack(pkg)
-		for i,client in pairs(gServer.clients) do
-			send(client, pkg, 'view')
-		end
+	pkg = pack(pkg, 'frame_id', gFrameID)
+	pkg = endpack(pkg)
+	for i,client in pairs(gServer.clients) do
+		send(client, pkg, 'view')
+	end
 
-		update_network()	
-		
-		local id_message = nextmessage(gClient, 'ID')
-		if id_message then
-			gRemoteID = id_message
-		end
-		
-		local message, remaining = nextmessage(gClient, 'view')
-		while message do
-			gRemoteView = unpack(1, message)
-			message = nextmessage(gClient, 'view')
-		end
+	update_network()	
+	
+	local id_message = nextmessage(gClient, 'ID')
+	if id_message then
+		gRemoteID = id_message
+	end
+	
+	local message, remaining = nextmessage(gClient, 'view')
+	while message do
+		gRemoteView = unpack(1, message)
+		message = nextmessage(gClient, 'view')
+	end
 
-		
-		if gRemoteView then
-			local verts = deepcopy(SHIP_VERTS)
+	
+	if gRemoteView then
+		Renderer:Draw(function()		
 			for k,ship in pairs(gRemoteView.ships) do
+
+				--team color
 				if ship.t == 0 then
 					love.graphics.setColor(55,255,155,255)
 				else
 					love.graphics.setColor(155,55,255,255)
 				end
-				for i = 1, 3 do
-					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.a)) - (SHIP_VERTS.y[i]*math.sin(ship.a))
-					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.a)) + (SHIP_VERTS.y[i]*math.cos(ship.a))
-				end				
+				-- the ship
+				DrawTriangle(10, 6, ship.x, ship.y, ship.a)
 
+				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
-
 				for k,v in pairs(ship.l) do
 					love.graphics.line(ship.x, ship.y, v.x, v.y)
 				end
-
 				love.graphics.setLineWidth(prevWidth)
 
-				love.graphics.polygon("fill", 	verts.x[1]+ship.x,
-												verts.y[1]+ship.y,
-												verts.x[2]+ship.x,
-												verts.y[2]+ship.y,
-												verts.x[3]+ship.x,
-												verts.y[3]+ship.y  )
-
+				-- shield
+				love.graphics.setColor(ship.h*255,ship.h*255,255,255)
 				love.graphics.circle("line", ship.x, ship.y, ship.r)
+				
+				-- thrusters
+				if false then -- TODO: detect whether or not a ship is thrusting!
+					local flameLen = math.random()*0.8+0.2
+					love.graphics.setColor(255,190,100,255)
+					DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
+					love.graphics.setColor(255,255,255,255)
+					DrawTriangle(20*flameLen, 4, ship.x, ship.y, ship.a-math.pi, 10*flameLen+5, 0)
+				end
 
 				if k == gRemoteID then
 					Renderer:SetCameraPos(ship.x, ship.y)
@@ -363,8 +365,8 @@ function love.draw()
 				love.graphics.setColor(155,155,155,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
 			end
-		end		
-	end)
+		end)
+	end
 
 	gRenderDt = socket.gettime() - start_time
 
