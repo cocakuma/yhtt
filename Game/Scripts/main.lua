@@ -101,7 +101,7 @@ function receiveinput(client)
 	end	
 end
 
-function love.update( dt)
+function love.update( dt)	
 	if paused then
 		return
 	end
@@ -216,7 +216,6 @@ function love.draw()
 		local_view.payloads = {}
 		local_view.obstacles = {}
 		local_view.frame_id = gFrameID
-		gFrameID = gFrameID + 1
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw(local_view)
@@ -243,7 +242,7 @@ function love.draw()
 			send(client, view_dmp, 'view')
 		end	
 
-		local message = nextmessage(gClient, 'view')
+		local message, remaining = nextmessage(gClient, 'view')
 		while message do 
 			gRemoteView = unpack(message)
 			message = nextmessage(gClient, 'view')
@@ -257,6 +256,7 @@ function love.draw()
 					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.angle)) - (SHIP_VERTS.y[i]*math.sin(ship.angle))
 					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.angle)) + (SHIP_VERTS.y[i]*math.cos(ship.angle))
 				end
+				--print(gFrameID - gRemoteView.frame_id)
 
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
@@ -305,5 +305,7 @@ function love.draw()
 		end
 
 	end)
+
+	gFrameID = gFrameID + 1
 
 end

@@ -154,13 +154,15 @@ end
 
 function nextmessage(node, t)
 	local message = nil
+	local remaining = 0
 	for k,v in pairs(node.in_messages) do
 		if string.find(k, t) > 0 then
 			message = v[1]
-			if message then
+			if message then				
 				table.remove(v, 1)
+				remaining = table.getn(v)
 			end			
 		end
 	end
-	return message
+	return message, remaining
 end
