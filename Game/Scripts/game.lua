@@ -69,20 +69,6 @@ function sendinput(client)
 	send(gClient, pkg, 'input')
 end
 
-function receiveinput(client)
-	local message = nextmessage(client, 'input')
-	while message do
-		local input = unpack(1, message)
-		message = nextmessage(client, 'input')
-		if not client.ID then
-			local ship = Ship(10, 10, 0)
-			client.ID = ship.ID	
-			send(client, tostring(client.ID), 'ID')
-		end
-		ships[client.ID].input = input
-	end	
-end
-
 function circles_overlap(a, b)
 	local r_total = a.radius + b.radius
 	local delta_x = math.abs(a.position.x - b.position.x)

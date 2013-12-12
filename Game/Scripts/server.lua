@@ -11,6 +11,20 @@ obstacles = {}
 
 gFrameID = 0
 
+function receiveinput(client)
+	local message = nextmessage(client, 'input')
+	while message do
+		local input = unpack(1, message)
+		message = nextmessage(client, 'input')
+		if not client.ID then
+			local ship = Ship(10, 10, 0)
+			client.ID = ship.ID	
+			send(client, tostring(client.ID), 'ID')
+		end
+		ships[client.ID].input = input
+	end	
+end
+
 function server_load()
 	gServer = startserver(getport())
 	GenerateLevel()
