@@ -186,7 +186,6 @@ function Attachable:SetVelocities(override)
 		thrust = thrust + self.thrust
 		self.velocity = self.velocity + thrust / (#childthrusts+1)
 	end
-	print(self._classname,self.ID,"velocity",self.velocity)
 	for k,v in pairs(self.children) do
 		if v.child then
 			v.child.velocity = self.velocity
