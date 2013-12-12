@@ -12,8 +12,6 @@ require("network")
 local serpent = require("util/serpent")
 TUNING = require("tuning")
 
-inputID = -1
-
 arena = {}
 ships = {}
 bullets = {}
@@ -97,9 +95,6 @@ function receiveinput(client)
 		if not client.ID then
 			local ship = Ship(10, 10, 0)
 			client.ID = ship.ID	
-			if inputID == -1 then
-				inputID = ship.ID
-			end		
 		end
 		ships[client.ID].input = input
 	end	
@@ -123,9 +118,6 @@ function love.update( dt)
 	-- check input and synchronize states
 	for k,ship in pairs(ships) do
 		ship:HandleInput()
-		if ship.ID == inputID then			
-			Renderer:SetCameraPos(ship.position)
-		end
 	end
 
 
@@ -239,8 +231,10 @@ function love.draw()
 			pl:Draw()
 		end
 
-		local view_dmp = serpent.dump(local_view)
-		for i,client in pairs(gServer.clients) do			
+		
+		for i,client in pairs(gServer.clients) do	
+			local_view.ID = client.ID		
+			local view_dmp = serpent.dump(local_view)
 			send(client, view_dmp)
 		end	
 
@@ -277,6 +271,9 @@ function love.draw()
 
 				love.graphics.circle("line", ship.position[1], ship.position[2], ship.radius)
 
+				if ship.ID == gRemoteView.ID then
+					Renderer:SetCameraPos(ship.position[1], ship.position[2])
+				end
 				--[[
 				if false then -- draw velocity line
 					love.graphics.setColor(255,0,0,255)

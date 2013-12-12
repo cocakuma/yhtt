@@ -301,6 +301,7 @@ end
 function Ship:Draw(view)
 
 	local ship_view = {}
+	ship_view.ID = self.ID
 	
 	if self.team == 0 then
 		ship_view.color = {55,255,155,255}

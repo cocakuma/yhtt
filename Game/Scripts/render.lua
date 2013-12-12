@@ -202,10 +202,10 @@ function Renderer:DrawHUD()
 end
 
 -- screen coordinates
-function Renderer:SetCameraPos(pos)
+function Renderer:SetCameraPos(x, y)
 	--print("Renderer:SetCameraPos", pos.x, pos.y)
-	self.camera.pos.x = pos.x
-	self.camera.pos.y = pos.y
+	self.camera.pos.x = x
+	self.camera.pos.y = y
 end
 
 function Renderer:GetCameraPos()
