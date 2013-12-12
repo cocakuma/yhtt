@@ -21,6 +21,7 @@ gServer = nil
 gClient = nil
 
 local gRemoteView = nil
+local gRemoteID = "0"
 local gFrameID = 0
 
 local gSimDt = 0
@@ -105,6 +106,7 @@ function receiveinput(client)
 		if not client.ID then
 			local ship = Ship(10, 10, 0)
 			client.ID = ship.ID	
+			send(client, tostring(client.ID), 'ID')
 		end
 		ships[client.ID].input = input
 	end	
@@ -258,13 +260,17 @@ function love.draw()
 		end
 		pkg = endpacktable(pkg)
 
-		pkg = pack(pkg, 'ID', 1)
 		pkg = pack(pkg, 'frame_id', gFrameID)
 		pkg = endpack(pkg)
-		for i,client in pairs(gServer.clients) do	
+		for i,client in pairs(gServer.clients) do
 			send(client, pkg, 'view')
 		end	
 		
+		local id_message = nextmessage(gClient, 'ID')
+		if id_message then
+			gRemoteID = id_message
+			print( id_message )
+		end
 		
 		local message, remaining = nextmessage(gClient, 'view')
 		while message do
@@ -304,7 +310,7 @@ function love.draw()
 
 				love.graphics.circle("line", ship.x, ship.y, ship.r)
 
-				if ship.ID == gRemoteView.ID then
+				if k == gRemoteID then
 					Renderer:SetCameraPos(ship.x, ship.y)
 				end
 			end

@@ -180,7 +180,8 @@ function nextmessage(node, t)
 	local message = nil
 	local remaining = 0
 	for k,v in pairs(node.in_messages) do
-		if string.find(k, t) > 0 then
+		local index = string.find(k, t)		
+		if index and index > 0 then
 			message = v[1]
 			if message then				
 				table.remove(v, 1)
