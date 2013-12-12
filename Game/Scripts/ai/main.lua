@@ -1,4 +1,4 @@
-local network = require('../../../Game/Scripts/network')
+local network = require('network')
 
 local gClients = {}
 

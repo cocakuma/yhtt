@@ -1,1 +1,2 @@
-start Love\love.exe --console game\scripts\client
+cd Game\Scripts
+start ..\..\Love\love.exe --console client
