@@ -112,7 +112,7 @@ function server_update(dt)
 
 		if not hit then
 			for k, ship in pairs(ships) do
-				if bullet.ship ~= ship and circles_overlap(bullet, ship) then
+				if bullet.ship ~= ship and bullet.ship.team ~= ship.team and circles_overlap(bullet, ship) then
 					ship:Hit(bullet)
 					table.insert(bulletToRemove, bullet)
 					hit = true

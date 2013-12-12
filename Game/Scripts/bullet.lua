@@ -11,7 +11,7 @@ function Bullet:init(ship)
 	self.speed = TUNING.BULLET.SPEED
 	self.thrustForce = TUNING.BULLET.THRUSTFORCE
 	self.thrust = Vector2(0,0)
-	self.ship = ship or nil
+	self.ship = ship
 	self.angle = ship.angle or 0 --rads
 	local offset = deepcopy(ship.shotoffset)
 	offset.x = offset.x*math.cos(self.angle) - offset.y*math.sin(self.angle)
@@ -43,7 +43,7 @@ end
 function Bullet:Pack(pkg)
 	pkg = pack(pkg, 'x', self.position.x)
 	pkg = pack(pkg, 'y', self.position.y)
-	pkg = pack(pkg, 't', self.team)
+	pkg = pack(pkg, 't', self.ship.team)
 	pkg = pack(pkg, 'a', self.angle)
 	return pkg
 end	

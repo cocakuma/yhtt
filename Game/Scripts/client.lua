@@ -140,11 +140,11 @@ function client_draw()
 
 			for k,bullet in pairs(gRemoteView.blts) do
 				if bullet.t == 0 then
-					love.graphics.setColor(155,255,155,255)
+					love.graphics.setColor(55,255,155,255)
 				else
-					love.graphics.setColor(155,255,155,255)
+					love.graphics.setColor(155,55,255,255)
 				end
-				DrawRectangle(8,3,bullet.x, bullet.y, bullet.a)
+				DrawRectangle(5,2,bullet.x, bullet.y, bullet.a)
 				local flameLen = math.random()*0.7+0.2
 				love.graphics.setColor(255,190,100,255)
 				DrawTriangle(15*flameLen, 3, bullet.x, bullet.y, bullet.a-math.pi, 7.2*flameLen+5, 0)
