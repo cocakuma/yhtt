@@ -1,1 +1,0 @@
-Love\love.exe --console game\scripts\client

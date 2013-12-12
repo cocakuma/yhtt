@@ -1,0 +1,1 @@
+Love\love.exe --console game\scripts\ai

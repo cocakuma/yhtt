@@ -1,3 +1,3 @@
 function love.conf(t)
-	t.title = "Client"
+	t.title = "AI"
 end
