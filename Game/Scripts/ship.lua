@@ -314,7 +314,7 @@ function Ship:Draw(view)
 		ship_view.color = {155,55,255,255}
 	end
 
-	ship_view.position = {self.position.x, self.position.y, self.position.z}
+	ship_view.position = {self.position.x, self.position.y}
 	ship_view.angle = self.angle
 	ship_view.radius = self.radius
 

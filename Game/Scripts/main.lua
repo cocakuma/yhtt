@@ -219,6 +219,7 @@ function love.draw()
 
 		local local_view = {}
 		local_view.ships = {}
+		local_view.bullets = {}
 
 		for k,obs in pairs(obstacles) do
 			obs:Draw()
@@ -231,7 +232,7 @@ function love.draw()
 		end
 
 		for k,bullet in pairs(bullets) do
-			bullet:Draw()
+			bullet:Draw(local_view)
 		end
 
 		for k,pl in pairs(payloads) do
@@ -283,6 +284,11 @@ function love.draw()
 						self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
 				end	
 				]]--		
+			end
+
+			for k,bullet in pairs(gRemoteView.bullets) do
+				love.graphics.setColor(bullet.color[1],bullet.color[2],bullet.color[3],bullet.color[4])		
+				love.graphics.rectangle("fill", bullet.position[1] - (bullet.size[1] * .5), bullet.position[2]- (bullet.size[2] * .5), BULLET_SIZE.x, BULLET_SIZE.y )	
 			end
 		end
 
