@@ -209,12 +209,9 @@ function love.update( dt)
 		local oob = arena:OOB( ship1.position )
 		if oob then
 			local parent = ship1:GetTrueParent()
-			if ship1.parent then
-				print(parent.ID)
-			end
+			parent:SetVelocities(ship1.velocity * -1)
 			parent.position = ship1.position + oob + (parent.position - ship1.position)
 			parent:ClampOffsets()
-			parent:SetVelocities(ship1.velocity * -1)
 		end
 	end
 
