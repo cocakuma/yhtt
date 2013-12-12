@@ -8,6 +8,7 @@ require("payload")
 require("obstacle")
 require("render")
 require("network")
+require("input")
 TUNING = require("tuning")
 
 gClient = nil
@@ -168,9 +169,9 @@ function client_draw()
 	local x = 1100
 	local y = 50
 	local y_delta = 15
-	love.graphics.print("Frame Lag: "..gFrameID - remote_frame_id, x, y)	
-	y = y + y_delta
 	love.graphics.print("Render Dt: "..gRenderDt, x, y)
+	y = y + y_delta
+
 end
 
 function client_load()
