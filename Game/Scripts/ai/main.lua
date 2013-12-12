@@ -1,28 +1,37 @@
 local network = require('../../../Game/Scripts/network')
-local serpent = require('../../../Game/Scripts/util/serpent')
-local gClient = nil
 
-function love.load()	
-	gClient = startclient()
+local gClients = {}
+
+function defaultinput()
+	local keys = { 'd', 'a', 'w', ' ', 'f' }
+	local input = {}
+	for i,k in pairs(keys) do
+		input[k] = false
+	end	
+	return input
 end
 
 function sendinput(client)
-	local keys = { 'd', 'a', 'w', ' ', 'f' }
-	input = {}
-	for i,k in pairs(keys) do
-		local down = love.keyboard.isDown(k)
-		input[k] = down
+	local input = defaultinput()
+	local pkg = beginpack()
+
+	for k,v in pairs(input) do		
+		pkg = pack(pkg, k, 0)
 	end
-	local dmp = serpent.dump(input)
-	send(gClient, serpent.dump(input), 'test')
+	pkg = endpack(pkg)
+	send(client, pkg, 'input')
 end
 
-function love.update(dt)
-	sendinput(gClient)
-	updateclient(gClient)
-	--send(gClient, 'Test!')
+function love.load()
+	for i=1,32 do
+		gClients[i] = startclient()
+	end
 end
 
-function love.draw()
-
+function love.update( dt)
+	for i,client in pairs(gClients) do
+		sendinput(client)
+		updateclient(client)
+		clearmessages(client)
+	end	
 end

@@ -137,20 +137,6 @@ function send(node, text, type)
 	table.insert(node.out_messages, 1, message)	
 end
 
---[[
-function pack(data)
-	local str = '{'
-	for k,v in pairs(data) do
-		if type(v) == 'table' then
-			str = str..k..'='..pack(v)
-		else
-			str = str..k..'='..tostring(v)..','
-		end		
-	end
-	return str..'},'
-end
-]]--
-
 function unpack(index, str)
 	local t = {}
 	local token_start = index + 1
@@ -174,6 +160,12 @@ function unpack(index, str)
 		i = i + 1
 	end
 	return t
+end
+
+function clearmessages(node)
+	for k,v in pairs(node.in_messages) do
+		node.in_messages[k] = {}
+	end
 end
 
 function nextmessage(node, t)
