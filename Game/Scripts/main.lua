@@ -171,9 +171,7 @@ function love.update( dt)
 
 	for k,pl in pairs(payloads) do
 		pl:Update(dt)
-	end
-
-	
+	end	
 
 	-- post-update
 	-- perform collisions, spawn/despawn entities
@@ -220,7 +218,7 @@ function love.update( dt)
 
 		if not hit then
 			for k, ship in pairs(ships) do
-				if bullet.ship ~= ship and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
+				if bullet.ship ~= ship and circles_overlap(bullet, ship) then
 					ship:Hit(bullet)
 					table.insert(bulletToRemove, bullet)
 					hit = true
@@ -230,7 +228,7 @@ function love.update( dt)
 
 		if not hit then
 			for n,obs in pairs(obstacles) do
-				if Physics.PointInCircle(bullet.position, obs:GetCircle() ) then
+				if circles_overlap(bullet, obs) then
 					table.insert(bulletToRemove, bullet)
 					hit = true
 				end

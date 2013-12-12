@@ -14,6 +14,7 @@ function Bullet:init(ship)
 	self.position = Vector2(ship.position.x or 0, ship.position.y or 0)
 	self.angle = ship.angle or 0 --rads
 	self.velocity = Vector2(0,0)
+	self.radius = 0
 	
 	local directionVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 	local dir = directionVector * self.speed
