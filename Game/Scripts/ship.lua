@@ -31,6 +31,7 @@ function Ship:init(x, y, angle, team)
 
 	self.tryAttach = false
 	self.tryDetach = false
+	self.wantsToDetach = false
 	self.canAttach = true
 	self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
 
@@ -51,11 +52,33 @@ function Ship:IsChildOf(parent)
 	end
 end
 
+function Ship:CombineVelocities(other)
+
+	local velDelta = Vector2(0,0)
+
+	local other_Vel = other:GetChildVelocities()
+	table.insert(other_Vel, other.velocity)
+
+	local my_Vel = self:GetChildVelocities()
+	table.insert(my_Vel, self.velocity)
+
+	if #my_Vel > #other_Vel then
+		velDelta = self.velocity - other.velocity * (#other_Vel / #my_Vel)
+	else
+		velDelta = other.velocity - self.velocity * (#other_Vel / #my_Vel)
+	end
+
+	print(velDelta)
+
+	return self.velocity + velDelta
+end
+
 function Ship:CheckChildrenForDetachment()
 	for k,v in pairs(self.children) do --Clean up any self.children that want to leave.
 		if v.child then
 			v.child:CheckChildrenForDetachment()
-			if v.child.tryDetach then
+			if v.child.wantsToDetach == true then
+				print(v.child.ID, "wants to detach from", self.ID, v.child.wantsToDetach)
 				self:RemoveChild(v.child)
 			end
 		end
@@ -114,22 +137,26 @@ function Ship:GetChild(child, offset)
 
 	print(self.ID, "got new child", child.ID)
 
+	local newVel = self:CombineVelocities(child)
+
 	self.children[child] = {child = child, offset = offset}
 	child.parent = self
 	--add velocity up too
-	local deltaVel = sumVelocities(child:GetChildVelocities()) + child.velocity
 
+	self.velocity = newVel
+	
 end
 
-function Ship:RemoveChild(child)
+function Ship:RemoveChild(child)	
+	print(self.ID, "Remove Child: ", child.ID)
 	child.canAttach = false
-	child.tryDetach = false
+	child.wantsToDetach = false
 	child.parent = nil
 	self.children[child] = nil
 end
 
 function Ship:AttachCooldown(dt)
-	self.attach_Timer = self.canShoot_timer - dt
+	self.attach_Timer = self.attach_Timer - dt
 	if self.attach_Timer <= 0 then
 		self.canAttach = true
 		self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
@@ -138,6 +165,7 @@ end
 
 function Ship:Attach()
 	local pos = self.position
+
 	-- for k,v in pairs(payloads) do
 	-- 	if v and (v.friendly or v.neutral) then
 	-- 		local distsq = pos:DistSq(v.position)
@@ -149,8 +177,10 @@ function Ship:Attach()
 	-- 		end
 	-- 	end
 	-- end
+	
 	local best = nil
 	local dist = TUNING.SHIP.MAX_ATTACH_DISTANCE^2
+	
 	for k,v in pairs(ships) do
 		if v and v ~= self and not v:IsChildOf(self) then
 			local distsq = pos:DistSq(v.position)
@@ -166,12 +196,15 @@ function Ship:Attach()
 		best:GetChild(self, offset)
 	end
 
+	self.tryAttach = false
+	self.canAttach = false
 end
 
 function Ship:Detach()
 	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
 	end
+	self.wantsToDetach = true
 end
 
 function Ship:ShootCooldown(dt)
@@ -200,13 +233,13 @@ function Ship:HandleInput( )
 	if self.input[" "] then
 		self.shoot = true
 	end
-	-- if self.input["f"] then
-	-- 	if not self.parent then
-	-- 		self.tryAttach = true
-	-- 	else
-	-- 		self.tryDetach = true
-	-- 	end
-	-- end
+	if self.input["f"] then
+		if not self.parent then
+			self.tryAttach = true
+		else
+			self.tryDetach = true
+		end
+	end
 end
 
 function Ship:Update(dt)
@@ -250,14 +283,12 @@ function Ship:Update(dt)
 	self.tryAttach = false
 	self.tryDetach = false
 
-
 	if not self.parent then
 		--Parent will do it for you otherwise!
-		--self.velocity = self.velocity + self.thrust
+		self:CheckChildrenForDetachment()
 		self:SetVelocities()
 		self:ClampOffsets()
 	end
-
 
 	local velLen = self.velocity:Length()
 	local dragdenom = 1 - (velLen * (self.drag * dt))
@@ -265,23 +296,50 @@ function Ship:Update(dt)
 	self.velocity = velLen == 0 and Vector2(0,0) or self.velocity:GetNormalized() * velLen
 
 	self.position = self.position + (self.velocity * dt)
+
+	self:DoRotation()
+end
+
+function Ship:DrawConnectionLines()
+	local prevWidth = love.graphics.getLineWidth()
+	love.graphics.setLineWidth(2)
+	for k,v in pairs(self.children) do
+		love.graphics.line(self.position.x, self.position.y, v.child.position.x, v.child.position.y)
+	end
+	love.graphics.setLineWidth(prevWidth)
 end
 
 function Ship:Draw(view)
 
 	local ship_view = {}
 
+	self:DrawConnectionLines()
+	
 	if self.team == 0 then
 		ship_view.color = {55,255,155,255}
 	else
 		ship_view.color = {155,55,255,255}
 	end
+	love.graphics.polygon("fill",   self.verts.x[1]+self.position.x,
+									self.verts.y[1]+self.position.y,
+									self.verts.x[2]+self.position.x,
+									self.verts.y[2]+self.position.y,
+									self.verts.x[3]+self.position.x,
+									self.verts.y[3]+self.position.y )
+
+
+	love.graphics.circle("line", self.position.x, self.position.y, self.radius)
 
 	ship_view.position = {self.position.x, self.position.y, self.position.z}
 	ship_view.angle = self.angle
 	ship_view.radius = self.radius
 
 	view.ships[self.ID] = ship_view
+	if false then -- draw velocity line
+		love.graphics.setColor(255,0,0,255)
+		love.graphics.line(self.position.x, self.position.y,
+							self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
+	end
 end
 
 function Ship:GetCircle()
@@ -292,11 +350,13 @@ function Ship:Collide(other)
 	local diff = self.position - other.position
 	diff.x = diff.x + math.random()*0.002-0.001
 	diff.y = diff.y + math.random()*0.002-0.001
+
 	if not self.parent then
 		self.velocity = self.velocity + diff:GetNormalized() * 20
 	else
 		self.parent.velocity = self.parent.velocity + diff:GetNormalized() * 20
 	end
+
 end
 
 function Ship:Hit(bullet)

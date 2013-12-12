@@ -167,8 +167,16 @@ function love.update( dt)
 
 		local oob = arena:OOB( ship1.position )
 		if oob then
-			ship1.position = ship1.position + oob
-			ship1.velocity = ship1.velocity * -1
+
+			if not ship1.parent then
+				ship1.position = ship1.position + oob
+				ship1.velocity = ship1.velocity * -1
+			else
+				ship1.parent.position = ship1.position + oob + (ship1.parent.position - ship1.position)
+				ship1.parent:ClampOffsets()
+				ship1.parent.velocity = ship1.velocity * -1
+			end
+
 		end
 	end
 
