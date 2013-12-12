@@ -118,7 +118,6 @@ end
 function Ship:Shoot()
 	self.canShoot = false
 	local bullet = Bullet(self)
-	table.insert(bullets, bullet)
 end
 
 function Ship:HandleInput( )
