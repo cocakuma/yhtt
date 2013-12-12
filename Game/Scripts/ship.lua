@@ -27,6 +27,8 @@ function Ship:init(x, y, angle, team)
 	self.didThrust = false
 	self.turnLeft = false
 	self.turnRight = false
+
+	self.mouse = nil
 	
 	self.shoot = false
 	self.canShoot = true
@@ -49,29 +51,55 @@ function Ship:Shoot()
 end
 
 function Ship:HandleInput( )
-	if self.input["d"] == 1 then
-		self.turnLeft = true
-	end
-	if self.input["a"] == 1 then
-		self.turnRight = true
-	end
-	if self.input["w"] == 1 then
-		self.thrusting = true
-		self.didThrust = true
-	end
-	if self.input[" "] == 1 then
-		self.shoot = true
-	end
-	if self.input["f"] == 1 then
-		if not self.parent then
-			self.tryAttach = true
-		else
-			self.tryDetach = true
+	
+	if self.input["m"] == 0 then
+		self.mouse = nil
+		if self.input["d"] == 1 then
+			self.turnLeft = true
+		end
+		if self.input["a"] == 1 then
+			self.turnRight = true
+		end
+		if self.input["w"] == 1 then
+			self.thrusting = true
+			self.didThrust = true
+		end
+		if self.input[" "] == 1 then
+			self.shoot = true
+		end
+		if self.input["f"] == 1 then
+			if not self.parent or not next(self.children) then
+				self.tryAttach = true
+			else
+				self.tryDetach = true
+			end
+		end
+	else
+		self.mouse = Vector2(self.input['m_x'] or 0, self.input['m_y'] or 0)
+		if self.input["m_r"] == 1 then
+			self.thrusting = true
+			self.didThrust = true
+		end
+		if self.input["m_l"] == 1 then
+			self.shoot = true
+		end
+		if self.input[" "] == 1 then
+			if not self.parent or not next(self.children) then
+				self.tryAttach = true
+			else
+				self.tryDetach = true
+			end
 		end
 	end
+
 end
 
 function Ship:Update(dt)
+
+	if self.mouse ~= nil then
+		self.mouse = (self.mouse - Vector2(Renderer.offset_x, Renderer.offset_y)) + Renderer:GetCameraPos()
+		self.angle = math.atan2(self.mouse.y - self.position.y, self.mouse.x - self.position.x)
+	end
 
 	if self.turnLeft then
 		self.turnLeft = false

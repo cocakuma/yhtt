@@ -1,6 +1,9 @@
 
 Renderer = {}
 
+Renderer.offset_x = 0
+Renderer.offset_y = 0
+
 Renderer.camera = {
 	pos = {
 		x = 0, 

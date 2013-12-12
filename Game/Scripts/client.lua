@@ -20,19 +20,23 @@ local gRenderDt = 0
 
 paused = false
 
+local useMouse = false
+
 function love.keypressed(key)
 	if key == "p" then
 		paused = not paused
 	end
-	if key == "1" then
-
-	elseif key == "2" then
-
+	if key == "w" then
+		useMouse = false
 	end
 end
 
+function love.mousepressed()
+	useMouse = true
+end
+
 function sendinput(client)
-	local input = defaultinput()
+	local input = defaultinput(useMouse)
 	local pkg = beginpack()
 	for k,v in pairs(input) do		
 		if love.keyboard.isDown(k) then
@@ -41,6 +45,16 @@ function sendinput(client)
 			pkg=pack(pkg, k, 0)
 		end
 	end
+
+	pkg = pack(pkg, 'm', useMouse and 1 or 0)
+	
+	if useMouse then
+		pkg = pack(pkg, 'm_x', love.mouse.getX())
+		pkg = pack(pkg, 'm_y', love.mouse.getY())
+		pkg = pack(pkg, 'm_r', love.mouse.isDown("r") and 1 or 0)
+		pkg = pack(pkg, 'm_l', love.mouse.isDown("l") and 1 or 0)
+	end
+
 	pkg = endpack(pkg)
 	send(gClient, pkg, 'input')
 end

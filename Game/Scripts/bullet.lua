@@ -15,7 +15,7 @@ function Bullet:init(ship)
 	self.angle = ship.angle or 0 --rads
 	local offset = deepcopy(ship.shotoffset)
 	offset.x = offset.x*math.cos(self.angle) - offset.y*math.sin(self.angle)
-	offset.y = offset.x*math.sin(self.angle) + offset.y*math.cos(self.angle)
+	offset.y = offset.x*math.sin(self.angle) + offset.y*math.cos(self.angle)	
 	self.position = Vector2(ship.position.x or 0, ship.position.y or 0)
 	self.position = self.position + offset
 	self.velocity = Vector2(0,0)
@@ -25,7 +25,7 @@ function Bullet:init(ship)
 	local dir = directionVector * self.speed
 	self.velocity = directionVector * self.speed
 	local ship_Vel = deepcopy(ship.velocity)
-	ship.velocity = ship.velocity - (self.velocity * 2)
+	--ship.velocity = ship.velocity - (self.velocity * 2)
 	self.velocity = ship_Vel + ship.velocity
 end
 

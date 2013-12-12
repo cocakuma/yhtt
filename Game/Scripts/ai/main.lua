@@ -2,24 +2,16 @@ local network = require('network')
 
 local gClients = {}
 
-function defaultinput()
+function defaultinput(useMouse)
 	local keys = { 'd', 'a', 'w', ' ', 'f' }
+	if useMouse then
+		keys = {' ', 'f'}
+	end
 	local input = {}
 	for i,k in pairs(keys) do
 		input[k] = false
 	end	
 	return input
-end
-
-function sendinput(client)
-	local input = defaultinput()
-	local pkg = beginpack()
-
-	for k,v in pairs(input) do		
-		pkg = pack(pkg, k, 0)
-	end
-	pkg = endpack(pkg)
-	send(client, pkg, 'input')
 end
 
 function love.load()
