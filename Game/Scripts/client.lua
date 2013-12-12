@@ -56,9 +56,13 @@ function client_draw()
 	updateclient(gClient)		
 	
 	local message, remaining = nextmessage(gClient, 'view')
-	while message do
+
+	while remaining > 3 do		
+		message, remaining = nextmessage(gClient, 'view')
+	end
+
+	if message then
 		gRemoteView = unpack(1, message)
-		message = nextmessage(gClient, 'view')
 	end
 
 	

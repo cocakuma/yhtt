@@ -7,6 +7,7 @@ function love.load()
 		local start_time = socket.gettime()
 		server_update(tick_time)
 		while socket.gettime() - start_time < tick_time do
-		end
+			updateserver(gServer)
+		end				
 	end	
 end
