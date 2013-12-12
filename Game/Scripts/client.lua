@@ -73,7 +73,13 @@ function client_draw()
 	if gRemoteView then
 		Renderer:Draw(function()		
 
-			arena:Draw()
+			local arena = gRemoteView.arena
+			love.graphics.setColor(125,55,55,255)
+			local thickness = 5
+			love.graphics.rectangle("fill", -thickness, -thickness, thickness, arena.h + thickness*2)
+			love.graphics.rectangle("fill", -thickness, -thickness, arena.w + thickness*2, thickness)
+			love.graphics.rectangle("fill", -thickness, arena.h, arena.w + thickness*2, thickness)
+			love.graphics.rectangle("fill", arena.w, -thickness, thickness, arena.h + thickness*2)
 
 			for k,payload in pairs(gRemoteView.plds) do
 				if payload.t == 0 then

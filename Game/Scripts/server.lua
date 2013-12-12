@@ -13,7 +13,7 @@ TUNING = require("tuning")
 
 gServer = nil
 
-arena = {}
+arena = nil
 ships = {}
 bullets = {}
 payloads = {}
@@ -58,8 +58,6 @@ function server_update(dt)
 	for k,ship in pairs(ships) do
 		ship:HandleInput()
 	end
-
-
 
 	-- update
 	-- handle input, apply physics, gameplay
@@ -142,6 +140,10 @@ end
 
 function package()
 	local pkg = beginpack()
+
+	pkg = beginpacktable(pkg,'arena')
+	pkg = arena:Pack(pkg)
+	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'obs')
 	for k,obs in pairs(obstacles) do
