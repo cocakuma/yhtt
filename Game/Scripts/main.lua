@@ -144,7 +144,11 @@ function update_network()
 	updateclient(gClient)	
 end
 
-function love.update( dt)	
+function love.update(dt)
+	update(dt)
+end
+
+function update( dt)	
 
 	if not gIsLevelGenerated and #gServer.clients > 0 then
 		GenerateLevel()
