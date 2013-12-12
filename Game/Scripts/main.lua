@@ -127,6 +127,11 @@ function circles_overlap(a, b)
 	return dist_sq <= r_total_sq
 end
 
+function update_network()
+	updateserver(gServer)
+	updateclient(gClient)	
+end
+
 function love.update( dt)	
 
 	if not gIsLevelGenerated and #gServer.clients > 0 then
@@ -140,14 +145,13 @@ function love.update( dt)
 		return
 	end
 
-	updateserver(gServer)
-	updateclient(gClient)
+	sendinput(gClient)
+
+	update_network()
 
 	for i,client in pairs(gServer.clients) do
 		receiveinput(client)		
-	end	
-
-	sendinput(gClient)
+	end		
 
 	-- pre-update
 	-- check input and synchronize states
@@ -289,7 +293,9 @@ function love.draw()
 		pkg = endpack(pkg)
 		for i,client in pairs(gServer.clients) do
 			send(client, pkg, 'view')
-		end	
+		end
+
+		update_network()	
 		
 		local id_message = nextmessage(gClient, 'ID')
 		if id_message then
