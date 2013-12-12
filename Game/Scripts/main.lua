@@ -36,6 +36,13 @@ end
 	
 
 function love.load()
+	for k,v in pairs(arg) do
+		if string.len(v) > 3 and string.sub(v,1,3) == 'ip=' then
+			local ip = string.sub(v,4)
+			print(ip)
+		end
+	end
+
 	gServer = startserver()
 	gClient = startclient()
 
