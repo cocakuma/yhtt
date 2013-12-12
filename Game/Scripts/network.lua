@@ -1,14 +1,20 @@
 local gMessageStart = ':>>'
 local gMessageEnd = '<<:' 
 local gMessageTypeDelim = '|' 
+gIsServer = false
 
 function sendmessages(node)
 	local message = node.out_messages[#node.out_messages]
 	if message then
 		local sent, err, b = node.conn:send(message.text, message.sent + 1)
-		if sent == nil then
-			sent = b
-			print(err)
+		if sent == nil and not gIsServer then			
+			print('Disconnected, attempting to reconnect...')
+			node.conn = connectsocket(getip(), getport())
+			table.remove(node.out_messages, #node.out_messages)
+			return
+		elseif sent == nil then
+			node.error = err
+			return
 		end
 		message.sent = message.sent + sent
 		if message.sent == string.len(message.text) then
@@ -65,16 +71,21 @@ function createnode(conn)
 	return node
 end
 
-function startclient(ip, port)
-	local client = {}
-	local socket=require ("socket")
-	print('Connecting to '..ip..':'..port)
+function connectsocket(ip, port)
 	local conn = nil
 	while nil == conn do
 		conn = socket.connect(ip, port)
 	end
 	conn:settimeout(0)
 	conn:setoption('keepalive', true)
+	return conn
+end
+
+function startclient(ip, port)
+	local client = {}
+	local socket=require ("socket")
+	print('Connecting to '..ip..':'..port)
+	local conn = connectsocket(ip, port)
 	print('Connected!')		
 	local client = createnode(conn)
 	client.co = coroutine.create(function() updateclientinternal(client) end)	
@@ -100,6 +111,9 @@ function updateserverinternal(server)
 			end
 			sendmessages(client)
 			receivemessages(client)
+			if client.error then
+				server.clients[i] = nil
+			end			
 		end
 
 		coroutine.yield()

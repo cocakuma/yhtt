@@ -42,6 +42,7 @@ function receiveinput(client)
 end
 
 function server_load()
+	gIsServer = true
 	gServer = startserver(getport())
 	GenerateLevel()
 end

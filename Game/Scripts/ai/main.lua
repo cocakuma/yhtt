@@ -1,4 +1,5 @@
 local network = require('network')
+local client = require('client')
 
 local gClients = {}
 
@@ -21,9 +22,9 @@ function love.load()
 end
 
 function love.update( dt)
-	for i,client in pairs(gClients) do
-		sendinput(client)
-		updateclient(client)
-		clearmessages(client)
+	for i,v in pairs(gClients) do
+		sendinput(v)
+		updateclient(v)
+		clearmessages(v)
 	end	
 end
