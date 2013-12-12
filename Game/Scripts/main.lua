@@ -248,12 +248,13 @@ function love.draw()
 			pl:Draw(local_view)
 		end
 
-		
 		for i,client in pairs(gServer.clients) do	
 			local_view.ID = client.ID		
 			local view_dmp = serpent.dump(local_view)
 			send(client, view_dmp, 'view')
 		end	
+		
+
 
 		local message, remaining = nextmessage(gClient, 'view')
 		while message do 
@@ -261,6 +262,7 @@ function love.draw()
 			message = nextmessage(gClient, 'view')
 		end
 
+		
 		if gRemoteView then
 			local verts = deepcopy(SHIP_VERTS)
 			for k,ship in pairs(gRemoteView.ships) do
@@ -291,13 +293,6 @@ function love.draw()
 				if ship.ID == gRemoteView.ID then
 					Renderer:SetCameraPos(ship.position[1], ship.position[2])
 				end
-				--[[
-				if false then -- draw velocity line
-					love.graphics.setColor(255,0,0,255)
-					love.graphics.line(ship.position.x, self.position.y,
-						self.position.x + self.velocity.x * 2, self.position.y + self.velocity.y * 2)
-				end	
-				]]--		
 			end
 
 			for k,bullet in pairs(gRemoteView.bullets) do
@@ -314,11 +309,8 @@ function love.draw()
 				love.graphics.setColor(155,155,155,255)
 				love.graphics.circle("fill", obstacle.position[1], obstacle.position[2], obstacle.radius)				
 			end
-		end
-
-		
+		end		
 	end)
-	--print_time( socket.gettime() - start_time)
 
 	gRenderDt = socket.gettime() - start_time
 

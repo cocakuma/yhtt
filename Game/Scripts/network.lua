@@ -143,6 +143,42 @@ function senddata(node, data, type)
 	send(gClient, dmp, type)
 end
 
+function pack(data)
+	if type(data) == 'table' then		
+		local str = '{'
+		for k,v in pairs(data) do
+			str = str..k..'='..pack(v)
+		end
+		return str..'},'
+	else
+		return tostring(data)..','
+	end
+end
+
+--{a=4,},
+function myunpack(index, str)
+	local t = {}
+	local token_start = index + 1
+	local key = ""	
+	for i = index + 1, #str do
+		local s = str:sub(i,i)
+		if s == '{' then
+			t[key], i = myunpack(i, str)
+			token_start = i
+		elseif s == '=' then
+			key=string.sub(str, token_start, i - 1)			
+			token_start = i + 1
+		elseif s == ',' then
+			local val = tonumber(string.sub(str, token_start, i - 1))
+			t[key] = val
+			token_start = i + 1
+		elseif s == '}' then
+			return t, i + 2
+		end
+	end
+	return t
+end
+
 function unpack(message)
 	local fun, err = loadstring(message)		
 	if err then 
