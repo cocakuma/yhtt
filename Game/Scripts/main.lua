@@ -262,8 +262,6 @@ function love.draw()
 	end
 	pkg = endpacktable(pkg)
 
-	arena:Draw()
-
 	pkg = beginpacktable(pkg, 'ships')		
 	for k,ship in pairs(ships) do
 		pkg = beginpacktable(pkg, k)
@@ -310,6 +308,9 @@ function love.draw()
 	
 	if gRemoteView then
 		Renderer:Draw(function()		
+
+			arena:Draw()
+
 			for k,ship in pairs(gRemoteView.ships) do
 
 				--team color
@@ -334,7 +335,7 @@ function love.draw()
 				love.graphics.circle("line", ship.x, ship.y, ship.r)
 				
 				-- thrusters
-				if false then -- TODO: detect whether or not a ship is thrusting!
+				if ship.it == 1 then -- TODO: detect whether or not a ship is thrusting!
 					local flameLen = math.random()*0.8+0.2
 					love.graphics.setColor(255,190,100,255)
 					DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)

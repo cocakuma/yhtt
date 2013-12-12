@@ -24,6 +24,7 @@ function Ship:init(x, y, angle, team)
 	self.turnSpeed = TUNING.SHIP.TURNSPEED
 
 	self.thrusting = false
+	self.didThrust = false;
 	self.turnLeft = false
 	self.turnRight = false
 	
@@ -231,6 +232,7 @@ function Ship:HandleInput( )
 	end
 	if self.input["w"] == 1 then
 		self.thrusting = true
+		self.didThrust = true
 	end
 	if self.input[" "] == 1 then
 		self.shoot = true
@@ -308,6 +310,8 @@ function Ship:Pack(pkg)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'r', self.radius)
 	pkg = pack(pkg, 'h', self.health)
+	pkg = pack(pkg, 'it', self.didThrust and 1 or 0) --"input: thrust"
+	self.didThrust = false;
 	pkg = beginpacktable(pkg, 'l')
 	for k,v in pairs(self.children) do
 		pkg = beginpacktable(pkg, k)
