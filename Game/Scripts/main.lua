@@ -1,4 +1,5 @@
 require("util/strict")
+local serpent = require("util/serpent")
 require("constants")
 require("util/util")
 require("util/mathutil")
@@ -12,7 +13,6 @@ require("network")
 TUNING = require("tuning")
 
 inputID = -1
-debugInputIDs = {}
 
 arena = {}
 ships = {}
@@ -21,6 +21,7 @@ payloads = {}
 obstacles = {}
 
 gServer = nil
+gClient = nil
 
 ENT_ID = 0
 function NextID()
@@ -31,13 +32,14 @@ end
 
 function love.load()
 	gServer = startserver()
+	gClient = startclient()
+
 	Renderer:Load()
 
 	arena = Arena(1600, 1600)
 
 	for i=1,32 do
-		local ship = Ship(100+20*i, 100, 0, i%2)
-		table.insert(debugInputIDs, ship.ID)
+		local ship = Ship(100+20*i, 100, 0)
 		if inputID == -1 then
 			inputID = ship.ID
 		end
@@ -68,25 +70,17 @@ function love.keypressed(key)
 	if key == "p" then
 		paused = not paused
 	end
+end
 
-	if key == "1" then
-		inputID = debugInputIDs[1]
-	elseif key == "2" then
-		inputID = debugInputIDs[2]
-	elseif key == "3" then
-		inputID = debugInputIDs[3]
-	elseif key == "4" then
-		inputID = debugInputIDs[4]
-	elseif key == "5" then
-		inputID = debugInputIDs[5]
-	elseif key == "6" then
-		inputID = debugInputIDs[6]
-	elseif key == "7" then
-		inputID = debugInputIDs[7]
-	elseif key == "8" then
-		inputID = debugInputIDs[8]
+function sendinput(client)
+	local keys = { 'd', 'a', 'w', ' ', 'f' }
+	local input = {}
+	for i,k in pairs(keys) do
+		local down = love.keyboard.isDown(k)
+		input[k] = down
 	end
-
+	local dmp = serpent.dump(input)
+	send(gClient, serpent.dump(input))
 end
 
 function receiveinput(client)
@@ -101,7 +95,7 @@ function receiveinput(client)
 		message = nextmessage(client)
 		if not client.ID then
 			local ship = Ship(0, 0, 0)
-			client.ID = ship.ID
+			client.ID = ship.ID			
 		end
 		ships[client.ID].input = input
 	end	
@@ -113,9 +107,13 @@ function love.update( dt)
 	end
 
 	updateserver(gServer)
+	updateclient(gClient)
+
 	for i,client in pairs(gServer.clients) do
 		receiveinput(client)		
 	end	
+
+	sendinput(gClient)
 
 	-- pre-update
 	-- check input and synchronize states
@@ -180,7 +178,7 @@ function love.update( dt)
 
 		if not hit then
 			for k, ship in pairs(ships) do
-				if bullet.ship.team ~= ship.team and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
+				if bullet.ship ~= ship and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
 					ship:Hit(bullet)
 					table.insert(bulletToRemove, bullet)
 					hit = true

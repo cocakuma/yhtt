@@ -110,7 +110,7 @@ function startserver()
 end
 
 function send(node, text)
-	message = 
+	local message = 
 	{ 
 		sent = 0,
 		text = gMessageStart..text..gMessageEnd
