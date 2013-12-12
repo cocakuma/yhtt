@@ -52,6 +52,6 @@ BULLET_SIZE =
 
 PAYLOAD_SIZE =
 {
-	rad = 30,
+	rad = 20,
 	segs = 6,
 }

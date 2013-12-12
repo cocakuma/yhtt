@@ -1,27 +1,26 @@
 require("util/vector2")
 require("util/class")
+require("attachable")
 
-class("Payload")
+class("Payload", Attachable)
 
 function Payload:init(x, y)
-	self.rad = PAYLOAD_SIZE.rad
-	self.mass = TUNING.PAYLOAD.MASS
+	self._base.init(self, x, y, PAYLOAD_SIZE.rad, TUNING.PAYLOAD.MASS)
+
+	self.ID = NextID()
+	payloads[self.ID] = self
 	
-	self.position = Vector2(x or 0, y or 0)
-	self.velocity = Vector2(0,0)
-	self.angle = 0 --rads
-
-	self.PAYLOAD_STATE = "NEUTRAL"
-
+	self.team = -1
 end
 
-function Payload:Update(dt)
-	self.position = self.position + (self.velocity * dt)
+function Payload:OnAttached(other)
+	print(self._classname, other._classname)
+	print(self.ID,"Setting payload team to", other.team)
+	self.team = other.team
 end
 
-function Payload:Pack(pkg)
-	pkg = pack(pkg, 'x', self.position.x)
-	pkg = pack(pkg, 'y', self.position.y)
-	pkg = pack(pkg, 'r', self.rad)
-	return pkg	
+function Payload:OnDetached(other)
+	print(self.ID,"resetting payload team to")
+	self.team = -1
 end
+

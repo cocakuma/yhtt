@@ -222,6 +222,25 @@ function draw()
 
 			arena:Draw()
 
+			for k,payload in pairs(gRemoteView.plds) do
+				if payload.t == 0 then
+					love.graphics.setColor(95,255,195,255)
+				elseif payload.t == 1 then
+					love.graphics.setColor(195,95,255,255)
+				else
+					love.graphics.setColor(255,255,255,255)
+				end
+				love.graphics.circle("fill", payload.x - (payload.r * .5), payload.y - (payload.r * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+				
+				-- attachments
+				local prevWidth = love.graphics.getLineWidth()
+				love.graphics.setLineWidth(2)
+				for k,v in pairs(payload.l) do
+					love.graphics.line(payload.x, payload.y, v.x, v.y)
+				end
+				love.graphics.setLineWidth(prevWidth)
+			end
+
 			for k,ship in pairs(gRemoteView.ships) do
 
 				--team color
@@ -231,9 +250,9 @@ function draw()
 					love.graphics.setColor(155,55,255,255)
 				end
 
-				if ship.p == 1 then
-					love.graphics.setColor(55,255,155,255)
-				end
+				--if ship.p == 1 then
+					--love.graphics.setColor(55,255,155,255)
+				--end
 				
 				-- the ship
 				DrawTriangle(10, 6, ship.x, ship.y, ship.a)
@@ -280,11 +299,6 @@ function draw()
 				DrawTriangle(15*flameLen, 3, bullet.x, bullet.y, bullet.a-math.pi, 7.2*flameLen+5, 0)
 				love.graphics.setColor(255,255,255,255)
 				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)				
-			end
-
-			for k,payload in pairs(gRemoteView.plds) do
-				love.graphics.setColor(255,255,255,255)
-				love.graphics.circle("fill", payload.x - (payload.r * .5), payload.y - (payload.r * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 			end
 
 			for k,obstacle in pairs(gRemoteView.obs) do
