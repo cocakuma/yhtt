@@ -337,7 +337,11 @@ function draw()
 				love.graphics.setLineWidth(prevWidth)
 
 				-- shield
-				love.graphics.setColor(ship.h*255,ship.h*255,255,255)
+				if ship.h > 0 then
+					love.graphics.setColor(ship.h*255,ship.h*255,255,255)
+				else
+					love.graphics.setColor(255,0,0,255)
+				end
 				love.graphics.circle("line", ship.x, ship.y, ship.r)
 				
 				-- thrusters
