@@ -7,6 +7,7 @@ require("payload")
 require("obstacle")
 require("render")
 require("arena")
+require("network")
 TUNING = require("tuning")
 
 inputID = -1
@@ -17,6 +18,8 @@ bullets = {}
 payloads = {}
 obstacles = {}
 
+gServer = nil
+
 ENT_ID = 0
 function NextID()
 	ENT_ID = ENT_ID + 1
@@ -25,6 +28,7 @@ end
 	
 
 function love.load()
+	gServer = startserver()
 	Renderer:Load()
 
 	arena = Arena(1600, 1600)
