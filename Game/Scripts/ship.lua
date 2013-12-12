@@ -27,10 +27,11 @@ function Ship:init(x, y, angle, team)
 
 	self.mouse = nil
 	
-	self.maxAmmoClip = 10
+	self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
 	self.minAmmoClip = 0
-	self.currentAmmoClip = 10
-	self.reloadSpeed = 0.5
+	self.currentAmmoClip = self.maxAmmoClip
+	self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
+	self.reload_timer = self.reloadSpeed
 	self.shoot = false
 	self.canShoot = true
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
@@ -38,8 +39,12 @@ function Ship:init(x, y, angle, team)
 
 end
 
-function Ship:ReloadClip()
-
+function Ship:ReloadClip(dt)
+	self.reload_timer = self.reload_timer - dt
+	if self.reload_timer <= 0 then
+		self.currentAmmoClip = self.currentAmmoClip + 1
+		self.reload_timer = self.reloadSpeed
+	end
 end
 
 function Ship:ShootCooldown(dt)
@@ -53,6 +58,7 @@ end
 function Ship:Shoot()
 	self.canShoot = false
 	local bullet = Bullet(self)
+	self.currentAmmoClip = self.currentAmmoClip - 1
 	self.shotoffset = self.shotoffset * -1
 end
 
@@ -74,7 +80,7 @@ function Ship:HandleInput( )
 			self.shoot = true
 		end
 		if self.input["f"] == 1 then
-			if not self.parent or not next(self.children) then
+			if not self.parent and not next(self.children) then
 				self.tryAttach = true
 			else
 				self.tryDetach = true
@@ -90,7 +96,7 @@ function Ship:HandleInput( )
 			self.shoot = true
 		end
 		if self.input[" "] == 1 then
-			if not self.parent or not next(self.children) then
+			if not self.parent and not next(self.children) then
 				self.tryAttach = true
 			else
 				self.tryDetach = true
@@ -128,7 +134,11 @@ function Ship:Update(dt)
 		self:ShootCooldown(dt)
 	end
 
-	if self.shoot and self.canShoot then
+	if self.currentAmmoClip < self.maxAmmoClip then
+		self:ReloadClip(dt)
+	end
+
+	if self.shoot and self.canShoot and self.currentAmmoClip > self.minAmmoClip then
 		self:Shoot()
 	end
 	
