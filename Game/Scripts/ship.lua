@@ -316,10 +316,6 @@ function Ship:Pack(pkg)
 	return pkg
 end
 
-function Ship:GetCircle()
-	return Circle(self.position.x, self.position.y, self.radius)
-end
-
 function Ship:Collide(other)
 	local diff = self.position - other.position
 	diff.x = diff.x + math.random()*0.002-0.001

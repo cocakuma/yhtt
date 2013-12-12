@@ -149,8 +149,6 @@ function love.update( dt)
 
 	sendinput(gClient)
 
-	
-
 	-- pre-update
 	-- check input and synchronize states
 	for k,ship in pairs(ships) do
@@ -208,6 +206,8 @@ function love.update( dt)
 		end
 	end
 
+	
+
 	local bulletToRemove = {}
 	for k,bullet in pairs(bullets) do
 		local hit = false
@@ -239,6 +239,8 @@ function love.update( dt)
 	for i,b in pairs(bulletToRemove) do
 		b:Destroy()
 	end
+	
+	
 
 	gUpdateDt = socket.gettime() - start_time
 end
