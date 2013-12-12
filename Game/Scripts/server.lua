@@ -1,3 +1,5 @@
+require 'network'
+
 gServer = nil
 gFrameID = 0
 
