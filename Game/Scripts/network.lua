@@ -1,5 +1,5 @@
-local gMessageStart = ':>>\n'
-local gMessageEnd = '\n<<:' 
+local gMessageStart = ':>>'
+local gMessageEnd = '<<:' 
 local gMessageTypeDelim = '|' 
 
 function sendmessages(node)
@@ -25,7 +25,7 @@ function receivemessages(node)
 		local end_delim = string.find( node.receive_buffer, gMessageEnd)
 		while end_delim do
 			local type_delim = string.find(node.receive_buffer, gMessageTypeDelim)
-			local t = string.sub(node.receive_buffer, string.len(gMessageStart), type_delim - 1)
+			local t = string.sub(node.receive_buffer, string.len(gMessageStart)+1, type_delim - 1)
 			local message = string.sub(node.receive_buffer, type_delim + 1, end_delim - 1)
 			local message_queue = node.in_messages[t]
 			if message_queue == nil then
@@ -171,14 +171,12 @@ end
 function nextmessage(node, t)
 	local message = nil
 	local remaining = 0
-	for k,v in pairs(node.in_messages) do
-		local index = string.find(k, t)		
-		if index and index > 0 then
-			message = v[1]
-			if message then				
-				table.remove(v, 1)
-				remaining = table.getn(v)
-			end			
+	local message_queue = node.in_messages[t]	
+	if message_queue then
+		message = message_queue[1]
+		if message then				
+			table.remove(message_queue, 1)
+			remaining = table.getn(message_queue)
 		end
 	end
 	return message, remaining

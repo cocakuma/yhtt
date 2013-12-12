@@ -304,7 +304,7 @@ function love.draw()
 		
 		local message, remaining = nextmessage(gClient, 'view')
 		while message do
-			gRemoteView = unpack(1, message)
+			gRemoteView = unpack(1, message)			
 			message = nextmessage(gClient, 'view')
 		end
 
