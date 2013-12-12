@@ -243,9 +243,7 @@ function update( dt)
 	gUpdateDt = socket.gettime() - start_time
 end
 
-function draw()
-	local start_time = socket.gettime()
-
+function package()
 	local pkg = beginpack()
 
 	pkg = beginpacktable(pkg, 'obs')
@@ -287,11 +285,17 @@ function draw()
 	end
 
 	update_network()	
-	
+end
+
+function draw()
+	local start_time = socket.gettime()
+
 	local id_message = nextmessage(gClient, 'ID')
 	if id_message then
 		gRemoteID = id_message
 	end
+
+	package()
 	
 	local message, remaining = nextmessage(gClient, 'view')
 	while message do
