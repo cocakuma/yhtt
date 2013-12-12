@@ -24,19 +24,14 @@ function Bullet:Update(dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function Bullet:Draw(view)
-	local bullet_view = {}
-	if self.ship.team == 0 then
-		bullet_view.color = {155,255,155,255}
-	else
-		bullet_view.color = {155,255,155,255}
-	end
-	
-	bullet_view.position = {self.position.x, self.position.y}
-	bullet_view.size = {self.size.x, self.size.y}
-	
-	view.bullets[self.ID] = bullet_view
-end
+function Bullet:Pack(pkg)
+	pkg = pack(pkg, 'x', self.position.x)
+	pkg = pack(pkg, 'y', self.position.y)
+	pkg = pack(pkg, 't', self.team)
+	pkg = pack(pkg, 'sx', self.size.x)
+	pkg = pack(pkg, 'sy', self.size.y)
+	return pkg
+end	
 
 function Bullet:Destroy()
 	bullets[self.ID] = nil

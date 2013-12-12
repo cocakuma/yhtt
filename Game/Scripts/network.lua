@@ -137,55 +137,43 @@ function send(node, text, type)
 	table.insert(node.out_messages, 1, message)	
 end
 
-function senddata(node, data, type)
-	local serpent = require("util/serpent")
-	local dmp = serpent.dump(data)
-	send(gClient, dmp, type)
-end
-
+--[[
 function pack(data)
-	if type(data) == 'table' then		
-		local str = '{'
-		for k,v in pairs(data) do
+	local str = '{'
+	for k,v in pairs(data) do
+		if type(v) == 'table' then
 			str = str..k..'='..pack(v)
-		end
-		return str..'},'
-	else
-		return tostring(data)..','
+		else
+			str = str..k..'='..tostring(v)..','
+		end		
 	end
+	return str..'},'
 end
+]]--
 
---{a=4,},
-function myunpack(index, str)
+function unpack(index, str)
 	local t = {}
 	local token_start = index + 1
 	local key = ""	
-	for i = index + 1, #str do
+	local i = index + 1
+	while i <= #str do
 		local s = str:sub(i,i)
 		if s == '{' then
-			t[key], i = myunpack(i, str)
-			token_start = i
+			t[key], i = unpack(i, str)
+			token_start = i + 1
 		elseif s == '=' then
-			key=string.sub(str, token_start, i - 1)			
+			key=string.sub(str, token_start, i - 1)	
 			token_start = i + 1
 		elseif s == ',' then
 			local val = tonumber(string.sub(str, token_start, i - 1))
 			t[key] = val
 			token_start = i + 1
 		elseif s == '}' then
-			return t, i + 2
+			return t, i + 1
 		end
+		i = i + 1
 	end
 	return t
-end
-
-function unpack(message)
-	local fun, err = loadstring(message)		
-	if err then 
-		print(error)
-		assert()
-	end
-	return fun()
 end
 
 function nextmessage(node, t)
@@ -201,4 +189,24 @@ function nextmessage(node, t)
 		end
 	end
 	return message, remaining
+end
+
+function beginpack()
+	return '{'
+end
+
+function endpack(package)
+	return package..'},'
+end
+
+function beginpacktable(package, key)
+	return package..tostring(key)..'={'
+end
+
+function endpacktable(package)
+	return package..'},'
+end
+
+function pack(package, key, value)
+	return package..tostring(key)..'='..tostring(value)..','
 end

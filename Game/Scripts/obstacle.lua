@@ -12,11 +12,11 @@ function Obstacle:init(x, y, radius)
 	self.position = Vector2(x, y)
 end
 
-function Obstacle:Draw(view)
-	local obstacle_view = {}
-	obstacle_view.position = {self.position.x, self.position.y}
-	obstacle_view.radius = self.radius
-	view.obstacles[self.ID] = obstacle_view
+function Obstacle:Pack(pkg)
+	pkg = pack(pkg, 'x', self.position.x)
+	pkg = pack(pkg, 'y', self.position.y)
+	pkg = pack(pkg, 'r', self.radius)
+	return pkg
 end
 
 function Obstacle:GetCircle()

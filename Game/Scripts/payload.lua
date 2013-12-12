@@ -16,9 +16,9 @@ function Payload:Update(dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function Payload:Draw(view)
-	local payload_view = {}
-	payload_view.position = {self.position.x, self.position.y}
-	payload_view.rad = self.rad
-	table.insert(view.payloads, payload_view)
+function Payload:Pack(pkg)
+	pkg = pack(pkg, 'x', self.position.x)
+	pkg = pack(pkg, 'y', self.position.y)
+	pkg = pack(pkg, 'r', self.rad)
+	return pkg	
 end

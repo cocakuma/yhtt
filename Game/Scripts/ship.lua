@@ -221,19 +221,19 @@ function Ship:Shoot()
 end
 
 function Ship:HandleInput( )
-	if self.input["d"] then
+	if self.input["d"] == 1 then
 		self.turnLeft = true
 	end
-	if self.input["a"] then
+	if self.input["a"] == 1 then
 		self.turnRight = true
 	end
-	if self.input["w"] then
+	if self.input["w"] == 1 then
 		self.thrusting = true
 	end
-	if self.input[" "] then
+	if self.input[" "] == 1 then
 		self.shoot = true
 	end
-	if self.input["f"] then
+	if self.input["f"] == 1 then
 		if not self.parent then
 			self.tryAttach = true
 		else
@@ -298,27 +298,22 @@ function Ship:Update(dt)
 	self.position = self.position + (self.velocity * dt)
 end
 
-function Ship:Draw(view)
-
-	local ship_view = {}
-	ship_view.ID = self.ID
-	
-	if self.team == 0 then
-		ship_view.color = {55,255,155,255}
-	else
-		ship_view.color = {155,55,255,255}
-	end
-
-	ship_view.position = {self.position.x, self.position.y}
-	ship_view.angle = self.angle
-	ship_view.radius = self.radius
-
-	ship_view.lines = {}
+function Ship:Pack(pkg)
+	pkg = pack(pkg, 'x', self.position.x)
+	pkg = pack(pkg, 'y', self.position.y)
+	pkg = pack(pkg, 'r', self.r)
+	pkg = pack(pkg, 't', self.team)
+	pkg = pack(pkg, 'a', self.angle)
+	pkg = pack(pkg, 'r', self.radius)
+	pkg = beginpacktable(pkg, 'l')
 	for k,v in pairs(self.children) do
-		table.insert(ship_view.lines, {v.child.position.x, v.child.position.y})
-	end
-
-	view.ships[self.ID] = ship_view
+		pkg = beginpacktable(pkg, k)
+		pkg = pack(pkg, 'x', v.child.position.x)
+		pkg = pack(pkg, 'y', v.child.position.y)		
+		pkg = endpacktable(pkg)
+	end	
+	pkg = endpacktable(pkg)
+	return pkg
 end
 
 function Ship:GetCircle()

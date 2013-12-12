@@ -9,7 +9,6 @@ require("obstacle")
 require("render")
 require("arena")
 require("network")
-local serpent = require("util/serpent")
 TUNING = require("tuning")
 
 arena = {}
@@ -86,16 +85,22 @@ end
 
 function sendinput(client)
 	local input = defaultinput()
-	for k,v in pairs(input) do
-		input[k] = love.keyboard.isDown(k)
+	local pkg = beginpack()
+	for k,v in pairs(input) do		
+		if love.keyboard.isDown(k) then
+			pkg = pack(pkg, k, 1)
+		else
+			pkg=pack(pkg, k, 0)
+		end
 	end
-	senddata(gClient, input, 'input')
+	pkg = endpack(pkg)
+	send(gClient, pkg, 'input')
 end
 
 function receiveinput(client)
 	local message = nextmessage(client, 'input')
 	while message do
-		local input = unpack(message)
+		local input = unpack(1, message)
 		message = nextmessage(client, 'input')
 		if not client.ID then
 			local ship = Ship(10, 10, 0)
@@ -213,52 +218,57 @@ function love.update( dt)
 	gUpdateDt = socket.gettime() - start_time
 end
 
-function print_time(val)
-	val = val * 1000
-	local decimal = 3
-	print( math.floor( (val * 10^decimal) + 0.5) / (10^decimal) )
-end
-
 function love.draw()
 	local start_time = socket.gettime()
 	Renderer:Draw(function()		
 
-		local local_view = {}
-		local_view.ships = {}
-		local_view.bullets = {}
-		local_view.payloads = {}
-		local_view.obstacles = {}
-		local_view.frame_id = gFrameID
+		local pkg = beginpack()
 
+		pkg = beginpacktable(pkg, 'obs')
 		for k,obs in pairs(obstacles) do
-			obs:Draw(local_view)
+			pkg = beginpacktable(pkg, k)
+			pkg = obs:Pack(pkg)
+			pkg = endpacktable(pkg)
 		end
+		pkg = endpacktable(pkg)
 
 		arena:Draw()
 
+		pkg = beginpacktable(pkg, 'ships')		
 		for k,ship in pairs(ships) do
-			ship:Draw(local_view)
+			pkg = beginpacktable(pkg, k)
+			pkg = ship:Pack(pkg)
+			pkg = endpacktable(pkg)
 		end
+		pkg = endpacktable(pkg)
 
+		pkg = beginpacktable(pkg, 'blts')
 		for k,bullet in pairs(bullets) do
-			bullet:Draw(local_view)
+			pkg = beginpacktable(pkg, k)
+			pkg = bullet:Pack(pkg)
+			pkg = endpacktable(pkg)
 		end
+		pkg = endpacktable(pkg)
 
+		pkg = beginpacktable(pkg, 'plds')
 		for k,pl in pairs(payloads) do
-			pl:Draw(local_view)
+			pkg = beginpacktable(pkg, k)
+			pkg = pl:Pack(pkg)
+			pkg = endpacktable(pkg)
 		end
+		pkg = endpacktable(pkg)
 
+		pkg = pack(pkg, 'ID', 1)
+		pkg = pack(pkg, 'frame_id', gFrameID)
+		pkg = endpack(pkg)
 		for i,client in pairs(gServer.clients) do	
-			local_view.ID = client.ID		
-			local view_dmp = serpent.dump(local_view)
-			send(client, view_dmp, 'view')
+			send(client, pkg, 'view')
 		end	
 		
-
-
+		
 		local message, remaining = nextmessage(gClient, 'view')
-		while message do 
-			gRemoteView = unpack(message)
+		while message do
+			gRemoteView = unpack(1, message)
 			message = nextmessage(gClient, 'view')
 		end
 
@@ -266,48 +276,56 @@ function love.draw()
 		if gRemoteView then
 			local verts = deepcopy(SHIP_VERTS)
 			for k,ship in pairs(gRemoteView.ships) do
-				love.graphics.setColor(ship.color[1],ship.color[2],ship.color[3],ship.color[4])			
+				if ship.t == 0 then
+					love.graphics.setColor(55,255,155,255)
+				else
+					love.graphics.setColor(155,55,255,255)
+				end
 				for i = 1, 3 do
-					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.angle)) - (SHIP_VERTS.y[i]*math.sin(ship.angle))
-					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.angle)) + (SHIP_VERTS.y[i]*math.cos(ship.angle))
+					verts.x[i] = (SHIP_VERTS.x[i]*math.cos(ship.a)) - (SHIP_VERTS.y[i]*math.sin(ship.a))
+					verts.y[i] = (SHIP_VERTS.x[i]*math.sin(ship.a)) + (SHIP_VERTS.y[i]*math.cos(ship.a))
 				end				
 
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
 
-				for k,v in pairs(ship.lines) do
-					love.graphics.line(ship.position[1], ship.position[2], v[1], v[2])
+				for k,v in pairs(ship.l) do
+					love.graphics.line(ship.x, ship.y, v.x, v.y)
 				end
 
 				love.graphics.setLineWidth(prevWidth)
 
-				love.graphics.polygon("fill", 	verts.x[1]+ship.position[1],
-												verts.y[1]+ship.position[2],
-												verts.x[2]+ship.position[1],
-												verts.y[2]+ship.position[2],
-												verts.x[3]+ship.position[1],
-												verts.y[3]+ship.position[2]  )
+				love.graphics.polygon("fill", 	verts.x[1]+ship.x,
+												verts.y[1]+ship.y,
+												verts.x[2]+ship.x,
+												verts.y[2]+ship.y,
+												verts.x[3]+ship.x,
+												verts.y[3]+ship.y  )
 
-				love.graphics.circle("line", ship.position[1], ship.position[2], ship.radius)
+				love.graphics.circle("line", ship.x, ship.y, ship.r)
 
 				if ship.ID == gRemoteView.ID then
-					Renderer:SetCameraPos(ship.position[1], ship.position[2])
+					Renderer:SetCameraPos(ship.x, ship.y)
 				end
 			end
 
-			for k,bullet in pairs(gRemoteView.bullets) do
-				love.graphics.setColor(bullet.color[1],bullet.color[2],bullet.color[3],bullet.color[4])		
-				love.graphics.rectangle("fill", bullet.position[1] - (bullet.size[1] * .5), bullet.position[2]- (bullet.size[2] * .5), BULLET_SIZE.x, BULLET_SIZE.y )	
+			for k,bullet in pairs(gRemoteView.blts) do
+				if bullet.t == 0 then
+					love.graphics.setColor(155,255,155,255)
+				else
+					love.graphics.setColor(155,255,155,255)
+				end
+				love.graphics.rectangle("fill", bullet.x - (bullet.sx * .5), bullet.y- (bullet.sy * .5), BULLET_SIZE.x, BULLET_SIZE.y )	
 			end
 
-			for k,payload in pairs(gRemoteView.payloads) do
+			for k,payload in pairs(gRemoteView.plds) do
 				love.graphics.setColor(255,255,255,255)
-				love.graphics.circle("fill", payload.position[1] - (payload.rad * .5), payload.position[2] - (payload.rad * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+				love.graphics.circle("fill", payload.x - (payload.r * .5), payload.y - (payload.r * .5), PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 			end
 
-			for k,obstacle in pairs(gRemoteView.obstacles) do
+			for k,obstacle in pairs(gRemoteView.obs) do
 				love.graphics.setColor(155,155,155,255)
-				love.graphics.circle("fill", obstacle.position[1], obstacle.position[2], obstacle.radius)				
+				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
 			end
 		end		
 	end)
