@@ -37,6 +37,15 @@ function updateclient(client)
 	end
 end
 
+function createnode(conn)
+	local node = {}
+	node.in_messages = {}
+	node.out_messages = {}
+	node.receive_buffer = ""
+	node.conn = conn
+	return node
+end
+
 function startclient()
 	local client = {}
 	local settings = require("../../../settings")
@@ -45,11 +54,8 @@ function startclient()
 	local conn = assert(socket.connect(settings.server_ip, settings.server_port))
 	conn:settimeout(0)
 	print('Connected!')		
-	client.conn = conn
-	client.in_messages = {}
-	client.out_messages = {}
-	client.receive_buffer = {}
-	client.co = coroutine.create(function() updateclientinternal(client) end)
+	local client = createnode(conn)
+	client.co = coroutine.create(function() updateclientinternal(client) end)	
 	return client
 end
 
@@ -60,10 +66,8 @@ function updateserverinternal(server)
 		if client_conn then
 			client_conn:settimeout(0)
 			local client_ip, client_port = client_conn:getpeername()
-			print('New connection '..client_ip..':'..client_port..'.')
-			client = { conn = client_conn, in_messages = {}, out_messages = {}, receive_buffer = {} }
-			
-			table.insert(server.clients, client)
+			print('New connection '..client_ip..':'..client_port..'.')			
+			table.insert(server.clients, createnode(client_conn))
 		end
 
 		for i,client in pairs(server.clients) do
