@@ -72,10 +72,18 @@ function love.keypressed(key)
 	end
 end
 
-function sendinput(client)
+function defaultinput()
 	local keys = { 'd', 'a', 'w', ' ', 'f' }
 	local input = {}
 	for i,k in pairs(keys) do
+		input[k] = false
+	end	
+	return input
+end
+
+function sendinput(client)
+	local input = defaultinput()
+	for k,v in pairs(input) do
 		local down = love.keyboard.isDown(k)
 		input[k] = down
 	end
@@ -94,7 +102,7 @@ function receiveinput(client)
 		local input = fun()
 		message = nextmessage(client)
 		if not client.ID then
-			local ship = Ship(0, 0, 0)
+			local ship = Ship(10, 10, 0)
 			client.ID = ship.ID			
 		end
 		ships[client.ID].input = input
