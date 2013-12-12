@@ -34,22 +34,6 @@ function Ship:init(x, y, angle)
 	self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
 
 	self.children = {}
-	self.offset = Vector2(0,0)
-
-end
-
-function Ship:GetChild(child)
-
-	self.children[child] = child
-
-end
-
-function Ship:RemoveChild(child)
-
-	child.attached = false
-	child.canAttach = false
-	self.children[child] = nil
-
 end
 
 function Ship:DoRotation()
@@ -57,6 +41,44 @@ function Ship:DoRotation()
 		self.verts.x[i] = (SHIP_VERTS.x[i]*math.cos(self.angle)) - (SHIP_VERTS.y[i]*math.sin(self.angle))
 		self.verts.y[i] = (SHIP_VERTS.x[i]*math.sin(self.angle)) + (SHIP_VERTS.y[i]*math.cos(self.angle))
 	end
+end
+
+function Ship:PollChildren()
+	for k,v in pairs(children) do --Clean up any children that want to leave.
+		if v.child then
+			v.child:PollChildren()
+			if v.child.tryDetach then
+				self:RemoveChild(v.child)
+			end
+		end
+	end
+
+	local c_Thrusts = {}
+
+	for k,v in pairs(children) do
+		if v.child and v.child.velocity then
+			local vels = child:PollChildren()
+
+			for k,v in pairs(vels) do
+				table.insert(c_Thrusts, v)
+			end
+		end
+	end
+
+	return c_Thrusts
+end
+
+function Ship:GetChild(child, offset)
+
+	self.children[child] = {child = child, offset = offset}
+
+end
+
+function Ship:RemoveChild(child)
+	child.attached = false
+	child.canAttach = false
+	child.tryDetach = false
+	self.children[child] = nil
 end
 
 function Ship:AttachCooldown(dt)
@@ -74,8 +96,8 @@ function Ship:Attach()
 			local distsq = pos:DistSq(v.position)
 			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
 				--Congrats, you found something. Attach to it!
-				self.offset = v.position - pos
-				v:GetChild(self)
+				local offset = v.position - pos
+				v:GetChild(self, offset)
 				return
 			end
 		end
@@ -87,8 +109,8 @@ function Ship:Attach()
 			local distsq = pos:DistSq(v.position)
 			if distsq <= (TUNING.SHIP.MAX_ATTACH_DIST)^2 then
 				--Congrats, you found something. Attach to it!
-				self.offset = v.position - pos
-				v:GetChild(self)
+				local offset = v.position - pos
+				v:GetChild(self, offset)
 				return
 			end
 		end
@@ -96,15 +118,9 @@ function Ship:Attach()
 end
 
 function Ship:Detach()
-
-end
-
-function Ship:GetVelocityFromChildren()
-	local vel = 0
 	for k,v in pairs(children) do
-
+		self:RemoveChild(v.child)
 	end
-	return vel
 end
 
 function Ship:ShootCooldown(dt)
@@ -141,6 +157,8 @@ function Ship:HandleInput( )
 		end
 	end
 end
+
+
 
 function Ship:Update(dt)
 	if self.turnLeft then
