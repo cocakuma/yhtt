@@ -257,6 +257,10 @@ function update( dt)
 end
 
 function love.draw()
+	draw()
+end
+
+function draw()
 	local start_time = socket.gettime()
 
 	local pkg = beginpack()
