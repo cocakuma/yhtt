@@ -11,6 +11,7 @@ require("network")
 TUNING = require("tuning")
 
 inputID = -1
+debugInputIDs = {}
 
 arena = {}
 ships = {}
@@ -34,7 +35,8 @@ function love.load()
 	arena = Arena(1600, 1600)
 
 	for i=1,32 do
-		local ship = Ship(100+20*i, 100, 0)
+		local ship = Ship(100+20*i, 100, 0, i%2)
+		table.insert(debugInputIDs, ship.ID)
 		if inputID == -1 then
 			inputID = ship.ID
 		end
@@ -65,6 +67,25 @@ function love.keypressed(key)
 	if key == "p" then
 		paused = not paused
 	end
+
+	if key == "1" then
+		inputID = debugInputIDs[1]
+	elseif key == "2" then
+		inputID = debugInputIDs[2]
+	elseif key == "3" then
+		inputID = debugInputIDs[3]
+	elseif key == "4" then
+		inputID = debugInputIDs[4]
+	elseif key == "5" then
+		inputID = debugInputIDs[5]
+	elseif key == "6" then
+		inputID = debugInputIDs[6]
+	elseif key == "7" then
+		inputID = debugInputIDs[7]
+	elseif key == "8" then
+		inputID = debugInputIDs[8]
+	end
+
 end
 
 function love.update( dt)
@@ -137,7 +158,7 @@ function love.update( dt)
 
 		if not hit then
 			for k, ship in pairs(ships) do
-				if bullet.ship ~= ship and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
+				if bullet.ship.team ~= ship.team and Physics.PointInCircle(bullet.position, ship:GetCircle() ) then
 					ship:Hit(bullet)
 					table.insert(bulletToRemove, bullet)
 					hit = true

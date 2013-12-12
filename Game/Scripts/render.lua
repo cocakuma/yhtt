@@ -141,7 +141,7 @@ end
 
 function Renderer:Draw(worldcb)
 
-	love.graphics.setBackgroundColor( 0x10, 0x06, 0x2C)
+	love.graphics.setBackgroundColor( 10, 0, 0)
 	love.graphics.clear()
 
 	self.offset_x = love.graphics.getWidth()/2

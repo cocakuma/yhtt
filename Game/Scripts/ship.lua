@@ -4,9 +4,11 @@ require("bullet")
 
 class("Ship")
 
-function Ship:init(x, y, angle)
+function Ship:init(x, y, angle, team)
 	self.ID = NextID()
 	ships[self.ID] = self
+
+	self.team = team
 
 	self.verts = deepcopy(SHIP_VERTS)
 	self.position = Vector2(x, y)
@@ -212,7 +214,11 @@ function Ship:Update(dt)
 end
 
 function Ship:Draw()
-	love.graphics.setColor(255,255,255,255)
+	if self.team == 0 then
+		love.graphics.setColor(55,255,155,255)
+	else
+		love.graphics.setColor(155,55,255,255)
+	end
 	love.graphics.polygon("fill", self.verts.x[1]+self.position.x,
 									self.verts.y[1]+self.position.y,
 									self.verts.x[2]+self.position.x,

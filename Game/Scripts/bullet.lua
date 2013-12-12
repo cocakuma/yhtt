@@ -25,7 +25,11 @@ function Bullet:Update(dt)
 end
 
 function Bullet:Draw()
-	love.graphics.setColor(255,255,255,255)
+	if self.ship.team == 0 then
+		love.graphics.setColor(155,255,155,255)
+	else
+		love.graphics.setColor(155,155,255,255)
+	end
 	love.graphics.rectangle("fill", self.position.x - (self.size.x * .5), self.position.y- (self.size.y * .5), BULLET_SIZE.x, BULLET_SIZE.y )
 end
 
