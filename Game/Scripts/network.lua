@@ -102,7 +102,7 @@ function startserver()
 	local server = {}
 	local settings = require('../../../settings')
 	local socket=require ('socket')
-	local conn = assert(socket.bind(settings.server_ip, settings.server_port))
+	local conn = assert(socket.bind('*', settings.server_port))
 	local ip, port = conn:getsockname()
 	print('Listening for connections at '..ip..':'..port..'.')
 	conn:settimeout(0)
