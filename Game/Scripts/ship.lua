@@ -58,13 +58,11 @@ function Ship:PollChildren()
 	for k,v in pairs(children) do
 		if v.child and v.child.velocity then
 			local vels = child:PollChildren()
-
 			for k,v in pairs(vels) do
 				table.insert(c_Thrusts, v)
 			end
 		end
 	end
-
 	return c_Thrusts
 end
 
