@@ -34,6 +34,7 @@ goals = {}
 particlesystems = {}
 
 gFrameID = 0
+gWorldPackage = nil
 
 ENT_ID = 0
 function NextID()
@@ -211,6 +212,31 @@ function ResetGame(warmup)
 	GAMESTATE.points = {[0]=0,[1]=0}
 end
 
+function package_world()
+	local pkg = beginpack()
+	pkg = beginpacktable(pkg,'arena')
+	pkg = arena:Pack(pkg)
+	pkg = endpacktable(pkg)	
+
+	pkg = beginpacktable(pkg, 'obs')
+	for k,obs in pairs(obstacles) do
+		pkg = beginpacktable(pkg, k)
+		pkg = obs:Pack(pkg)
+		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
+
+	pkg = beginpacktable(pkg, 'goals')
+	for k,body in pairs(goals) do
+		pkg = beginpacktable(pkg, k)
+		pkg = body:Pack(pkg)
+		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
+
+	gWorldPackage = endpack(pkg)	
+end
+
 gPackageDT = 0
 function package()
 	local start_time = socket.gettime()
@@ -224,20 +250,9 @@ function package()
 	pkg = pack(pkg, 'st', GAMESTATE.pointsToWin)
 	pkg = endpacktable(pkg)
 
-	pkg = beginpacktable(pkg,'arena')
-	pkg = arena:Pack(pkg)
-	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'ptcl')
 	for k,obs in pairs(particlesystems) do
-		pkg = beginpacktable(pkg, k)
-		pkg = obs:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
-	pkg = beginpacktable(pkg, 'obs')
-	for k,obs in pairs(obstacles) do
 		pkg = beginpacktable(pkg, k)
 		pkg = obs:Pack(pkg)
 		pkg = endpacktable(pkg)
@@ -272,17 +287,13 @@ function package()
 	end
 	pkg = endpacktable(pkg)
 
-	pkg = beginpacktable(pkg, 'goals')
-	for k,body in pairs(goals) do
-		pkg = beginpacktable(pkg, k)
-		pkg = body:Pack(pkg)
-		pkg = endpacktable(pkg)
-	end
-	pkg = endpacktable(pkg)
-
 	pkg = pack(pkg, 'frame_id', gFrameID)
 	pkg = endpack(pkg)
 	for i,client in pairs(gServer.clients) do
+		if not client.has_world then
+			send(client, gWorldPackage, 'world_view')
+			client.has_world = true
+		end
 		send(client, pkg, 'view')
 	end
 	gPackageDT = socket.gettime() - start_time
@@ -314,6 +325,8 @@ function GenerateLevel()
 		Obstacle(pos.x, pos.y, rad)
 		Obstacle(arena.width-pos.x, (mirror and arena.height-pos.y or pos.y), rad)
 	end
+
+	package_world()
 end
 
 function circles_overlap(a, b)

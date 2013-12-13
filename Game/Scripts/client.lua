@@ -15,6 +15,7 @@ TUNING = require("tuning")
 
 gClient = nil
 
+local gRemoteWorldView = nil
 local gRemoteView = nil
 local gRemoteID = "0"
 
@@ -66,6 +67,11 @@ function client_draw()
 	end
 	
 	updateclient(gClient)		
+
+	local world_view_message = nextmessage(gClient, 'world_view')
+	if world_view_message then
+		gRemoteWorldView = unpack(1, world_view_message)
+	end
 	
 	local message_count = messagecount(gClient, 'view')
 	gQueuedFrames = message_count - 1
@@ -98,7 +104,7 @@ function client_draw()
 		end
 	end
 	
-	if gRemoteView then
+	if gRemoteView and gRemoteWorldView then
 		Renderer:Draw(function()	
 
 			for k,ptcl in pairs(gRemoteView.ptcl) do
@@ -120,7 +126,7 @@ function client_draw()
 				end
 			end	
 
-			local arena = gRemoteView.arena
+			local arena = gRemoteWorldView.arena
 			love.graphics.setColor(125,55,55,255)
 			local thickness = 5
 			love.graphics.rectangle("fill", -thickness, -thickness, thickness, arena.h + thickness*2)
@@ -128,7 +134,7 @@ function client_draw()
 			love.graphics.rectangle("fill", -thickness, arena.h, arena.w + thickness*2, thickness)
 			love.graphics.rectangle("fill", arena.w, -thickness, thickness, arena.h + thickness*2)
 
-			for k,goal in pairs(gRemoteView.goals) do
+			for k,goal in pairs(gRemoteWorldView.goals) do
 				if goal.t == 0 then
 					love.graphics.setColor(5,55,15,255)
 					love.graphics.rectangle("fill",
@@ -254,7 +260,7 @@ function client_draw()
 				end
 			end
 
-			for k,obstacle in pairs(gRemoteView.obs) do
+			for k,obstacle in pairs(gRemoteWorldView.obs) do
 				love.graphics.setColor(155,155,155,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
 			end
