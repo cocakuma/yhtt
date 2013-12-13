@@ -143,7 +143,10 @@ function server_update(dt)
 	gFrameID = gFrameID + 1
 end
 
+
+gPackageDT = 0
 function package()
+	local start_time = socket.gettime()
 	local pkg = beginpack()
 
 	pkg = beginpacktable(pkg,'arena')
@@ -191,6 +194,7 @@ function package()
 	for i,client in pairs(gServer.clients) do
 		send(client, pkg, 'view')
 	end
+	gPackageDT = socket.gettime() - start_time
 end
 
 function GenerateLevel()

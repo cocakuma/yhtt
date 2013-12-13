@@ -31,5 +31,7 @@ function love.draw()
 	y = y + y_delta
 	love.graphics.print("Update: "..gUpdate, x, y)
 	y = y + y_delta	
+	love.graphics.print("Package: "..gPackageDT, x, y)
+	y = y + y_delta		
 end
 
