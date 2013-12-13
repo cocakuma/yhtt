@@ -24,7 +24,7 @@ end
 function love.draw()
 	local x = 500
 	local y = 50
-	local y_delta = 15
+	local y_delta = 20
 	love.graphics.print("Tick: "..round3(tick_time), x, y)
 	y = y + y_delta
 	love.graphics.print("Dt: "..round3(gDt), x, y)
