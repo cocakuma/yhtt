@@ -499,8 +499,40 @@ function client_draw()
 				love.graphics.setColor(255,255,255,255)
 				love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)
 
+				local fakelog = {
+					"bob|Payload",
+					"bob|tim",
+					"tim|bob",
+					"bob|Border",
+					"bob|Rock",
+					"bob|fred",
+				}
 
+				for i,log in ipairs(fakelog) do
+					local names = {}
+					for n1,n2 in string.gmatch(log, "(%w+)|(%w+)") do
+						names[1] = n1
+						names[2] = n2
+					end
+					local s = string.format("%s was killed by %s", names[1], names[2])
 
+					love.graphics.setFont(Fonts.info.font)
+					love.graphics.setColor(0,0,0,255)
+					love.graphics.print(s, 30+1, love.graphics.getHeight() -60+1 - 30*i)
+					if names[1] == "tim" or names[2] == "tim" then
+						love.graphics.setColor(255,255,55,255)
+					elseif names[2] == "Rock" then
+						love.graphics.setColor(115,115,115,255)
+					elseif names[2] == "Border" then
+						love.graphics.setColor(135,115,115,255)
+					elseif names[2] == "Payload" then
+						love.graphics.setColor(115,115,135,255)
+					else
+						love.graphics.setColor(155,155,55,255)
+					end
+					love.graphics.print(s, 30, love.graphics.getHeight() -60 - 30*i)
+
+				end
 
 			end
 			
@@ -516,7 +548,7 @@ function client_draw()
 	end
 end
 
-gUser = 'TriKiller'
+sgUser = 'TriKiller'
 function client_load()
 	gClient = startclient(getip(), getport())
 	Renderer:Load()	
