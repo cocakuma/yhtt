@@ -18,7 +18,7 @@ local gRemoteView = nil
 local gRemoteID = "0"
 
 gRenderDt = 0
-
+explosions = {}
 
 local lastMouse = Vector2(0,0)
 
