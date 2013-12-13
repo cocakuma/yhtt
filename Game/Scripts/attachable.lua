@@ -5,8 +5,10 @@ require("particlesystem")
 class("Attachable")
 
 function Attachable:init(x, y, radius, mass)
-
-	self.ID = NextID()
+	-- this is to allow ships to override their ID
+	if self.ID == nil then
+		self.ID = NextID()
+	end
 	bodies[self.ID] = self
 	
 	self.radius = radius

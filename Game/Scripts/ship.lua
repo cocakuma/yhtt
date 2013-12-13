@@ -8,7 +8,8 @@ class("Ship", Attachable)
 
 
 
-function Ship:init(x, y, angle, team)
+function Ship:init(x, y, angle, team, ID)
+	self.ID = ID -- in reset the game overrides this ID
 	self._base.init(self, x, y, 8, 1)
 
 	self.angle = angle --rads
@@ -67,6 +68,9 @@ function Ship:Shoot()
 end
 
 function Ship:HandleInput( )
+	if not self.input then
+		return
+	end
 	
 	if self.input["d"] == 1 then
 		self.turnLeft = true

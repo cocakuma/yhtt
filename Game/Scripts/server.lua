@@ -15,23 +15,6 @@ TUNING = require("tuning")
 
 gServer = nil
 
-GAMESTATE = {
-	warmup = true,
-	warmupTime = TUNING.GAME.WARMUP_TIME,
-	pointsToWin = 2,
-	points = {
-		[0]=0,
-		[1]=0
-	},
-}
-
-arena = nil
-bodies = {} --ships, payloads, etc
-to_respawn = {}
-bullets = {}
-obstacles = {}
-goals = {}
-particlesystems = {}
 
 gFrameID = 0
 gWorldPackage = nil
@@ -50,7 +33,7 @@ function receiveinput(client)
 		if bodies[input.cid] then
 			client.ID = input.cid
 		elseif client.ID == nil then
-			local ship = Ship(10, 10, 0)
+			local ship = Ship(0, 0, 0, 0)
 			client.ID = ship.ID	
 			send(client, tostring(client.ID), 'ID')
 		end
@@ -63,7 +46,8 @@ end
 function server_load()
 	gIsServer = true
 	gServer = startserver(getport())
-	GenerateLevel()
+
+	ResetGame(true)
 end
 
 function server_update(dt)
@@ -207,9 +191,35 @@ function StartGame()
 end
 
 function ResetGame(warmup)
-	GAMESTATE.warmup = warmup
-	GAMESTATE.warmupTime = TUNING.GAME.WARMUP_TIME
-	GAMESTATE.points = {[0]=0,[1]=0}
+
+	global("GAMESTATE")
+	GAMESTATE = {
+		warmup = warmup,
+		warmupTime = TUNING.GAME.WARMUP_TIME,
+		pointsToWin = TUNING.GAME.POINTS_TO_WIN,
+		points = {
+			[0]=0,
+			[1]=0
+		},
+	}
+
+	global("arena")
+	arena = nil
+	global("bodies")
+	bodies = {} --ships, payloads, etc
+	global("to_respawn")
+	to_respawn = {}
+	global("bullets")
+	bullets = {}
+	global("obstacles")
+	obstacles = {}
+	global("goals")
+	goals = {}
+	global("particlesystems")
+	particlesystems = {}
+
+
+	GenerateLevel()
 end
 
 function package_world()
@@ -235,6 +245,10 @@ function package_world()
 	pkg = endpacktable(pkg)
 
 	gWorldPackage = endpack(pkg)	
+
+	for i,client in pairs(gServer.clients) do
+		client.has_world = false
+	end
 end
 
 gPackageDT = 0
@@ -309,10 +323,9 @@ function GenerateLevel()
 		Goal(1, Vector2(arena.width-20,arena.height/2), 40, 600),
 	}
 
-	for i=1,4 do
-		local ship = Ship(100+20*i, 100, 0)
-		ship.input = defaultinput()
-	end
+	for i,client in pairs(gServer.clients) do
+		Ship(0,0,0,0,client.ID)
+	end		
 
 	for i=1,GAMESTATE.pointsToWin*2 - 1 do
 		local pl = Payload(arena.width/2, i*arena.height/(GAMESTATE.pointsToWin*2))
