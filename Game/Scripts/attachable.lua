@@ -287,6 +287,7 @@ end
 
 function Attachable:Detach()
 	for k,v in pairs(self.children) do
+		self.se_detach = true
 		self:RemoveChild(v.child)
 		if self.OnDetached then
 			self:OnDetached(v.child)

@@ -114,6 +114,9 @@ function client_draw()
 				if ship.se_atch then
 					SOUNDS:PlaySound("sfx.ingame.ship.attach", sound_scale)
 				end
+				if ship.se_dtch then
+					SOUNDS:PlaySound("sfx.ingame.ship.release", sound_scale)
+				end	
 			end
 		end
 	end

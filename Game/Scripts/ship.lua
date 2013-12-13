@@ -179,6 +179,10 @@ function Ship:Pack(pkg)
 		pkg = pack(pkg, 'se_atch', 1)
 		self.se_attach = false
 	end
+	if self.se_detach then
+		pkg = pack(pkg, 'se_dtch', 1)
+		self.se_detach = false
+	end	
 	if self.boosting then
 		pkg = pack(pkg, 'se_bst', 1)
 	end	
@@ -192,6 +196,7 @@ function Ship:OnDetached(other)
 		local thrust = thrustVector * 100 * (self.boosting and 3 or 1)
 		self.velocity = self.velocity + thrust
 	end
+	self.se_detach = true
 end
 
 function Ship:Collide(other)
