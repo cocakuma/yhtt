@@ -309,7 +309,7 @@ function GenerateLevel()
 		Goal(1, Vector2(arena.width-20,arena.height/2), 40, 600),
 	}
 
-	for i=1,32 do
+	for i=1,4 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.input = defaultinput()
 	end
