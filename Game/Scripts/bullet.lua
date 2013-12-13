@@ -34,12 +34,15 @@ function Bullet:init(ship)
 	self.velocity = ship.velocity + self.velocity
 
 	self.target = self:LookForTarget()
+
+	self.search_Timer = 0.33
+
 end
 
 function Bullet:LookForTarget()
 	local bestTar = nil
 	local bestDist = 300^2
-	local bestDot = 0.8
+	local bestDot = 0.73
 	
 	for k,v in pairs(bodies) do
 		if v and not v:IsOnTeam(self.team) then
@@ -61,9 +64,31 @@ function Bullet:LookForTarget()
 	return bestTar
 end
 
+function Bullet:SearchTimer(dt)
+	self.search_Timer = self.search_Timer - dt
+	if self.search_Timer <= 0 then
+		self.search_Timer = 0.5
+
+		if self.target then
+			local toTar = self.target.position - self.position
+			local vec = Vector2(math.cos(self.angle), math.sin(self.angle))
+			local dot = vec:Dot(toTar)
+			dot = dot / (vec:Length() * toTar:Length())
+
+			if dot < 0 then
+				self.target = nil
+			end
+
+		end
+		if not self.target then
+			self.target = self:LookForTarget()
+		end
+	end
+end
+
 function Bullet:Update(dt)
 
-	self.target = self:LookForTarget()
+	self:SearchTimer(dt)
 
 	if self.target then		
 
