@@ -245,6 +245,13 @@ function client_draw()
 					love.graphics.setColor(255,255,255,255)
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x, Renderer.offset_y+30)
 				end
+
+				local instructions = "W, LMB = Thrust | Space, RMB = Shoot | A,D,Mouse = Aim | F = Attach!!"
+				love.graphics.setColor(0,0,0,255)
+				love.graphics.print(instructions, 30+1, love.graphics.getHeight() - 30+1)
+				love.graphics.setColor(255,255,255,255)
+				love.graphics.print(instructions, 30, love.graphics.getHeight() - 30)
+
 			end
 			
 		end)
