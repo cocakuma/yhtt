@@ -48,7 +48,7 @@ end
 function reconnect(node)
 	local conn = connectsocket(getip(), getport())
 	for k,v in pairs(node) do
-		pairs[k] = nil
+		node[k] = nil
 	end
 	local new_node = createnode(conn)
 	for k,v in pairs(new_node) do
@@ -56,21 +56,9 @@ function reconnect(node)
 	end
 end
 
-function updateclientinternal(client)
-	local coroutine = require('coroutine')
-	while 1 do
-		sendmessages(client)
-		receivemessages(client)
-		coroutine.yield()
-	end	
-end
-
 function updateclient(client)
-	local v,e = coroutine.resume(client.co)
-	if not v then
-		print(e)
-		assert()
-	end
+	sendmessages(client)
+	receivemessages(client)
 end
 
 function createnode(conn)
@@ -99,48 +87,56 @@ function startclient(ip, port)
 	local conn = connectsocket(ip, port)
 	print('Connected!')		
 	local client = createnode(conn)
-	client.co = coroutine.create(function() updateclientinternal(client) end)	
 	return client
 end
 
 function updateserverinternal(server)
-	local coroutine = require('coroutine')
-	while 1 do
-		local client_conn = server.conn:accept()
-		if client_conn then
-			client_conn:settimeout(0)
-			client_conn:setoption('keepalive', true)
-			local client_ip, client_port = client_conn:getpeername()
-			print('New connection '..client_ip..':'..client_port..'.')			
-			table.insert(server.clients, createnode(client_conn))
-		end
+	local client_conn = server.conn:accept()
+	if client_conn then
+		client_conn:settimeout(0)
+		client_conn:setoption('keepalive', true)
+		local client_ip, client_port = client_conn:getpeername()
+		print('New connection '..client_ip..':'..client_port..'.')			
+		table.insert(server.clients, createnode(client_conn))
+	end
 
-		for i,client in pairs(server.clients) do
-			if client.error then
-				print('Connection lost: '..client.error)
-				server.clients[i] = nil
-			end
-			sendmessages(client)
-			receivemessages(client)
-			if client.error then
-				server.clients[i] = nil
-			end			
+	for i,client in pairs(server.clients) do
+		if client.error then
+			print('Connection lost: '..client.error)
+			server.clients[i] = nil
 		end
-
-		coroutine.yield()
+		sendmessages(client)
+		receivemessages(client)
+		if client.error then
+			server.clients[i] = nil
+		end			
 	end
 end
 
 function updateserver(server)
-	local v,e = coroutine.resume(server.co)
-	if not v then
-		print(e)
-		assert()
+	local client_conn = server.conn:accept()
+	if client_conn then
+		client_conn:settimeout(0)
+		client_conn:setoption('keepalive', true)
+		local client_ip, client_port = client_conn:getpeername()
+		print('New connection '..client_ip..':'..client_port..'.')			
+		table.insert(server.clients, createnode(client_conn))
+	end
+
+	for i,client in pairs(server.clients) do
+		if client.error then
+			print('Connection lost: '..client.error)
+			server.clients[i] = nil
+		end
+		sendmessages(client)
+		receivemessages(client)
+		if client.error then
+			server.clients[i] = nil
+		end			
 	end
 end
 
 function startserver(port)
-	local coroutine = require('coroutine')
 	local server = {}
 	local socket=require ('socket')
 	local conn = assert(socket.bind('*', port))
@@ -149,7 +145,6 @@ function startserver(port)
 	conn:settimeout(0)
 	server.conn = conn
 	server.clients = {}	
-	server.co = coroutine.create(function() updateserverinternal(server) end)
 	return server
 end
 
