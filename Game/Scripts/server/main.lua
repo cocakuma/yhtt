@@ -33,5 +33,15 @@ function love.draw()
 	y = y + y_delta	
 	love.graphics.print("Package: "..round3(gPackageDT), x, y)
 	y = y + y_delta		
+
+	local instructions = {
+			"Instructions:",
+			"F5 = Reset Game" }
+	local instructionstring = table.concat(instructions,"          ")
+  	
+  	love.graphics.setColor(0,0,0,255)
+  	love.graphics.print(instructionstring, 30+1, love.graphics.getHeight() - 30+1)
+  	love.graphics.setColor(255,255,255,255)
+  	love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)	
 end
 

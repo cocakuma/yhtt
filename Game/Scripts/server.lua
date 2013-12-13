@@ -374,3 +374,9 @@ function circles_overlap(a, b)
 	local dist_sq = delta_x * delta_x + delta_y * delta_y
 	return dist_sq <= r_total_sq
 end
+
+function love.keypressed(key)
+	if key == 'f5' then
+		ResetGame(false)
+	end
+end
