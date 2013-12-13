@@ -243,6 +243,8 @@ function Attachable:Attach()
 		return
 	end
 
+	self.wantsToDetach = false
+
 	local pos = self.position
 	
 	local best = nil
@@ -286,6 +288,11 @@ function Attachable:IsOnTeam(otherteam)
 end
 
 function Attachable:Detach()
+
+	if not self.canAttach then
+		return
+	end
+
 	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
 		if self.OnDetached then
