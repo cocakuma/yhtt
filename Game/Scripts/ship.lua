@@ -76,16 +76,16 @@ function Ship:HandleInput( )
 		self.turnRight = true
 	end
 	if self.input["w"] == 1 then
-		self.thrusting = true		
+		self.thrusting = true
 	end
 	if self.input[" "] == 1 then
-		self.shoot = true		
+		self.shoot = true
 	end
 	if self.input["f"] == 1 then
 		if not self.parent and not next(self.children) then
-			self.tryAttach = true			
+			self.tryAttach = true
 		else
-			self.tryDetach = true			
+			self.tryDetach = true
 		end
 	end
 
@@ -182,7 +182,7 @@ function Ship:Collide(other)
 	diff.y = diff.y + math.random()*0.002-0.001
 
 	local parent = self:GetTrueParent()
-	parent.velocity = self.velocity + diff:GetNormalized() * 20
+	parent.velocity = self.velocity + (diff:GetNormalized() * 20)/self:GetMass()
 
 	local impactVel = self.velocity:Length()
 	if other.velocity then impactVel = impactVel + other.velocity:Length() end
@@ -196,7 +196,7 @@ end
 
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
-	parent.velocity = parent.velocity + bullet.velocity:GetNormalized() * 20	
+	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/self:GetMass()
 	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP )
 end
 

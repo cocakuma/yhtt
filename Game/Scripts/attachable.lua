@@ -33,6 +33,14 @@ function Attachable:init(x, y, radius, mass)
 
 end
 
+function Attachable:GetMass()
+	local m = self.mass
+	for k,v in pairs(self.children) do
+		m = m + v.child:GetMass()
+	end
+	return m
+end
+
 function Attachable:Update(dt)
 
 	if not self.canAttach then
@@ -103,9 +111,9 @@ function Attachable:CombineVelocities(other)
 	local my_Vel = self:GetChildVelocities()
 	table.insert(my_Vel, self.velocity)
 
-	local velDelta = self.velocity * #my_Vel
-	local otherDelta = other.velocity * #other_Vel
-	local newVelocity = (velDelta+otherDelta) / (#my_Vel + #other_Vel)
+	local velDelta = self.velocity * self:GetMass()
+	local otherDelta = other.velocity * other:GetMass()
+	local newVelocity = (velDelta+otherDelta) / (self:GetMass()+other:GetMass())
 	--print("final", newVelocity)
 
 	return newVelocity
@@ -191,7 +199,7 @@ function Attachable:SetVelocities(override)
 		local childthrusts = self:GetChildThrusts()
 		local thrust = sumThrusts(childthrusts)
 		thrust = thrust + self.thrust
-		self.velocity = self.velocity + thrust / (#childthrusts+1)
+		self.velocity = self.velocity + (thrust / self:GetMass())
 	end
 	for k,v in pairs(self.children) do
 		if v.child then

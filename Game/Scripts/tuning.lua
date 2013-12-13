@@ -21,7 +21,7 @@ return
 	},
 	PAYLOAD =
 	{
-		MASS = 100,
+		MASS = 30,
 		DRAG = -0.66,
 	},
 	DAMAGE = 
