@@ -329,18 +329,41 @@ function client_draw()
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40+1, Renderer.offset_y+40+1)
 					love.graphics.setColor(255,255,255,255)
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40, Renderer.offset_y+40)
-				elseif gRemoteView.game.f == FLOW.WIN_0 then
-					love.graphics.setFont(Fonts.title.font)
-					love.graphics.setColor(0,0,0,255)
-					love.graphics.print("TEAL WINS!!", Renderer.offset_x-200+1, Renderer.offset_y-90+1)
-					love.graphics.setColor(55,255,155,255)
-					love.graphics.print("TEAL WINS!!", Renderer.offset_x-200, Renderer.offset_y-90)
-				elseif gRemoteView.game.f == FLOW.WIN_1 then
-					love.graphics.setFont(Fonts.title.font)
-					love.graphics.setColor(0,0,0,255)
-					love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250+1, Renderer.offset_y-90+1)
-					love.graphics.setColor(155,55,255,255)
-					love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250, Renderer.offset_y-90)
+				else
+
+					for i=1,gRemoteView.game.st do
+						love.graphics.setColor(0,0,0,255)
+						love.graphics.circle("fill", Renderer.offset_x - i * 40, 40, 17, 6)
+						love.graphics.circle("fill", Renderer.offset_x + i * 40, 40, 17, 6)
+
+						local mode0 = "line"
+						if gRemoteView.game.s0 >= i then
+							mode0 = "fill"
+						end
+						love.graphics.setColor(55,255,155,255)
+						love.graphics.circle(mode0, Renderer.offset_x - i * 40, 40, 15, 6)
+
+						local mode1 = "line"
+						if gRemoteView.game.s1 >= i then
+							mode1 = "fill"
+						end
+						love.graphics.setColor(155,55,255,255)
+						love.graphics.circle(mode1, Renderer.offset_x + i * 40, 40, 15, 6)
+					end
+
+					if gRemoteView.game.f == FLOW.WIN_0 then
+						love.graphics.setFont(Fonts.title.font)
+						love.graphics.setColor(0,0,0,255)
+						love.graphics.print("TEAL WINS!!", Renderer.offset_x-200+1, Renderer.offset_y-90+1)
+						love.graphics.setColor(55,255,155,255)
+						love.graphics.print("TEAL WINS!!", Renderer.offset_x-200, Renderer.offset_y-90)
+					elseif gRemoteView.game.f == FLOW.WIN_1 then
+						love.graphics.setFont(Fonts.title.font)
+						love.graphics.setColor(0,0,0,255)
+						love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250+1, Renderer.offset_y-90+1)
+						love.graphics.setColor(155,55,255,255)
+						love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250, Renderer.offset_y-90)
+					end
 				end
 
 				local instructions = {
