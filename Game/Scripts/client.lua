@@ -66,10 +66,24 @@ function client_draw()
 	
 	updateclient(gClient)		
 	
-	local message, remaining = nextmessage(gClient, 'view')
+	local message_count = messagecount(gClient, 'view')
+	local message = nextmessage(gClient, 'view')
 
-	while remaining > 3 do		
-		message, remaining = nextmessage(gClient, 'view')
+	if message == nil then
+		print('FPS: Running ahead!')
+		while message_count < 2 do
+			updateclient(gClient)
+			message_count = messagecount(gClient, 'view')
+		end
+		message = nextmessage(gClient, 'view')
+	end
+
+	if message_count > 4 then
+		print('FPS: Lagging behind!')
+		while message_count > 3 do		
+			message = nextmessage(gClient, 'view')
+			message_count = messagecount(gClient, 'view')
+		end
 	end
 
 	if message then

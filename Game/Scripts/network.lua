@@ -188,18 +188,25 @@ function clearmessages(node)
 	end
 end
 
+function messagecount(node, t)
+	local remaining = 0
+	local message_queue = node.in_messages[t]	
+	if message_queue then
+		remaining = table.getn(message_queue)	
+	end
+	return remaining
+end
+
 function nextmessage(node, t)
 	local message = nil
-	local remaining = 0
 	local message_queue = node.in_messages[t]	
 	if message_queue then
 		message = message_queue[1]
 		if message then				
 			table.remove(message_queue, 1)
-			remaining = table.getn(message_queue)
 		end
 	end
-	return message, remaining
+	return message
 end
 
 function beginpack()
