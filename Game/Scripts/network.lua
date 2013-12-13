@@ -10,8 +10,7 @@ function sendmessages(node)
 		if sent == nil and not gIsServer then			
 			print('Disconnected because: '..err)
 			print('Attempting to reconnect...')
-			node.conn = connectsocket(getip(), getport())
-			table.remove(node.out_messages, #node.out_messages)
+			reconnect(node)
 			return
 		elseif sent == nil then
 			node.error = err
@@ -46,17 +45,22 @@ function receivemessages(node)
 	end
 end
 
+function reconnect(node)
+	local conn = connectsocket(getip(), getport())
+	for k,v in pairs(node) do
+		pairs[k] = nil
+	end
+	local new_node = createnode(conn)
+	for k,v in pairs(new_node) do
+		node[k] = v
+	end
+end
+
 function updateclientinternal(client)
 	local coroutine = require('coroutine')
 	while 1 do
 		sendmessages(client)
-		if client.error then 
-			client = createnode(client.conn)
-		end
 		receivemessages(client)
-		if client.error then 
-			client = createnode(client.conn)
-		end		
 		coroutine.yield()
 	end	
 end
