@@ -58,6 +58,8 @@ end
 gLocalSoundScale = 1.0
 gRemoteSoundScale = 0.4
 
+gWarmupSong = nil
+gGameSong = nil
 gPlayCountdown = true
 gQueuedFrames = 0
 gClientState = 'ok'
@@ -347,6 +349,14 @@ function client_draw()
 		function()
 			if gRemoteView.game then
 				if gRemoteView.game.f == FLOW.WARMUP then
+					if gGameSong then 
+						gGameSong:Stop()
+						gGameSong = nil
+					end
+					if not gWarmupSong then
+						gWarmupSong = SOUNDS:PlaySound("music.warmup", 0.3)
+					end
+
 					love.graphics.setFont(Fonts.header.font)
 					love.graphics.setColor(0,0,0,255)
 					love.graphics.print("WARMUP MODE", Renderer.offset_x-150+1, Renderer.offset_y-90+1)
@@ -364,6 +374,13 @@ function client_draw()
 						SOUNDS:PlaySound("sfx.ingame.countdown", 1.0)
 					end
 				else
+					if gWarmupSong then
+						gWarmupSong:Stop()
+						gWarmupSong = nil
+					end		
+					if not gGameSong then 
+						gGameSong = SOUNDS:PlaySound("music.game", 0.3)
+					end			
 
 					for i=1,gRemoteView.game.st do
 						love.graphics.setColor(0,0,0,255)
@@ -439,12 +456,8 @@ function client_load()
 	SOUNDS:LoadBank( "mainbank" )
 end
 
-local playing_music = false
+
 function client_update(dt)
-	if not playing_music then
-		SOUNDS:PlaySound("music.game", 0.3)
-		playing_music = true
-	end
 	sendinput(gClient)
 	updateclient(gClient)	
 	for k,expl in pairs(explosions) do
