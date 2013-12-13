@@ -16,7 +16,7 @@ return SoundBank
 		},
 
 		game = SoundDef{
-			samples={"Sound/thehardestspace.ogg"},
+			samples={"Sound/beatsNbeats.ogg"},
 			looping = true,
 			stream = true,
 			fadeintime = 1,
