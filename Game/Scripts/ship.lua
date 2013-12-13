@@ -12,41 +12,40 @@ function Ship:init(x, y, angle, team, ID)
 	self.ID = ID -- in reset the game overrides this ID
 	self._base.init(self, x, y, 8, 1)
 
-	self.angle = angle --rads
-
 	self.team = self.ID % 2
-
 	self.particle_type = 1
-
-	self.health = 1 -- 100% always
-	
-	self.thrustForce = TUNING.SHIP.THRUST
-	self.drag = TUNING.SHIP.DRAG
-	self.turnSpeed = TUNING.SHIP.TURNSPEED
-
-	self.thrusting = false
-	self.didThrust = false
-	self.turnLeft = false
-	self.turnRight = false
-
-	self.numBoosts = 3
-	self.tryBoost = false
-	self.boosting = false
-	
-	self.boostDuration = 3
-	self.boostDuration_timer = self.boostDuration
-
 	self.mouse = nil
+
+	self:ResetShip()
+	-- self.health = 1 -- 100% always
 	
-	self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
-	self.minAmmoClip = 0
-	self.currentAmmoClip = self.maxAmmoClip
-	self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
-	self.reload_timer = self.reloadSpeed
-	self.shoot = false
-	self.canShoot = true
-	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
-	self.shotoffset = Vector2(0, 4)
+	-- self.thrustForce = TUNING.SHIP.THRUST
+	-- self.drag = TUNING.SHIP.DRAG
+	-- self.turnSpeed = TUNING.SHIP.TURNSPEED
+
+	-- self.thrusting = false
+	-- self.didThrust = false
+	-- self.turnLeft = false
+	-- self.turnRight = false
+
+	-- self.numBoosts = 3
+	-- self.tryBoost = false
+	-- self.boosting = false
+	
+	-- self.boostDuration = 3
+	-- self.boostDuration_timer = self.boostDuration
+
+
+	
+	-- self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
+	-- self.minAmmoClip = 0
+	-- self.currentAmmoClip = self.maxAmmoClip
+	-- self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
+	-- self.reload_timer = self.reloadSpeed
+	-- self.shoot = false
+	-- self.canShoot = true
+	-- self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+	-- self.shotoffset = Vector2(0, 4)
 
 	self:Respawn()
 end
@@ -188,7 +187,6 @@ function Ship:Update(dt)
 	self.tryBoost = false
 
 	self._base.Update(self, dt)
-
 end
 
 function Ship:Pack(pkg)
@@ -234,6 +232,7 @@ end
 function Ship:Die()
 	ParticleSystem(self)	
 	self:Detach()
+	self:ResetShip()
 	bodies[self.ID] = nil
 	to_respawn[self.ID] = {ship=self, remaining=TUNING.SHIP.RESPAWN_TIME}
 end
@@ -245,21 +244,59 @@ function Ship:TryRespawn(dt)
 	end
 end
 
+function Ship:ResetShip()
+
+	self.input = {}
+
+	self.angle = 0
+
+	self.boosting = false
+	self.numBoosts = 3
+	self.boostDuration_timer = self.boostDuration
+	self.velocity.x = 0
+	self.velocity.y = 0
+
+	self.health = 1 -- 100% always
+	
+	self.thrustForce = TUNING.SHIP.THRUST
+	self.drag = TUNING.SHIP.DRAG
+	self.turnSpeed = TUNING.SHIP.TURNSPEED
+
+	self.thrusting = false
+	self.didThrust = false
+	self.turnLeft = false
+	self.turnRight = false
+
+	self.numBoosts = 3
+	self.tryBoost = false
+	self.boosting = false
+	
+	self.boostDuration = 3
+	self.boostDuration_timer = self.boostDuration
+
+	self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
+	self.minAmmoClip = 0
+	self.currentAmmoClip = self.maxAmmoClip
+	self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
+	self.reload_timer = self.reloadSpeed
+	self.shoot = false
+	self.canShoot = true
+	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+	self.shotoffset = Vector2(0, 4)
+	
+end
+
 function Ship:Respawn()
-	self.health = 1
+
+	
 	bodies[self.ID] = self
 	to_respawn[self.ID] = nil
 
 	if self.team == 0 then
 		self.position.x = 40
 	else
+		self.angle = math.pi
 		self.position.x = arena.width - 40
 	end
 	self.position.y = math.random() * arena.height
-
-	self.boosting = false
-	self.numBoosts = 3
-
-	self.velocity.x = 0
-	self.velocity.y = 0
 end

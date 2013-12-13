@@ -299,8 +299,8 @@ function client_draw()
 									"W, LMB = Thrust",
 									"Space, RMB = Shoot",
 									"A,D,Mouse = Aim",
-									"F10 = Zoom",
-									"F = Attach!!"									
+									"F = Attach!!",
+									"L Shift = Boost!"
 								}
 				local instructionstring = table.concat(instructions,"          ")
 
