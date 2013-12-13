@@ -105,15 +105,19 @@ function Ship:HandleInput( )
 	end
 	if self.input["w"] == 1 then
 		self.thrusting = true
+		SOUND:PlaySound("sfx.ingame.ship.thrust")
 	end
 	if self.input[" "] == 1 then
 		self.shoot = true
+		SOUND:PlaySound("sfx.ingame.ship.shoot")
 	end
 	if self.input["f"] == 1 then
 		if not self.parent and not next(self.children) then
 			self.tryAttach = true
+			SOUND:PlaySound("sfx.ingame.ship.attach")
 		else
 			self.tryDetach = true
+			SOUND:PlaySound("sfx.ingame.ship.detach")
 		end
 	end
 

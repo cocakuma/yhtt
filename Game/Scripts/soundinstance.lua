@@ -29,6 +29,7 @@ function SoundInstance:Update(dt)
 	end
 
 	local v = base_volume * self.def.mixnode.network_volume
+	print(self.def, v, self.def.mixnode.name)
 	self.source:setVolume(v)
 end
 

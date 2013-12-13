@@ -195,10 +195,6 @@ function client_draw()
 				else
 					love.graphics.setColor(155,55,255,255)
 				end
-
-				--if ship.p == 1 then
-					--love.graphics.setColor(55,255,155,255)
-				--end
 				
 				-- the ship
 				DrawTriangle(10, 6, ship.x, ship.y, ship.a)
@@ -340,15 +336,14 @@ function client_load()
 	Renderer:Load()	
 	global("SOUNDS")
 	SOUNDS = SoundSystem()
-	SOUNDS:LoadBank( "mainbank" )
 	SOUNDS.mixer:LoadDefs("mixes")
+	SOUNDS:LoadBank( "mainbank" )
 end
 
 local playing_music = false
 function client_update(dt)
 	if not playing_music then
 		SOUNDS:PlaySound("music.game")
-		SOUNDS.mixer:SetMix("normal")
 		playing_music = true
 	end
 	sendinput(gClient)
@@ -356,7 +351,11 @@ function client_update(dt)
 	for k,expl in pairs(explosions) do
 		expl:Update(dt)
 	end
+
+	SOUNDS.mixer:SetMix("normal")
 	SOUNDS:Update(dt)
+	SOUNDS.mixer:Update(dt)
+	print("musicVol",SOUNDS.musicnode.network_volume)
 end
 
 

@@ -9,126 +9,105 @@ return SoundBank
 			samples={"Sound/thehardestspace.ogg"},
 			looping = true,
 			stream = true,
-			fadeintime = 10,
+			fadeintime = 1,
 			fadeouttime = 1,
+			volume_min = 0.3,
+			volume_max = 0.3,
 		},
 	},
 
---[[
+
 	sfx=
 	{	
 		ui=
 		{
-			click=SoundDef{
-				samples={
-					"data/sounds/menu_button.ogg",
-				},
-				maxplaybacks = 1,
-			},
+			--click=SoundDef{
+				--samples={
+					--"data/sounds/menu_button.ogg",
+				--},
+				--maxplaybacks = 1,
+			--},
 		},
 		ingame=
 		{
 			countdown=SoundDef{
 				samples={
-					"data/sounds/Beep_Race_StartCountdown1.ogg",
+					"Sound/countdown.ogg",
 				},
 				maxplaybacks=1,
 			},
-			win=SoundDef{
+			--win=SoundDef{
+				--samples={
+					--"data/sounds/win.ogg",
+				--},
+				--maxplaybacks=1,
+			--},
+			score_point=SoundDef{
 				samples={
-					"data/sounds/win.ogg",
+					"Sound/score_point.ogg"
 				},
-				maxplaybacks=1,
+				maxplaybacks=2,
 			},
-			chain_scatter=SoundDef{
-				samples={
-					"data/sounds/chain_scatter.ogg",
+			ship={
+				attach=SoundDef{
+					samples={
+						"Sound/ship_attach.ogg"
+					},
+					maxplaybacks=10,
 				},
-				maxplaybacks=10,
-			},
-			dash=SoundDef{
-				samples={
-					"data/sounds/dash.ogg",
+				release=SoundDef{
+					samples={
+						"Sound/ship_release.ogg"
+					},
+					maxplaybacks=10,
 				},
-				maxplaybacks=10,
-			},
-			flower_dropoff=SoundDef{
-				samples={
-					"data/sounds/flower_dropoff.ogg",
+				thrust=SoundDef{
+					samples={
+						"Sound/ship_thrust.ogg"
+					},
+					maxplaybacks=60,
+					looping=true,
+					volume_min = .3,
+					volume_max = .3,
 				},
-				maxplaybacks=10,
-			},
-			flower_lost=SoundDef{
-				samples={
-					"data/sounds/flower_lost.ogg",
+				shoot=SoundDef{
+					samples={
+						"Sound/missle_launch.ogg"
+					},
+					pick = "sequence",
+					pitch_min = .75,
+					pitch_max = 1.5,
+					volume_min = .3,
+					volume_max = .5,
+					maxplaybacks = 60,
 				},
-				maxplaybacks=10,
 			},
-			flower_pickup=SoundDef{
-				samples={
-					"data/sounds/flower_pickup.ogg",
-				},
-				volume_min = .4,
-				volume_max = .6,
-				pitch_min = .9,
-				pitch_max = 1.1,
-				maxplaybacks=10,
-			},
-			freeze_impact=SoundDef{
-				samples={
-					"data/sounds/freeze_impact.ogg",
-				},
-				maxplaybacks=10,
-			},
-			freeze_shot=SoundDef{
-				samples={
-					"data/sounds/freeze_shot.ogg",
-				},
-				maxplaybacks=10,
-			},
-			radius_blast=SoundDef{
-				samples={
-					"data/sounds/radius_blast.ogg",
-				},
-				maxplaybacks=10,
-			},
-			bounce=SoundDef{
-				samples={
-					"data/sounds/bounce.ogg",
-				},
-				maxplaybacks=20,
-			},
-			freeze_bounce=SoundDef{
-				samples={
-					"data/sounds/freeze_bounce.ogg",
-				},
-				maxplaybacks=20,
-			},
-
 			explosions=
 			{
-				small=SoundDef{
+				ship=SoundDef{
 					samples={
-						"data/sounds/bomb-02.ogg",
-						"data/sounds/bomb-03.ogg"
+						"Sound/ship_explo.ogg"
 					},
 					pick = "sequence",
 					pitch_min = .75,
 					pitch_max = 1.5,
 					volume_min = .8,
 					volume_max = 1.2,
-					maxplaybacks = 2,
-				}
-
+					maxplaybacks = 8,
+				},
+				missile=SoundDef{
+					samples={
+						"Sound/missle_explo.ogg"
+					},
+					pick = "sequence",
+					pitch_min = .75,
+					pitch_max = 1.5,
+					volume_min = .8,
+					volume_max = 1.2,
+					maxplaybacks = 20,
+				},
 			},
-			tank=
-			{
-				turret_rotate=SoundDef{
-					samples={},
-					loop = true,
-				}
-			}
 		}
 	},
-	]]
+	
 }

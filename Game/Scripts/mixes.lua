@@ -6,9 +6,9 @@ return
 		pushtime=0,
 		vol=
 		{
-			['sfx.game']=1,
+			['sfx.ingame']=1,
 			['sfx.ui']=1,
-			['music']=1,
+			['music']=.3,
 			['ambient']=1
 		},
 	},
@@ -17,9 +17,9 @@ return
 		pushtime=1,
 		vol=
 		{
-			['sfx.game'] = 0,
+			['sfx.ingame'] = 0,
 			['sfx.ui'] = 1,
-			['music'] = .5,
+			['music'] = .2,
 			['ambient'] = 0
 		},
 	}
