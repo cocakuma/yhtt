@@ -206,7 +206,7 @@ function client_draw()
 
 			for k,payload in pairs(gRemoteView.plds) do
 
-				love.graphics.setColor(0,0,100 + 155 * forcefield_scale,255)
+				love.graphics.setColor(255*(1-forcefield_scale),255*(1-forcefield_scale),255*forcefield_scale,255)
 				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 				if payload.t == 0 then
 					love.graphics.setColor(95,255,195,255)
