@@ -548,7 +548,7 @@ function client_draw()
 	end
 end
 
-sgUser = 'TriKiller'
+gUser = 'TriKiller'
 function client_load()
 	gClient = startclient(getip(), getport())
 	Renderer:Load()	
