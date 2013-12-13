@@ -213,7 +213,8 @@ function endpacktable(package)
 end
 
 function pack(package, key, value)
-	return package..tostring(key)..'='..tostring(value)..','
+
+	return package..tostring(key)..'='..tostring(round(value))..','
 end
 
 function getip()
@@ -228,4 +229,9 @@ end
 
 function getport()
 	return '7500'
+end
+
+function round(val)
+	local roundness = 100
+	return math.floor(val*roundness+0.5)/roundness
 end
