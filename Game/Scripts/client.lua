@@ -102,6 +102,36 @@ function client_draw()
 			love.graphics.rectangle("fill", -thickness, arena.h, arena.w + thickness*2, thickness)
 			love.graphics.rectangle("fill", arena.w, -thickness, thickness, arena.h + thickness*2)
 
+			for k,goal in pairs(gRemoteView.goals) do
+				if goal.t == 0 then
+					love.graphics.setColor(5,55,15,255)
+					love.graphics.rectangle("fill",
+										goal.x-goal.w/2,
+										goal.y-goal.h/2,
+										goal.w,
+										goal.h)
+					love.graphics.setColor(55,255,155,255)
+					love.graphics.rectangle("line",
+										goal.x-goal.w/2,
+										goal.y-goal.h/2,
+										goal.w,
+										goal.h)
+				else
+					love.graphics.setColor(15,5,55,255)
+					love.graphics.rectangle("fill",
+										goal.x-goal.w/2,
+										goal.y-goal.h/2,
+										goal.w,
+										goal.h)
+					love.graphics.setColor(155,55,255,255)
+					love.graphics.rectangle("line",
+										goal.x-goal.w/2,
+										goal.y-goal.h/2,
+										goal.w,
+										goal.h)
+				end
+			end
+
 			for k,payload in pairs(gRemoteView.plds) do
 				if payload.t == 0 then
 					love.graphics.setColor(95,255,195,255)

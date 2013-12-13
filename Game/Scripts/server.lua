@@ -5,6 +5,7 @@ require("util/mathutil")
 require("ship")
 require("physics")
 require("payload")
+require("goal")
 require("obstacle")
 require("render")
 require("network")
@@ -19,6 +20,7 @@ bodies = {} --ships, payloads, etc
 to_respawn = {}
 bullets = {}
 obstacles = {}
+goals = {}
 
 gFrameID = 0
 
@@ -189,6 +191,14 @@ function package()
 	end
 	pkg = endpacktable(pkg)
 
+	pkg = beginpacktable(pkg, 'goals')
+	for k,body in pairs(goals) do
+		pkg = beginpacktable(pkg, k)
+		pkg = body:Pack(pkg)
+		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
+
 	pkg = pack(pkg, 'frame_id', gFrameID)
 	pkg = endpack(pkg)
 	for i,client in pairs(gServer.clients) do
@@ -201,6 +211,11 @@ function GenerateLevel()
 	print('Generating Level.')
 
 	arena = Arena(1600, 1600)
+
+	goals = {
+		Goal(0, Vector2(20,arena.height/2), 40, 600),
+		Goal(1, Vector2(arena.width-20,arena.height/2), 40, 600),
+	}
 
 	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
