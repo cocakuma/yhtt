@@ -58,6 +58,7 @@ end
 gLocalSoundScale = 1.0
 gRemoteSoundScale = 0.4
 
+gPlayCountdown = true
 gQueuedFrames = 0
 gClientState = 'ok'
 gShipSounds = {}
@@ -356,6 +357,12 @@ function client_draw()
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40+1, Renderer.offset_y+40+1)
 					love.graphics.setColor(255,255,255,255)
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40, Renderer.offset_y+40)
+					if gRemoteView.game.t > 1.2 then 
+						gPlayCountdown = true
+					elseif gPlayCountdown then
+						gPlayCountdown = false
+						SOUNDS:PlaySound("sfx.ingame.countdown", 1.0)
+					end
 				else
 
 					for i=1,gRemoteView.game.st do
