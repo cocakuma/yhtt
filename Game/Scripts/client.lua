@@ -56,6 +56,7 @@ function sendinput(client)
 end
 
 gQueuedFrames = 0
+gClientState = 'ok'
 function client_draw()
 	local start_time = socket.gettime()
 
@@ -67,30 +68,35 @@ function client_draw()
 	updateclient(gClient)		
 	
 	local message_count = messagecount(gClient, 'view')
-	local message = nextmessage(gClient, 'view')
 	gQueuedFrames = message_count - 1
-	if message == nil then
-		print('FPS: Running ahead!')
-		while message_count < 2 do
-			updateclient(gClient)
-			message_count = messagecount(gClient, 'view')
-		end
-		message = nextmessage(gClient, 'view')
+	if message_count == 0 then
+		gClientState = 'ahead'
+	elseif message_count > 4 then
+		gClientState = 'behind'
 	end
 
-	if message_count > 4 then
-		print('FPS: Lagging behind!')
+	if gClientState ~= 'ok' then
+		print('Client State: '..gClientState )
+	end
+
+	if gClientState == 'ahead' then
+		if message_count > 2 then 
+			gClientState = 'ok'
+		end
+	elseif gClientState == 'behind' then
 		while message_count > 3 do		
-			message = nextmessage(gClient, 'view')
+			nextmessage(gClient, 'view')
 			message_count = messagecount(gClient, 'view')
 		end
+		gClientState = 'ok'
+	end	
+
+	if gClientState == 'ok' then
+		local message = nextmessage(gClient, 'view')
+		if message then
+			gRemoteView = unpack(1, message)
+		end
 	end
-
-	if message then
-		gRemoteView = unpack(1, message)
-	end
-
-
 	
 	if gRemoteView then
 		Renderer:Draw(function()	
