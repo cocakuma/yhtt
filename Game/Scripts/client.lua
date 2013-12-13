@@ -399,10 +399,14 @@ function client_draw()
 							love.graphics.circle("line", xOffset, yOffset, boost_Rad)
 
 							if i <= ship.b then
+								local a = maxAlpha
+								if i == ship.b and ship.se_bst then
+									a = lerp(0, maxAlpha, ship.bt/3)
+								end
 								if ship.t == 0 then
-									love.graphics.setColor(55,255,155,maxAlpha)
+									love.graphics.setColor(55,255,155,a)
 								else
-									love.graphics.setColor(155,55,255,maxAlpha)
+									love.graphics.setColor(155,55,255,a)
 								end
 								love.graphics.circle("fill", xOffset, yOffset, boost_Rad)
 							end
