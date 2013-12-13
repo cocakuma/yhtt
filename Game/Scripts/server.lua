@@ -46,7 +46,9 @@ function receiveinput(client)
 	while message do
 		local input = unpack(1, message)
 		message = nextmessage(client, 'input')
-		if not client.ID then
+		if bodies[input.cid] then
+			client.ID = input.cid
+		elseif client.ID == nil then
 			local ship = Ship(10, 10, 0)
 			client.ID = ship.ID	
 			send(client, tostring(client.ID), 'ID')

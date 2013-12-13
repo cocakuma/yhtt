@@ -49,6 +49,8 @@ function sendinput(client)
 		pkg = pack(pkg, 'm_l', 1)
 	end
 
+	pkg = pack(pkg, 'cid', gRemoteID)
+
 	pkg = endpack(pkg)
 	send(client, pkg, 'input')
 end
@@ -58,7 +60,7 @@ function client_draw()
 	local start_time = socket.gettime()
 
 	local id_message = nextmessage(gClient, 'ID')
-	if id_message and gRemoteID == "0" then
+	if id_message then
 		gRemoteID = id_message
 	end
 	
