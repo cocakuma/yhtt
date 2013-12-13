@@ -1,6 +1,6 @@
 function love.conf(t)
 
-	t.title = "TRIANGLES WILL KILL YOU"
+	t.title = "TRI"
 	t.screen.width = 1280
 	t.screen.height = 720
 	t.screen.fsaa = 3
