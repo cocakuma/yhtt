@@ -49,7 +49,13 @@ function updateclientinternal(client)
 	local coroutine = require('coroutine')
 	while 1 do
 		sendmessages(client)
+		if client.error then 
+			client = createnode(client.conn)
+		end
 		receivemessages(client)
+		if client.error then 
+			client = createnode(client.conn)
+		end		
 		coroutine.yield()
 	end	
 end
