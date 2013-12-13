@@ -350,9 +350,9 @@ function GenerateLevel()
 
 	local mirror = math.random() < 0.5
 	for i=1,10 do
-		local pos = Vector2(math.random()*(arena.width / 2), math.random()*arena.height)
 		local rad = math.random()*100+40
-		pos.x = pos.x + 45 + rad
+		local x = (40+rad)+(math.random()*((arena.width/2)-80-rad-rad))
+		local pos = Vector2(x, math.random()*arena.height)
 		Obstacle(pos.x, pos.y, rad)
 		Obstacle(arena.width-pos.x, (mirror and arena.height-pos.y or pos.y), rad)
 	end
