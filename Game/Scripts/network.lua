@@ -197,24 +197,27 @@ function nextmessage(node, t)
 end
 
 function beginpack()
-	return '{'
+	return {'{'}
 end
 
 function endpack(package)
-	return package..'},'
+	package[#package+1]='},'
+	return table.concat(package)
 end
 
 function beginpacktable(package, key)
-	return package..tostring(key)..'={'
+	package[#package+1]=tostring(key)..'={'
+	return package
 end
 
 function endpacktable(package)
-	return package..'},'
+	package[#package+1]='},'
+	return package
 end
 
 function pack(package, key, value)
-
-	return package..tostring(key)..'='..tostring(round(value))..','
+	package[#package+1]=tostring(key)..'='..tostring(round(value))..','
+	return package
 end
 
 function getip()
