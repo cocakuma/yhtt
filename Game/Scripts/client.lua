@@ -125,6 +125,7 @@ function client_draw()
 				end
 			end	
 
+			local forcefield_scale = (math.sin(socket.gettime()*6) + 1) / 2
 			local arena = gRemoteWorldView.arena
 			love.graphics.setColor(125,55,55,255)
 			local thickness = 5
@@ -164,6 +165,9 @@ function client_draw()
 			end
 
 			for k,payload in pairs(gRemoteView.plds) do
+
+				love.graphics.setColor(0,0,100 + 155 * forcefield_scale,255)
+				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 				if payload.t == 0 then
 					love.graphics.setColor(95,255,195,255)
 				elseif payload.t == 1 then
@@ -171,7 +175,7 @@ function client_draw()
 				else
 					love.graphics.setColor(255,255,255,255)
 				end
-				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad - 3, PAYLOAD_SIZE.segs )				
 				
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
@@ -261,9 +265,9 @@ function client_draw()
 				end
 			end
 
-			local scale = (math.sin(socket.gettime()*6) + 1) / 2
+			
 			for k,obstacle in pairs(gRemoteWorldView.obs) do
-				love.graphics.setColor(155 + 100*scale,0,0,255)
+				love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)
 			end
 
