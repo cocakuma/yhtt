@@ -228,8 +228,10 @@ function client_draw()
 					DrawTriangle(20*flameLen, 4, ship.x, ship.y, ship.a-math.pi, 10*flameLen+5, 0)
 				end
 
-				if k == gRemoteID then
+				if k == gRemoteID and not gSpectatorMode then
 					Renderer:SetCameraPos(ship.x, ship.y)
+				else
+					Renderer:SetCameraPos(arena.w / 2, arena.h/2)
 				end
 			end
 
@@ -336,8 +338,18 @@ end
 
 
 gShowProfiling = false
+gSpectatorMode = false
 function love.keypressed(key)
 	if key == 'f2' then
 		gShowProfiling = not gShowProfiling
 	end
+	if key == 'f10' then
+		gSpectatorMode = not gSpectatorMode
+		if gSpectatorMode then
+			Renderer:ZoomOut()
+		else
+			Renderer:ZoomIn()
+		end
+	end
 end
+

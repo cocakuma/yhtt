@@ -12,9 +12,9 @@ Renderer.camera = {
 	zoom = {
 		default = 1,
 		current = 1,
-		max = 1.5,
+		max = 3,
 		min = 0.1,
-		increment = 0.05,
+		increment = 0.6,
 	},
 	default_line_width = 2,
 }
