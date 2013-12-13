@@ -267,6 +267,7 @@ function Attachable:Attach()
 
 	if best then
 		local offset = pos - best.position
+		self.se_attach = true
 		best:GetChild(self, offset)
 		if best.OnAttached then
 			best:OnAttached(self)

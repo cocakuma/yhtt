@@ -175,6 +175,10 @@ function Ship:Pack(pkg)
 		pkg = pack(pkg, 'se_sht', 1)
 		self.snd_event_shoot = false
 	end
+	if self.se_attach then
+		pkg = pack(pkg, 'se_atch', 1)
+		self.se_attach = false
+	end
 	if self.boosting then
 		pkg = pack(pkg, 'se_bst', 1)
 	end	
