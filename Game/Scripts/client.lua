@@ -55,6 +55,9 @@ function sendinput(client)
 	send(client, pkg, 'input')
 end
 
+gLocalSoundScale = 1.0
+gRemoteSoundScale = 0.4
+
 gQueuedFrames = 0
 gClientState = 'ok'
 function client_draw()
@@ -103,8 +106,9 @@ function client_draw()
 			gRemoteView = unpack(1, message)
 			
 			for k,ship in pairs(gRemoteView.ships) do
+				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
 				if ship.se_sht then
-					SOUNDS:PlaySound("sfx.ingame.ship.shoot")
+					SOUNDS:PlaySound("sfx.ingame.ship.shoot", sound_scale)
 				end
 			end
 		end
@@ -349,7 +353,7 @@ end
 local playing_music = false
 function client_update(dt)
 	if not playing_music then
-		SOUNDS:PlaySound("music.game")
+		SOUNDS:PlaySound("music.game", 1.0)
 		playing_music = true
 	end
 	sendinput(gClient)

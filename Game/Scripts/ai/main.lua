@@ -3,16 +3,16 @@ local client = require('client')
 
 local gClients = {}
 
-function defaultinput(useMouse)
-	local keys = { 'd', 'a', 'w', ' ', 'f' }
-	if useMouse then
-		keys = {' ', 'f'}
-	end
-	local input = {}
-	for i,k in pairs(keys) do
-		input[k] = false
-	end	
-	return input
+function sendaiinput(client)
+	local input = defaultinput()
+
+	local pkg = beginpack()
+	pkg = pack(pkg, ' ', 1)
+
+	pkg = pack(pkg, 'cid', 2)
+
+	pkg = endpack(pkg)
+	send(client, pkg, 'input')
 end
 
 function love.load()
@@ -23,7 +23,7 @@ end
 
 function love.update( dt)
 	for i,v in pairs(gClients) do
-		sendinput(v)
+		sendaiinput(v)
 		updateclient(v)
 		clearmessages(v)
 	end	

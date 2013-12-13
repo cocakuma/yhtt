@@ -1,10 +1,11 @@
 local easing = require "util/easing"
 local SoundInstance = class("SoundInstance")
 
-function SoundInstance:init(def, source)
+function SoundInstance:init(def, source, volume_scale)
 	self.def = def
 	self.source = source
 	self.timestart = love.timer.getTime()
+	self.volume_scale = volume_scale
 end
 
 function SoundInstance:__tostring()
@@ -28,7 +29,7 @@ function SoundInstance:Update(dt)
 		end
 	end
 
-	local v = base_volume * self.def.mixnode.network_volume
+	local v = base_volume * self.def.mixnode.network_volume * self.volume_scale
 	--print(self.def, v, self.def.mixnode.name)
 	self.source:setVolume(v)
 end

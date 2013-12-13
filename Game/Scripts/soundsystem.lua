@@ -75,7 +75,7 @@ function SoundSystem:Update(dt)
 
 end
 
-function SoundSystem:PlaySound(name)
+function SoundSystem:PlaySound(name, volume_scale)
 	local def = self.sounds[name]
 	
 	if self.numbyname[def.name] and self.numbyname[def.name] >= def.maxplaybacks then
@@ -100,13 +100,14 @@ function SoundSystem:PlaySound(name)
 			source:setPitch(pitch)
 		end
 
+		local volume = 1
 		if def.volume_min and self.volume_max then
-			local volume = def.volume_min+math.random()*(def.volume_max-def.volume_min)
-			source:setVolume(volume)
+			volume = def.volume_min+math.random()*(def.volume_max-def.volume_min)
 		end
+		--source:setVolume(volume)
 
 		source:play()
-		local instance = SoundInstance(def, source)
+		local instance = SoundInstance(def, source, volume_scale)
 		self.numbyname[def.name] = self.numbyname[def.name] and self.numbyname[def.name] + 1 or 1
 		self.bydef[def.name] = self.bydef[def.name] or {}
 		self.bydef[def.name][instance] = true
