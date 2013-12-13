@@ -127,7 +127,7 @@ function client_draw()
 
 			local forcefield_scale = (math.sin(socket.gettime()*6) + 1) / 2
 			local arena = gRemoteWorldView.arena
-			love.graphics.setColor(125,55,55,255)
+			love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)
 			local thickness = 5
 			love.graphics.rectangle("fill", -thickness, -thickness, thickness, arena.h + thickness*2)
 			love.graphics.rectangle("fill", -thickness, -thickness, arena.w + thickness*2, thickness)
