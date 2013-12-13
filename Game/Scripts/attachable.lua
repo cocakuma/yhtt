@@ -239,19 +239,11 @@ function Attachable:AttachCooldown(dt)
 end
 
 function Attachable:Attach()
-	local pos = self.position
+	if not self.canAttach then
+		return
+	end
 
-	-- for k,v in pairs(payloads) do
-	-- 	if v and (v.friendly or v.neutral) then
-	-- 		local distsq = pos:DistSq(v.position)
-	-- 		if distsq <= (TUNING.SHIP.MAX_ATTACH_DISTANCE)^2 then
-	-- 			--Congrats, you found something. Attach to it!
-	-- 			local offset = v.position - pos
-	-- 			v:GetChild(self, offset)
-	-- 			break
-	-- 		end
-	-- 	end
-	-- end
+	local pos = self.position
 	
 	local best = nil
 	local dist = TUNING.SHIP.MAX_ATTACH_DISTANCE^2
@@ -295,6 +287,12 @@ end
 function Attachable:Detach()
 	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
+		if self.OnDetached then
+			self:OnDetached(v.child)
+		end
+		if v.child.OnDetached then
+			v.child:OnDetached(self)
+		end
 	end
 	self.wantsToDetach = true
 end

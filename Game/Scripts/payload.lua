@@ -19,6 +19,10 @@ end
 function Payload:OnDetached(other)
 	print(self.ID,"resetting payload team to")
 	self.team = -1
+	for k,v in pairs(self.children) do
+		self.team = v.child.team
+		break
+	end
 end
 
 function Payload:Collide(other)
@@ -38,7 +42,7 @@ function Payload:Hit(bullet)
 	local parent = self:GetTrueParent()
 	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 2)/self:GetMass()
 
-	self.tryDetach = true
+	self:Detach()
 end
 
 function Payload:Destroy()
