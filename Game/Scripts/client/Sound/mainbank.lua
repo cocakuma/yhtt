@@ -5,7 +5,7 @@ return SoundBank
 {
 	music =
 	{
-		game = SoundDef{
+		warmup = SoundDef{
 			samples={"Sound/thehardestspace.ogg"},
 			looping = true,
 			stream = true,
@@ -14,6 +14,16 @@ return SoundBank
 			volume_min = 0.3,
 			volume_max = 0.3,
 		},
+
+		game = SoundDef{
+			samples={"Sound/thehardestspace.ogg"},
+			looping = true,
+			stream = true,
+			fadeintime = 1,
+			fadeouttime = 1,
+			volume_min = 0.3,
+			volume_max = 0.3,
+		},		
 	},
 
 
