@@ -31,7 +31,7 @@ to_respawn = {}
 bullets = {}
 obstacles = {}
 goals = {}
-explosions = {}
+particlesystems = {}
 
 gFrameID = 0
 
@@ -98,6 +98,10 @@ function server_update(dt)
 
 	for k,bullet in pairs(bullets) do
 		bullet:Update(dt)
+	end
+
+	for k, ptcl in pairs(particlesystems) do
+		ptcl:Update(dt)
 	end
 
 	-- post-update
@@ -220,6 +224,14 @@ function package()
 
 	pkg = beginpacktable(pkg,'arena')
 	pkg = arena:Pack(pkg)
+	pkg = endpacktable(pkg)
+
+	pkg = beginpacktable(pkg, 'ptcl')
+	for k,obs in pairs(particlesystems) do
+		pkg = beginpacktable(pkg, k)
+		pkg = obs:Pack(pkg)
+		pkg = endpacktable(pkg)
+	end
 	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'obs')

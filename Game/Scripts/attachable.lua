@@ -1,5 +1,6 @@
 require("util/vector2")
 require("util/class")
+require("particlesystem")
 
 class("Attachable")
 

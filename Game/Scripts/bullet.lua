@@ -8,11 +8,14 @@ function Bullet:init(ship)
 	bullets[self.ID] = self
 
 
+	self.particle_type = 0
+
 	self.speed = TUNING.BULLET.SPEED
 	self.thrustForce = TUNING.BULLET.THRUSTFORCE
 	self.thrust = Vector2(0,0)
 	self.ship = ship
 	self.angle = ship.angle or 0 --rads
+	self.team = ship.team
 
 	self.angle = self.angle + (math.random() * TUNING.BULLET.RAND/2) - (math.random() * TUNING.BULLET.RAND)
 
@@ -44,11 +47,12 @@ end
 function Bullet:Pack(pkg)
 	pkg = pack(pkg, 'x', self.position.x)
 	pkg = pack(pkg, 'y', self.position.y)
-	pkg = pack(pkg, 't', self.ship.team)
+	pkg = pack(pkg, 't', self.team)
 	pkg = pack(pkg, 'a', self.angle)
 	return pkg
 end	
 
 function Bullet:Destroy()
+	ParticleSystem(self)
 	bullets[self.ID] = nil
 end

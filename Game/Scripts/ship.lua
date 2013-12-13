@@ -1,7 +1,7 @@
 require("util/vector2")
 require("util/class")
 require("bullet")
-require("explosion")
+
 require("attachable")
 
 class("Ship", Attachable)
@@ -14,6 +14,8 @@ function Ship:init(x, y, angle, team)
 	self.angle = angle --rads
 
 	self.team = self.ID % 2
+
+	self.particle_type = 1
 
 	self.health = 1 -- 100% always
 	
@@ -62,15 +64,6 @@ function Ship:Shoot()
 	local bullet = Bullet(self)
 	self.currentAmmoClip = self.currentAmmoClip - 1
 	self.shotoffset = self.shotoffset * -1
-	
-	local data =
-	{
-		pos = deepcopy(self.position),
-		exp_type = 1,
-		team = self.team,
-	}
-
-	Explosion(data)
 end
 
 function Ship:HandleInput( )
@@ -192,6 +185,7 @@ function Ship:TakeDamage(damage)
 end
 
 function Ship:Die()
+	ParticleSystem(self)	
 	self:Detach()
 	bodies[self.ID] = nil
 	to_respawn[self.ID] = {ship=self, remaining=TUNING.SHIP.RESPAWN_TIME}

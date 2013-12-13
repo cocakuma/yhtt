@@ -22,13 +22,12 @@ local ship =
 }
 
 function Explosion:init(data)
-	self.ID = NextID()
-	explosions[self.ID] = self
+	explosions[self] = self
 
-	self.pos = data.pos
+	self.position = data.position
 	self.team = data.team
-	
-	if data.exp_type == 1 then
+	self.parent = data.parent
+	if data.particle_type == 1 then
 		data = ship	
 	else
 		data = bullet
@@ -49,16 +48,12 @@ function Explosion:init(data)
 	end
 end
 
-function Explosion:MakeExplosion(ship)
-
-end
-
 function Explosion:CreateParticle()
 	local particle = {}
 	local angle = math.random() * 2 * math.pi
 	local dir = Vector2(math.cos(angle), math.sin(angle))
 	particle.velocity = dir * (self.speed + ((math.random() * self.speed_var/2) - (math.random() * self.speed_var)))
-	particle.pos = self.pos
+	particle.position = self.position
 	return particle
 end
 
@@ -67,7 +62,7 @@ function Explosion:Update(dt)
 	self.alpha = lerp(255, 0, self.age/self.lifetime)
 	
 	for k,v in pairs(self.particles) do
-		v.pos = v.pos + (v.velocity * dt)
+		v.position = v.position + (v.velocity * dt)
 	end
 
 	if self.age > self.lifetime then
@@ -76,21 +71,6 @@ function Explosion:Update(dt)
 
 end
 
-function Explosion:Pack(pkg)
-	pkg = pack(pkg, 'a', self.alpha)
-	pkg = pack(pkg, 't', self.team)
-	pkg = pack(pkg, 's', self.size)
-	pkg = beginpacktable(pkg, 'p')
-		for k,v in pairs(self.particles) do
-			pkg = beginpacktable(pkg, k)
-			pkg = pack(pkg, 'x', v.pos.x)
-			pkg = pack(pkg, 'y', v.pos.y)		
-			pkg = endpacktable(pkg)
-		end	
-	pkg = endpacktable(pkg)	
-	return pkg
-end	
-
 function Explosion:Destroy()
-	explosions[self.ID] = nil
+	explosions[self] = nil
 end

@@ -10,6 +10,7 @@ require("obstacle")
 require("render")
 require("network")
 require("input")
+require("explosion")
 TUNING = require("tuning")
 
 gClient = nil
@@ -90,7 +91,26 @@ function client_draw()
 
 	
 	if gRemoteView then
-		Renderer:Draw(function()		
+		Renderer:Draw(function()	
+
+			for k,ptcl in pairs(gRemoteView.ptcl) do
+				local makeNew = true
+				for k,v in pairs(explosions) do
+					if v.parent == ptcl.p then
+						makeNew = false
+					end
+				end
+				if makeNew then
+					local data = 
+					{
+						position = Vector2(ptcl.x, ptcl.y),
+						team = ptcl.t,
+						parent = ptcl.p,
+						particle_type = ptcl.typ,
+					}
+					Explosion(data)
+				end
+			end	
 
 			local arena = gRemoteView.arena
 			love.graphics.setColor(125,55,55,255)
@@ -222,7 +242,7 @@ function client_draw()
 				end
 
 				for k,v in pairs(expl.particles) do
-					love.graphics.rectangle("fill", v.pos.x, v.pos.y, expl.size, expl.size)
+					love.graphics.rectangle("fill", v.position.x, v.position.y, expl.size, expl.size)
 				end
 			end
 
