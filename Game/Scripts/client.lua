@@ -358,7 +358,7 @@ end
 local playing_music = false
 function client_update(dt)
 	if not playing_music then
-		SOUNDS:PlaySound("music.game", 1.0)
+		SOUNDS:PlaySound("music.game", 0.3)
 		playing_music = true
 	end
 	sendinput(gClient)
