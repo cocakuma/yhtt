@@ -29,6 +29,15 @@ function Ship:init(x, y, angle, team, ID)
 	self.turnLeft = false
 	self.turnRight = false
 
+	self.numBoosts = 3
+	self.useBoost = false
+	
+	self.boostDuration = 3
+	self.boostDuration_timer = self.boostDuration
+	
+	self.boostCooldown = self.boostDuration + 0.5
+	self.boostCooldown_timer = self.boostCooldown
+
 	self.mouse = nil
 	
 	self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
@@ -42,6 +51,14 @@ function Ship:init(x, y, angle, team, ID)
 	self.shotoffset = Vector2(0, 4)
 
 	self:Respawn()
+end
+
+function Ship:EndBoost()
+
+end
+
+function Ship:StartBoost()
+
 end
 
 function Ship:ReloadClip(dt)
