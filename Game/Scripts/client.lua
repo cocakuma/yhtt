@@ -101,6 +101,12 @@ function client_draw()
 		local message = nextmessage(gClient, 'view')
 		if message then
 			gRemoteView = unpack(1, message)
+			
+			for k,ship in pairs(gRemoteView.ships) do
+				if ship.se_sht then
+					SOUNDS:PlaySound("sfx.ingame.ship.shoot")
+				end
+			end
 		end
 	end
 	
@@ -355,7 +361,7 @@ function client_update(dt)
 	SOUNDS.mixer:SetMix("normal")
 	SOUNDS:Update(dt)
 	SOUNDS.mixer:Update(dt)
-	print("musicVol",SOUNDS.musicnode.network_volume)
+	--print("musicVol",SOUNDS.musicnode.network_volume)
 end
 
 

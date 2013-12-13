@@ -61,6 +61,7 @@ function Ship:Shoot()
 	local bullet = Bullet(self)
 	self.currentAmmoClip = self.currentAmmoClip - 1
 	self.shotoffset = self.shotoffset * -1
+	self.snd_event_shoot = true
 end
 
 function Ship:HandleInput( )
@@ -75,20 +76,16 @@ function Ship:HandleInput( )
 		self.turnRight = true
 	end
 	if self.input["w"] == 1 then
-		self.thrusting = true
-		SOUND:PlaySound("sfx.ingame.ship.thrust")
+		self.thrusting = true		
 	end
 	if self.input[" "] == 1 then
-		self.shoot = true
-		SOUND:PlaySound("sfx.ingame.ship.shoot")
+		self.shoot = true		
 	end
 	if self.input["f"] == 1 then
 		if not self.parent and not next(self.children) then
-			self.tryAttach = true
-			SOUND:PlaySound("sfx.ingame.ship.attach")
+			self.tryAttach = true			
 		else
-			self.tryDetach = true
-			SOUND:PlaySound("sfx.ingame.ship.detach")
+			self.tryDetach = true			
 		end
 	end
 
@@ -157,7 +154,7 @@ function Ship:Update(dt)
 	end
 
 	if self.shoot and self.canShoot and self.currentAmmoClip > self.minAmmoClip then
-		self:Shoot()
+		self:Shoot()		
 	end
 	
 	self.shoot = false
@@ -171,6 +168,10 @@ function Ship:Pack(pkg)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'h', self.health)
 	pkg = pack(pkg, 'it', self.didThrust and 1 or 0) --"input: thrust"
+	if self.snd_event_shoot then
+		pkg = pack(pkg, 'se_sht', 1)
+		self.snd_event_shoot = false
+	end
 	self.didThrust = false;
 	return pkg
 end
