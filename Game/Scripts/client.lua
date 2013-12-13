@@ -104,7 +104,24 @@ function client_draw()
 	if gClientState == 'ok' then
 		local message = nextmessage(gClient, 'view')
 		if message then
+			local check_score = gRemoteView and gRemoteView.game
+			local score_0 = 0
+			local score_1 = 0
+			if check_score then
+				score_0 = gRemoteView.game.s0
+				score_1 = gRemoteView.game.s1				
+			end
+
 			gRemoteView = unpack(1, message)
+
+			if check_score then
+				if score_0 < gRemoteView.game.s0 then
+					SOUNDS:PlaySound("sfx.ingame.score_point", 2.0)
+				end
+				if score_1 < gRemoteView.game.s1 then
+					SOUNDS:PlaySound("sfx.ingame.score_point", 2.0)
+				end				
+			end
 			
 			for k,ship in pairs(gRemoteView.ships) do
 				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
