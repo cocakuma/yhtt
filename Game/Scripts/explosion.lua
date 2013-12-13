@@ -5,18 +5,18 @@ class("Explosion")
 
 local bullet = 
 {
-	size = 2,
+	size = 3,
 	speed = 15,
 	speed_var = 14,
-	num = 10,
+	num = 20,
 	lifetime = 1,
 }
 
 local ship =
 {
-	size = 4,
-	speed = 20,
-	speed_var = 19,
+	size = 6,
+	speed = 30,
+	speed_var = 25,
 	num = 30,
 	lifetime = 2,
 }

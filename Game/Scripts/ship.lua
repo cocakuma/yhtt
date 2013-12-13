@@ -17,35 +17,6 @@ function Ship:init(x, y, angle, team, ID)
 	self.mouse = nil
 
 	self:ResetShip()
-	-- self.health = 1 -- 100% always
-	
-	-- self.thrustForce = TUNING.SHIP.THRUST
-	-- self.drag = TUNING.SHIP.DRAG
-	-- self.turnSpeed = TUNING.SHIP.TURNSPEED
-
-	-- self.thrusting = false
-	-- self.didThrust = false
-	-- self.turnLeft = false
-	-- self.turnRight = false
-
-	-- self.numBoosts = 3
-	-- self.tryBoost = false
-	-- self.boosting = false
-	
-	-- self.boostDuration = 3
-	-- self.boostDuration_timer = self.boostDuration
-
-
-	
-	-- self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
-	-- self.minAmmoClip = 0
-	-- self.currentAmmoClip = self.maxAmmoClip
-	-- self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
-	-- self.reload_timer = self.reloadSpeed
-	-- self.shoot = false
-	-- self.canShoot = true
-	-- self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
-	-- self.shotoffset = Vector2(0, 4)
 
 	self:Respawn()
 end
@@ -140,6 +111,8 @@ function Ship:HandleInput( )
 end
 
 function Ship:Update(dt)
+
+	self.lifetime = self.lifetime + dt
 
 	if self.mouse ~= nil then
 		self.angle = math.atan2(self.mouse.y, self.mouse.x)
@@ -238,7 +211,7 @@ function Ship:Die()
 	self:Detach()
 	self:ResetShip()
 	bodies[self.ID] = nil
-	to_respawn[self.ID] = {ship=self, remaining=TUNING.SHIP.RESPAWN_TIME}
+	to_respawn[self.ID] = {ship=self, remaining= TUNING.SHIP.RESPAWN_TIME}
 end
 
 function Ship:TryRespawn(dt)
@@ -251,7 +224,6 @@ end
 function Ship:ResetShip()
 
 	self.input = {}
-
 	self.angle = 0
 
 	self.boosting = false
@@ -287,6 +259,8 @@ function Ship:ResetShip()
 	self.canShoot = true
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 	self.shotoffset = Vector2(0, 4)
+
+	self.lifetime = 0
 	
 end
 
