@@ -8,6 +8,7 @@ end
 local tick_time = 1 / 30
 local last_tick = socket.gettime()
 local gDt = 0
+local gUpdate = 0
 function love.update()	
 	while socket.gettime() - last_tick < tick_time do
 		updateserver(gServer)
@@ -15,7 +16,9 @@ function love.update()
 	local this_tick = socket.gettime()	
 	gDt = this_tick - last_tick
 	last_tick = this_tick
+	local sim_start = this_tick
 	server_update(tick_time)
+	gUpdate = socket.gettime() - sim_start
 end
 
 function love.draw()
@@ -26,5 +29,7 @@ function love.draw()
 	y = y + y_delta
 	love.graphics.print("Dt: "..gDt, x, y)
 	y = y + y_delta
+	love.graphics.print("Update: "..gUpdate, x, y)
+	y = y + y_delta	
 end
 
