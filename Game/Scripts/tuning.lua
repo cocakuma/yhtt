@@ -3,7 +3,7 @@ return
 	SHIP =
 	{
 		THRUST = 100,
-		DRAG = -0.01,
+		DRAG = -0.0065,
 		TURNSPEED = 3,
 		SHOOT_COOLDOWN = 0.1,
 		ATTACH_COOLDOWN = .5,
