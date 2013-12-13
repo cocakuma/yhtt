@@ -167,6 +167,9 @@ end
 
 function Ship:Pack(pkg)
 	pkg = self._base.Pack(self, pkg)
+	pkg = pack(pkg, 'ammo', self.currentAmmoClip)
+	pkg = pack(pkg, 'rl', self.reload_timer)
+	pkg = pack(pkg, 'b', self.numBoosts)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'h', self.health)
 	pkg = pack(pkg, 'it', self.didThrust and 1 or 0) --"input: thrust"

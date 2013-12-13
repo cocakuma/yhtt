@@ -255,6 +255,8 @@ function client_draw()
 					end
 				end
 
+
+
 				--team color
 				if ship.t == 0 then
 					love.graphics.setColor(55,255,155,255)
@@ -349,6 +351,69 @@ function client_draw()
 		
 		function()
 			if gRemoteView.game then
+
+				for k,ship in pairs(gRemoteView.ships) do
+					if k == gRemoteID then
+						--This is your ship, get info from it
+						local maxAlpha = 180
+						local yOffset = Renderer.offset_y + (Renderer.offset_y - 50)
+						local xOffset = Renderer.offset_x
+						local ammo_Width = 8
+						local ammo_Height = 20
+						xOffset = xOffset - (ammo_Width * 10) + (ammo_Width*.5)
+
+						local prevWidth = love.graphics.getLineWidth()
+						love.graphics.setLineWidth(1)			
+
+						for i= 1, TUNING.SHIP.MAX_AMMO_CLIP do
+							love.graphics.setColor(255,255,255,255)
+							love.graphics.rectangle("line", xOffset, yOffset, ammo_Width, ammo_Height)
+
+							if i <= ship.ammo then
+								if ship.t == 0 then
+									love.graphics.setColor(55,255,155,maxAlpha)
+								else
+									love.graphics.setColor(155,55,255,maxAlpha)
+								end
+								love.graphics.rectangle("fill", xOffset, yOffset, ammo_Width, ammo_Height)
+							end
+
+							if i == ship.ammo + 1 then
+								local a = lerp(maxAlpha, 0, ship.rl/TUNING.SHIP.RELOAD_SPEED)
+								if ship.t == 0 then
+									love.graphics.setColor(55,255,155,a)
+								else
+									love.graphics.setColor(155,55,255,a)
+								end
+								love.graphics.rectangle("fill", xOffset, yOffset, ammo_Width, ammo_Height)
+							end
+							xOffset = xOffset + (ammo_Width * 2)
+						end
+
+						local yOffset = Renderer.offset_y + (Renderer.offset_y - 75)
+						local xOffset = Renderer.offset_x
+						local boost_Rad = 10
+						xOffset = xOffset - (boost_Rad * 3)
+						for i = 1, 3 do
+							love.graphics.setColor(255,255,255,255)
+							love.graphics.circle("line", xOffset, yOffset, boost_Rad)
+
+							if i <= ship.b then
+								if ship.t == 0 then
+									love.graphics.setColor(55,255,155,maxAlpha)
+								else
+									love.graphics.setColor(155,55,255,maxAlpha)
+								end
+								love.graphics.circle("fill", xOffset, yOffset, boost_Rad)
+							end
+
+							xOffset = xOffset + (boost_Rad * 3)
+						end
+
+						love.graphics.setLineWidth(prevWidth)
+					end					
+				end
+
 				if gRemoteView.game.f == FLOW.WARMUP then
 					if gGameSong then 
 						gGameSong:Stop()
@@ -433,6 +498,9 @@ function client_draw()
 				love.graphics.print(instructionstring, 30+1, love.graphics.getHeight() - 30+1)
 				love.graphics.setColor(255,255,255,255)
 				love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)
+
+
+
 
 			end
 			
