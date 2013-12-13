@@ -1,6 +1,7 @@
 require("util/strict")
 require("constants")
 require("util/util")
+require("util/vector2")
 require("util/mathutil")
 require("ship")
 require("physics")
@@ -20,39 +21,35 @@ local gRenderDt = 0
 
 paused = false
 
-local useMouse = false
+local lastMouse = Vector2(0,0)
 
 function love.keypressed(key)
 	if key == "p" then
 		paused = not paused
 	end
-	if key == "w" then
-		useMouse = false
-	end
-end
-
-function love.mousepressed()
-	useMouse = true
 end
 
 function sendinput(client)
-	local input = defaultinput(useMouse)
+	local input = defaultinput()
 	local pkg = beginpack()
-	for k,v in pairs(input) do		
+	for k,v in pairs(input) do
 		if love.keyboard.isDown(k) then
 			pkg = pack(pkg, k, 1)
-		else
-			pkg=pack(pkg, k, 0)
 		end
 	end
-
-	pkg = pack(pkg, 'm', useMouse and 1 or 0)
 	
-	if useMouse then
-		pkg = pack(pkg, 'm_x', love.mouse.getX())
-		pkg = pack(pkg, 'm_y', love.mouse.getY())
-		pkg = pack(pkg, 'm_r', love.mouse.isDown("r") and 1 or 0)
-		pkg = pack(pkg, 'm_l', love.mouse.isDown("l") and 1 or 0)
+	local mouse = Vector2(love.mouse.getX(), love.mouse.getY())
+	if (lastMouse - mouse):Length() > 2.0 then
+		pkg = pack(pkg, 'm_x', love.mouse.getX() - Renderer.offset_x)
+		pkg = pack(pkg, 'm_y', love.mouse.getY() - Renderer.offset_y)
+	end
+	lastMouse = mouse
+
+	if love.mouse.isDown("r") then
+		pkg = pack(pkg, 'm_r', 1)
+	end
+	if love.mouse.isDown("l") then
+		pkg = pack(pkg, 'm_l', 1)
 	end
 
 	pkg = endpack(pkg)
