@@ -234,7 +234,7 @@ function client_draw()
 
 				if k == gRemoteID and not gSpectatorMode then
 					Renderer:SetCameraPos(ship.x, ship.y)
-				else
+				elseif gSpectatorMode then
 					Renderer:SetCameraPos(arena.w / 2, arena.h/2)
 				end
 			end
