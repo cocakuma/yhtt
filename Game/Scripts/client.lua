@@ -230,10 +230,23 @@ function client_draw()
 				love.graphics.setColor(155,155,155,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
 			end
+		end,
+		
+		function()
+			if gRemoteView.game then
+				if gRemoteView.game.w == 1 then
+					love.graphics.setColor(0,0,0,255)
+					love.graphics.print("WARMUP MODE", Renderer.offset_x+1, Renderer.offset_y+1)
+					love.graphics.setColor(255,255,255,255)
+					love.graphics.print("WARMUP MODE", Renderer.offset_x, Renderer.offset_y)
 
-
-
-
+					love.graphics.setColor(0,0,0,255)
+					love.graphics.print(gRemoteView.game.t, Renderer.offset_x+1, Renderer.offset_y+30+1)
+					love.graphics.setColor(255,255,255,255)
+					love.graphics.print(gRemoteView.game.t, Renderer.offset_x, Renderer.offset_y+30)
+				end
+			end
+			
 		end)
 	end
 

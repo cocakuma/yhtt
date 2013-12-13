@@ -142,7 +142,7 @@ function Renderer:Load()
 	--end
 end
 
-function Renderer:Draw(worldcb)
+function Renderer:Draw(worldcb, hudcb)
 
 	love.graphics.setBackgroundColor( 10, 0, 0)
 	love.graphics.clear()
@@ -164,7 +164,7 @@ function Renderer:Draw(worldcb)
 	love.graphics.setLineWidth(self.default_line_width)
 	-- now drawing in SCREEN space (HUD stuff)
 
-	--self:DrawHUD()
+	hudcb()
 
 end
 

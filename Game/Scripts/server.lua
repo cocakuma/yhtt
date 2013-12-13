@@ -15,6 +15,16 @@ TUNING = require("tuning")
 
 gServer = nil
 
+GAMESTATE = {
+	warmup = true,
+	warmupTime = TUNING.GAME.WARMUP_TIME,
+	pointsToWin = 2,
+	points = {
+		[0]=0,
+		[1]=0
+	},
+}
+
 arena = nil
 bodies = {} --ships, payloads, etc
 to_respawn = {}
@@ -62,6 +72,14 @@ function server_update(dt)
 
 	-- pre-update
 	-- check input and synchronize states
+	if GAMESTATE.warmup then
+		GAMESTATE.warmupTime = GAMESTATE.warmupTime - dt
+		if GAMESTATE.warmupTime <= 0 then
+			StartGame()
+		end
+	end
+
+
 	for k,info in pairs(to_respawn) do
 		info.ship:TryRespawn(dt)
 	end
@@ -155,11 +173,6 @@ function server_update(dt)
 	gFrameID = gFrameID + 1
 end
 
-pointsToWin = 2
-points = {
-	[0]=0,
-	[1]=0
-}
 function ScoreAgainst(team)
 	if team == 0 then
 		team = 1
@@ -167,25 +180,43 @@ function ScoreAgainst(team)
 		team = 0
 	end
 
-	points[team] = points[team] + 1
+	GAMESTATE.points[team] = GAMESTATE.points[team] + 1
 	print("Team",team,"scored a goal!")
-	print("Score is now T0:",points[0],"to T1:",points[1])
+	print("Score is now T0:",GAMESTATE.points[0],"to T1:",GAMESTATE.points[1])
 
-	if points[0] == pointsToWin then
+	if GAMESTATE.points[0] == GAMESTATE.pointsToWin then
 		EndGame(0)
-	elseif points[1] == pointsToWin then
+	elseif GAMESTATE.points[1] == GAMESTATE.pointsToWin then
 		EndGame(1)
 	end
 end
 
 function EndGame(winningTeam)
-	print("*\n*\n*\n* YAHOOO,", winningTeam, " WON THE GAME!")
+	ResetGame(true)
+end
+
+function StartGame()
+	ResetGame(false)
+end
+
+function ResetGame(warmup)
+	GAMESTATE.warmup = warmup
+	GAMESTATE.warmupTime = TUNING.GAME.WARMUP_TIME
+	GAMESTATE.points = {[0]=0,[1]=0}
 end
 
 gPackageDT = 0
 function package()
 	local start_time = socket.gettime()
 	local pkg = beginpack()
+
+	pkg = beginpacktable(pkg,'game')
+	pkg = pack(pkg, 'w', GAMESTATE.warmup and 1 or 0)
+	pkg = pack(pkg, 't', GAMESTATE.warmupTime)
+	pkg = pack(pkg, 's0', GAMESTATE.points[0])
+	pkg = pack(pkg, 's1', GAMESTATE.points[1])
+	pkg = pack(pkg, 'st', GAMESTATE.pointsToWin)
+	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg,'arena')
 	pkg = arena:Pack(pkg)
@@ -258,8 +289,8 @@ function GenerateLevel()
 		ship.input = defaultinput()
 	end
 
-	for i=1,pointsToWin*2 - 1 do
-		local pl = Payload(arena.width/2, i*arena.height/(pointsToWin*2))
+	for i=1,GAMESTATE.pointsToWin*2 - 1 do
+		local pl = Payload(arena.width/2, i*arena.height/(GAMESTATE.pointsToWin*2))
 	end	
 
 	local mirror = math.random() < 0.5
