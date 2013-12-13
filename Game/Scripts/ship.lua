@@ -182,6 +182,14 @@ function Ship:Pack(pkg)
 	return pkg
 end
 
+function Ship:OnDetached(other)
+	if self.thrusting or self.didThrust then
+		local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
+		local thrust = thrustVector * 100 * (self.boosting and 3 or 1)
+		self.velocity = self.velocity + thrust
+	end
+end
+
 function Ship:Collide(other)
 	local diff = self.position - other.position
 	diff.x = diff.x + math.random()*0.002-0.001
