@@ -171,7 +171,10 @@ function unpack(index, str)
 			key=string.sub(str, token_start, i - 1)	
 			token_start = i + 1
 		elseif s == ',' then
-			local val = tonumber(string.sub(str, token_start, i - 1))
+			local val = string.sub(str, token_start, i - 1)
+			if key ~= 'usr' then
+				val = tonumber(val)
+			end
 			t[key] = val
 			token_start = i + 1
 		elseif s == '}' then
@@ -229,7 +232,12 @@ function endpacktable(package)
 end
 
 function pack(package, key, value)
-	package[#package+1]=tostring(key)..'='..tostring(round(value))..','
+	if key == 'usr' then
+		package[#package+1]=tostring(key)..'='..value..','
+	else
+		package[#package+1]=tostring(key)..'='..tostring(round(value))..','
+	end
+	
 	return package
 end
 

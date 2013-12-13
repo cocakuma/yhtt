@@ -50,6 +50,7 @@ function sendinput(client)
 	end
 
 	pkg = pack(pkg, 'cid', gRemoteID)
+	pkg = pack(pkg, 'usr', gUser)
 
 	pkg = endpack(pkg)
 	send(client, pkg, 'input')
@@ -447,6 +448,7 @@ function client_draw()
 	end
 end
 
+gUser = 'TriKiller'
 function client_load()
 	gClient = startclient(getip(), getport())
 	Renderer:Load()	
@@ -454,6 +456,14 @@ function client_load()
 	SOUNDS = SoundSystem()
 	SOUNDS.mixer:LoadDefs("mixes")
 	SOUNDS:LoadBank( "mainbank" )
+
+	for k,v in pairs(arg) do
+		if string.len(v) > 5 then
+			if string.sub(v, 1, 5 ) == 'user=' then
+				gUser = string.sub(v,6)
+			end
+		end
+	end
 end
 
 
