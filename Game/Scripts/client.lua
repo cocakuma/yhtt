@@ -12,6 +12,7 @@ require("network")
 require("input")
 require("explosion")
 require("gamestate")
+require("soundsystem")
 TUNING = require("tuning")
 
 gClient = nil
@@ -337,14 +338,25 @@ end
 function client_load()
 	gClient = startclient(getip(), getport())
 	Renderer:Load()	
+	global("SOUNDS")
+	SOUNDS = SoundSystem()
+	SOUNDS:LoadBank( "mainbank" )
+	SOUNDS.mixer:LoadDefs("mixes")
 end
 
+local playing_music = false
 function client_update(dt)
+	if not playing_music then
+		SOUNDS:PlaySound("music.game")
+		SOUNDS.mixer:SetMix("normal")
+		playing_music = true
+	end
 	sendinput(gClient)
 	updateclient(gClient)	
 	for k,expl in pairs(explosions) do
 		expl:Update(dt)
 	end
+	SOUNDS:Update(dt)
 end
 
 

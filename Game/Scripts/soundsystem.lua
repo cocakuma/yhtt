@@ -48,7 +48,7 @@ end
 
 function SoundSystem:LoadBank(bankname)
 	if not self.banks[bankname] then
-		self.banks[bankname] = require("sounds/"..bankname)
+		self.banks[bankname] = require("Sound/"..bankname)
 		for k,v in pairs(self.banks[bankname].sounds) do
 			self.sounds[v.name] = v
 		end

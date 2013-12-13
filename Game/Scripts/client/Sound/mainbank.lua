@@ -9,7 +9,7 @@ return SoundBank
 			samples={"Sound/thehardestspace.ogg"},
 			looping = true,
 			stream = true,
-			fadeintime = 1,
+			fadeintime = 10,
 			fadeouttime = 1,
 		},
 	},
