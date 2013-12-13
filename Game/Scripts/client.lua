@@ -25,9 +25,6 @@ explosions = {}
 
 local lastMouse = Vector2(0,0)
 
-function love.keypressed(key)
-end
-
 function sendinput(client)
 	local input = defaultinput()
 	local pkg = beginpack()
@@ -338,3 +335,9 @@ function client_update(dt)
 end
 
 
+gShowProfiling = false
+function love.keypressed(key)
+	if key == 'f2' then
+		gShowProfiling = not gShowProfiling
+	end
+end

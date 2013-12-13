@@ -21,15 +21,17 @@ function love.draw()
 	last_tick = this_tick
 	client_draw()
 
-	local x = 1100
-	local y = 50
-	local y_delta = 20
-	love.graphics.print("Tick: "..round3(tick_time), x, y)
-	y = y + y_delta
-	love.graphics.print("DT: "..round3(gDt), x, y)
-	y = y + y_delta
-	love.graphics.print("Queued Frames: "..gQueuedFrames, x, y)
-	y = y + y_delta	
-	love.graphics.print("Render: "..round3(gRenderDt), x, y)
-	y = y + y_delta	
+	if gShowProfiling then 
+		local x = 1100
+		local y = 50
+		local y_delta = 20
+		love.graphics.print("Tick: "..round3(tick_time), x, y)
+		y = y + y_delta
+		love.graphics.print("DT: "..round3(gDt), x, y)
+		y = y + y_delta
+		love.graphics.print("Queued Frames: "..gQueuedFrames, x, y)
+		y = y + y_delta	
+		love.graphics.print("Render: "..round3(gRenderDt), x, y)
+		y = y + y_delta	
+	end
 end
