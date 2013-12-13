@@ -11,6 +11,7 @@ require("render")
 require("network")
 require("arena")
 require("input")
+require("gamestate")
 TUNING = require("tuning")
 
 gServer = nil
@@ -59,10 +60,15 @@ function server_update(dt)
 
 	-- pre-update
 	-- check input and synchronize states
-	if GAMESTATE.warmup then
+	if GAMESTATE.flow == FLOW.WARMUP then
 		GAMESTATE.warmupTime = GAMESTATE.warmupTime - dt
 		if GAMESTATE.warmupTime <= 0 then
 			StartGame()
+		end
+	elseif GAMESTATE.flow == FLOW.WIN_0 or GAMESTATE.flow == FLOW.WIN_1 then
+		GAMESTATE.warmupTime = GAMESTATE.warmupTime - dt
+		if GAMESTATE.warmupTime <= 0 then
+			ResetGame(true)
 		end
 	end
 
@@ -173,7 +179,7 @@ function ScoreAgainst(team)
 
 	GAMESTATE.points[team] = GAMESTATE.points[team] + 1
 	print("Team",team,"scored a goal!")
-	print("Score is now T0:",GAMESTATE.points[0],"to T1:",GAMESTATE.points[1])
+	print("Score is now T0:",GAMESTATE.points[0],"to T1:",GAMESTATE.points[1],"out of",GAMESTATE.pointsToWin,"to win.")
 
 	if GAMESTATE.points[0] == GAMESTATE.pointsToWin then
 		EndGame(0)
@@ -183,10 +189,17 @@ function ScoreAgainst(team)
 end
 
 function EndGame(winningTeam)
-	ResetGame(true)
+	print("****\nGAME OVER! Team", winningTeam, "wins!\n****")
+	if winningTeam == 0 then
+		GAMESTATE.flow = FLOW.WIN_0
+	else
+		GAMESTATE.flow = FLOW.WIN_1
+	end
+	GAMESTATE.warmupTime = TUNING.GAME.VICTORY_TIME
 end
 
 function StartGame()
+	print("****\nSTARTING A NEW GAME\n****")
 	ResetGame(false)
 end
 
@@ -194,7 +207,7 @@ function ResetGame(warmup)
 
 	global("GAMESTATE")
 	GAMESTATE = {
-		warmup = warmup,
+		flow = warmup and FLOW.WARMUP or FLOW.PLAYING,
 		warmupTime = TUNING.GAME.WARMUP_TIME,
 		pointsToWin = TUNING.GAME.POINTS_TO_WIN,
 		points = {
@@ -257,7 +270,7 @@ function package()
 	local pkg = beginpack()
 
 	pkg = beginpacktable(pkg,'game')
-	pkg = pack(pkg, 'w', GAMESTATE.warmup and 1 or 0)
+	pkg = pack(pkg, 'f', GAMESTATE.flow)
 	pkg = pack(pkg, 't', GAMESTATE.warmupTime)
 	pkg = pack(pkg, 's0', GAMESTATE.points[0])
 	pkg = pack(pkg, 's1', GAMESTATE.points[1])

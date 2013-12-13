@@ -11,6 +11,7 @@ require("render")
 require("network")
 require("input")
 require("explosion")
+require("gamestate")
 TUNING = require("tuning")
 
 gClient = nil
@@ -269,7 +270,7 @@ function client_draw()
 		
 		function()
 			if gRemoteView.game then
-				if gRemoteView.game.w == 1 then
+				if gRemoteView.game.f == FLOW.WARMUP then
 					love.graphics.setColor(0,0,0,255)
 					love.graphics.print("WARMUP MODE", Renderer.offset_x+1, Renderer.offset_y+1)
 					love.graphics.setColor(255,255,255,255)
@@ -279,6 +280,16 @@ function client_draw()
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x+1, Renderer.offset_y+30+1)
 					love.graphics.setColor(255,255,255,255)
 					love.graphics.print(gRemoteView.game.t, Renderer.offset_x, Renderer.offset_y+30)
+				elseif gRemoteView.game.f == FLOW.WIN_0 then
+					love.graphics.setColor(0,0,0,255)
+					love.graphics.print("TEAL WINS!!", Renderer.offset_x+1, Renderer.offset_y+1)
+					love.graphics.setColor(255,255,255,255)
+					love.graphics.print("TEAL WINS!!", Renderer.offset_x, Renderer.offset_y)
+				elseif gRemoteView.game.f == FLOW.WIN_1 then
+					love.graphics.setColor(0,0,0,255)
+					love.graphics.print("PURPLE WINS!!", Renderer.offset_x+1, Renderer.offset_y+1)
+					love.graphics.setColor(255,255,255,255)
+					love.graphics.print("PURPLE WINS!!", Renderer.offset_x, Renderer.offset_y)
 				end
 
 				local instructions = "W, LMB = Thrust | Space, RMB = Shoot | A,D,Mouse = Aim | F = Attach!!"

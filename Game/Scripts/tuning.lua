@@ -33,6 +33,7 @@ return
 	GAME = 
 	{
 		WARMUP_TIME = 10,
+		VICTORY_TIME = 10,
 		POINTS_TO_WIN = 2,
 	},
 
