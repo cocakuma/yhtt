@@ -105,6 +105,15 @@ function server_update(dt)
 				end
 			end
 		end
+
+		if body._classname == "Payload" then
+			for n,goal in pairs(goals) do
+				if goal:Contains(body.position) then
+					ScoreAgainst(goal.team)
+					body:Destroy()
+				end
+			end
+		end
 	end
 
 	local bulletToRemove = {}
@@ -145,6 +154,32 @@ function server_update(dt)
 	gFrameID = gFrameID + 1
 end
 
+pointsToWin = 2
+points = {
+	[0]=0,
+	[1]=0
+}
+function ScoreAgainst(team)
+	if team == 0 then
+		team = 1
+	else
+		team = 0
+	end
+
+	points[team] = points[team] + 1
+	print("Team",team,"scored a goal!")
+	print("Score is now T0:",points[0],"to T1:",points[1])
+
+	if points[0] == pointsToWin then
+		EndGame(0)
+	elseif points[1] == pointsToWin then
+		EndGame(1)
+	end
+end
+
+function EndGame(winningTeam)
+	print("*\n*\n*\n* YAHOOO,", winningTeam, " WON THE GAME!")
+end
 
 gPackageDT = 0
 function package()
@@ -222,8 +257,8 @@ function GenerateLevel()
 		ship.input = defaultinput()
 	end
 
-	for i=1,3 do
-		local pl = Payload(arena.width/2, i*arena.height/4)
+	for i=1,pointsToWin*2 - 1 do
+		local pl = Payload(arena.width/2, i*arena.height/(pointsToWin*2))
 	end	
 
 	local mirror = math.random() < 0.5

@@ -56,3 +56,11 @@ function Payload:Hit(bullet)
 
 	self.tryDetach = true
 end
+
+function Payload:Destroy()
+	self:Detach()
+	bodies[self.ID] = nil
+end
+
+
+

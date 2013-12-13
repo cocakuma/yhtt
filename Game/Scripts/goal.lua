@@ -27,7 +27,7 @@ function Goal:Pack(pkg)
 	pkg = pack(pkg, 'w', self.width)
 	pkg = pack(pkg, 't', self.team)
 	return pkg
-end	
+end
 
 function Goal:Contains( position )
 	return
