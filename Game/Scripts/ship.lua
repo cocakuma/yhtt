@@ -30,13 +30,11 @@ function Ship:init(x, y, angle, team, ID)
 	self.turnRight = false
 
 	self.numBoosts = 3
-	self.useBoost = false
+	self.tryBoost = false
+	self.boosting = false
 	
 	self.boostDuration = 3
 	self.boostDuration_timer = self.boostDuration
-	
-	self.boostCooldown = self.boostDuration + 0.5
-	self.boostCooldown_timer = self.boostCooldown
 
 	self.mouse = nil
 	
@@ -53,12 +51,23 @@ function Ship:init(x, y, angle, team, ID)
 	self:Respawn()
 end
 
-function Ship:EndBoost()
+function Ship:CanBoost()
+	return not self.boosting and self.numBoosts > 0
+end
 
+function Ship:BoostTimer(dt)
+	self.boostDuration_timer = self.boostDuration_timer - dt
+	if self.boostDuration_timer <= 0 then
+		self.boostDuration_timer = self.boostDuration
+		self.boosting = false
+	end
 end
 
 function Ship:StartBoost()
-
+	if self:CanBoost() then
+		self.boosting = true
+		self.numBoosts = self.numBoosts - 1
+	end
 end
 
 function Ship:ReloadClip(dt)
@@ -97,7 +106,6 @@ function Ship:HandleInput( )
 	end
 	if self.input["w"] == 1 then
 		self.thrusting = true
-		self.didThrust = true
 	end
 	if self.input[" "] == 1 then
 		self.shoot = true
@@ -108,6 +116,10 @@ function Ship:HandleInput( )
 		else
 			self.tryDetach = true
 		end
+	end
+
+	if self.input["lshift"] == 1 then
+		self.tryBoost = true
 	end
 
 	if self.input['m_x'] then
@@ -130,6 +142,18 @@ function Ship:Update(dt)
 		self.angle = math.atan2(self.mouse.y, self.mouse.x)
 	end
 
+	if self.tryBoost then
+		self:StartBoost()
+	end
+
+	if self.boosting then
+		self:BoostTimer(dt)
+		self.thrustForce = 1000
+		self.thrusting = true
+	else
+		self.thrustForce = 100
+	end
+
 	if self.turnLeft then
 		self.turnLeft = false
 		self.angle = self.angle + self.turnSpeed * dt
@@ -139,6 +163,7 @@ function Ship:Update(dt)
 		self.angle = self.angle - self.turnSpeed * dt
 	end
 	if self.thrusting then
+		self.didThrust = true
 		self.thrusting = false
 		local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 		local thrust = thrustVector * self.thrustForce
@@ -160,6 +185,7 @@ function Ship:Update(dt)
 	end
 	
 	self.shoot = false
+	self.tryBoost = false
 
 	self._base.Update(self, dt)
 
@@ -230,6 +256,9 @@ function Ship:Respawn()
 		self.position.x = arena.width - 40
 	end
 	self.position.y = math.random() * arena.height
+
+	self.boosting = false
+	self.numBoosts = 3
 
 	self.velocity.x = 0
 	self.velocity.y = 0
