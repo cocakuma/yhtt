@@ -203,8 +203,9 @@ function client_draw()
 				love.graphics.setLineWidth(prevWidth)
 			end
 
-			for k,snd in pairs( gShipSounds ) do
-				if not gRemoteView.ships[k] or not gRemoteView.ships[k].se_bst then
+			for k,snd in pairs( gShipSounds ) do				
+				if not gRemoteView.ships[k] or ( not gRemoteView.ships[k].se_bst and gRemoteView.ships[k].it == 0 ) then
+
 					snd:Stop()
 					gShipSounds[k] = nil
 				end 
@@ -212,10 +213,18 @@ function client_draw()
 			for k,ship in pairs(gRemoteView.ships) do
 
 				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
-				if ship.se_bst and not gShipSounds[k] then
-					local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", 0.3 )
-					if snd then
-						gShipSounds[k] = snd
+				if ( ship.it == 1 or ship.se_bst ) and not gShipSounds[k] then
+					local sound_scale = 0.3 * sound_scale
+					if ship.se_bst then
+						sound_scale = sound_scale * 2
+					end
+					if gShipSounds[k] then 
+						gShipSounds[k]:SetVolumeScale(sound_scale)
+					else
+						local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", sound_scale )
+						if snd then
+							gShipSounds[k] = snd
+						end						
 					end
 				end
 

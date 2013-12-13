@@ -34,6 +34,9 @@ function SoundInstance:Update(dt)
 	self.source:setVolume(v)
 end
 
+function SoundInstance:SetVolumeScale(volume_scale)
+	self.volume_scale = volume_scale
+end
 
 function SoundInstance:Stop()
 	if self.def.fadeouttime then
