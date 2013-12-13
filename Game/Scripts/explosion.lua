@@ -9,16 +9,16 @@ local bullet =
 	speed = 150,
 	speed_var = 104,
 	num = 20,
-	lifetime = .5,
+	lifetime = .25,
 }
 
 local ship =
 {
-	size = 6,
+	size = 4,
 	speed = 230,
 	speed_var = 205,
-	num = 30,
-	lifetime = .52,
+	num = 20,
+	lifetime = .33,
 }
 
 function Explosion:init(data)
@@ -60,12 +60,12 @@ end
 function Explosion:Update(dt)
 	self.age = self.age + dt
 	self.alpha = lerp(255, 0, self.age/self.lifetime)
-	
+	self.alpha = math.max(0, self.alpha)
 	for k,v in pairs(self.particles) do
 		v.position = v.position + (v.velocity * dt)
 	end
 
-	if self.age > self.lifetime then
+	if self.age > 1 and self.age > self.lifetime then
 		self:Destroy()
 	end
 
