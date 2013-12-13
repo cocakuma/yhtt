@@ -261,10 +261,16 @@ function client_draw()
 				end
 			end
 
+			local scale = (math.sin(socket.gettime()*6) + 1) / 2
+			for k,obstacle in pairs(gRemoteWorldView.obs) do
+				love.graphics.setColor(155 + 100*scale,0,0,255)
+				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)
+			end
+
 			for k,obstacle in pairs(gRemoteWorldView.obs) do
 				love.graphics.setColor(155,155,155,255)
-				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
-			end
+				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r-5)
+			end			
 		end,
 		
 		function()
