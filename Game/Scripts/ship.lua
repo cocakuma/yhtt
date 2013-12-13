@@ -172,6 +172,9 @@ function Ship:Pack(pkg)
 		pkg = pack(pkg, 'se_sht', 1)
 		self.snd_event_shoot = false
 	end
+	if self.boosting then
+		pkg = pack(pkg, 'se_bst', 1)
+	end	
 	self.didThrust = false;
 	return pkg
 end

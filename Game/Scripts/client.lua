@@ -60,6 +60,7 @@ gRemoteSoundScale = 0.4
 
 gQueuedFrames = 0
 gClientState = 'ok'
+gShipSounds = {}
 function client_draw()
 	local start_time = socket.gettime()
 
@@ -202,7 +203,21 @@ function client_draw()
 				love.graphics.setLineWidth(prevWidth)
 			end
 
+			for k,snd in pairs( gShipSounds ) do
+				if not gRemoteView.ships[k] or not gRemoteView.ships[k].se_bst then
+					snd:Stop()
+					gShipSounds[k] = nil
+				end 
+			end
 			for k,ship in pairs(gRemoteView.ships) do
+
+				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
+				if ship.se_bst and not gShipSounds[k] then
+					local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", 0.3 )
+					if snd then
+						gShipSounds[k] = snd
+					end
+				end
 
 				--team color
 				if ship.t == 0 then
