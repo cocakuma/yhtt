@@ -8,7 +8,8 @@ function sendmessages(node)
 	if message then
 		local sent, err, b = node.conn:send(message.text, message.sent + 1)
 		if sent == nil and not gIsServer then			
-			print('Disconnected, attempting to reconnect...')
+			print('Disconnected because: '..err)
+			print('Attempting to reconnect...')
 			node.conn = connectsocket(getip(), getport())
 			table.remove(node.out_messages, #node.out_messages)
 			return
