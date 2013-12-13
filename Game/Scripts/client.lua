@@ -19,14 +19,10 @@ local gRemoteID = "0"
 
 local gRenderDt = 0
 
-paused = false
 
 local lastMouse = Vector2(0,0)
 
 function love.keypressed(key)
-	if key == "p" then
-		paused = not paused
-	end
 end
 
 function sendinput(client)
