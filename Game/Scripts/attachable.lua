@@ -24,7 +24,6 @@ function Attachable:init(x, y, radius, mass)
 
 	self.tryAttach = false
 	self.tryDetach = false
-	self.wantsToDetach = false
 	self.canAttach = true
 	self.attach_Timer = TUNING.SHIP.ATTACH_COOLDOWN
 
@@ -57,7 +56,6 @@ function Attachable:Update(dt)
 	self.tryDetach = false
 
 	if not self.parent then
-		self:CheckChildrenForDetachment()
 		self:SetVelocities()
 		local velLen = self.velocity:Length()
 		local dragdenom = 1 - (velLen * (self.drag * dt))
@@ -117,24 +115,6 @@ function Attachable:CombineVelocities(other)
 	--print("final", newVelocity)
 
 	return newVelocity
-end
-
-function Attachable:CheckChildrenForDetachment()
-	for k,v in pairs(self.children) do --Clean up any self.children that want to leave.
-		if v.child then
-			v.child:CheckChildrenForDetachment()
-			if v.child.wantsToDetach == true then
-				print(v.child.ID, "wants to detach from", self.ID, v.child.wantsToDetach)
-				self:RemoveChild(v.child)
-				if self.OnDetached then
-					self:OnDetached(v.child)
-				end
-				if v.child.OnDetached then
-					v.child:OnDetached(self)
-				end
-			end
-		end
-	end
 end
 
 function Attachable:GetTrueParent()
@@ -243,8 +223,6 @@ function Attachable:Attach()
 		return
 	end
 
-	self.wantsToDetach = false
-
 	local pos = self.position
 	
 	local best = nil
@@ -288,10 +266,7 @@ function Attachable:IsOnTeam(otherteam)
 end
 
 function Attachable:Detach()
-
-	if not self.canAttach then
-		return
-	end
+	print(self._classname, self.ID, "wants to detach")
 
 	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
@@ -302,7 +277,20 @@ function Attachable:Detach()
 			v.child:OnDetached(self)
 		end
 	end
-	self.wantsToDetach = true
+
+	if self.parent then
+		local parent = self.parent
+		self.parent:RemoveChild(self)
+		
+		if parent.OnDetached then
+			parent:OnDetached(self)
+		end
+		if self.OnDetached then
+			self:OnDetached(parent)
+		end
+	end
+
+	print(self._classname, self.ID, "has detached!")
 end
 
 function Attachable:HasParent()
