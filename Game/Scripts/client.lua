@@ -133,6 +133,11 @@ function client_draw()
 						particle_type = ptcl.typ,
 					}
 					Explosion(data)
+					if ptcl.typ == 1 then
+						SOUNDS:PlaySound("sfx.ingame.explosions.ship", 1.0)
+					else
+						SOUNDS:PlaySound("sfx.ingame.explosions.missile", 1.0)
+					end
 				end
 			end	
 
