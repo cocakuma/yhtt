@@ -20,14 +20,18 @@ Renderer.camera = {
 }
 
 Fonts = {
-    big = {
-        file = "fonts/BABYU___.TTF",
-        size = 32,
+    title = {
+        file = "Fonts/PLASTICB.TTF",
+        size = 70,
     },
-    small = {
-        file = "fonts/BABYU___.TTF",
-        size = 16,
+    header = {
+        file = "Fonts/PLASTICB.TTF",
+        size = 42,
     },
+	info = {
+        file = "Fonts/coolvetica.ttf",
+        size = 20,
+	}
 }
 
 local EffectInfo = 
@@ -136,10 +140,10 @@ function Renderer:Load()
 	self.default_line_width = love.graphics.getLineWidth()
 	print("Default line width", self.default_line_width)
 
-	--for k,v in pairs(Fonts) do
-        --v.font = love.graphics.newFont(v.file, v.size)
-		--print("Loaded", k, v.file, v.size)
-	--end
+	for k,v in pairs(Fonts) do
+    	v.font = love.graphics.newFont(v.file, v.size)
+		print("Loaded font", k, v.file, v.size)
+	end
 end
 
 function Renderer:Draw(worldcb, hudcb)

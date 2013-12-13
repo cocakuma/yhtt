@@ -219,7 +219,7 @@ function client_draw()
 				if k == gRemoteID then
 					love.graphics.setLineWidth(2)
 				end
-				love.graphics.circle("line", ship.x, ship.y, ship.r)
+				love.graphics.circle("line", ship.x, ship.y, ship.r, 6)
 				love.graphics.setLineWidth(prevWidth)
 				
 				-- thrusters
@@ -271,32 +271,44 @@ function client_draw()
 		function()
 			if gRemoteView.game then
 				if gRemoteView.game.f == FLOW.WARMUP then
+					love.graphics.setFont(Fonts.header.font)
 					love.graphics.setColor(0,0,0,255)
-					love.graphics.print("WARMUP MODE", Renderer.offset_x+1, Renderer.offset_y+1)
+					love.graphics.print("WARMUP MODE", Renderer.offset_x-150+1, Renderer.offset_y-90+1)
 					love.graphics.setColor(255,255,255,255)
-					love.graphics.print("WARMUP MODE", Renderer.offset_x, Renderer.offset_y)
+					love.graphics.print("WARMUP MODE", Renderer.offset_x-150, Renderer.offset_y-90)
 
 					love.graphics.setColor(0,0,0,255)
-					love.graphics.print(gRemoteView.game.t, Renderer.offset_x+1, Renderer.offset_y+30+1)
+					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40+1, Renderer.offset_y+40+1)
 					love.graphics.setColor(255,255,255,255)
-					love.graphics.print(gRemoteView.game.t, Renderer.offset_x, Renderer.offset_y+30)
+					love.graphics.print(gRemoteView.game.t, Renderer.offset_x-40, Renderer.offset_y+40)
 				elseif gRemoteView.game.f == FLOW.WIN_0 then
+					love.graphics.setFont(Fonts.title.font)
 					love.graphics.setColor(0,0,0,255)
-					love.graphics.print("TEAL WINS!!", Renderer.offset_x+1, Renderer.offset_y+1)
-					love.graphics.setColor(255,255,255,255)
-					love.graphics.print("TEAL WINS!!", Renderer.offset_x, Renderer.offset_y)
+					love.graphics.print("TEAL WINS!!", Renderer.offset_x-200+1, Renderer.offset_y-90+1)
+					love.graphics.setColor(55,255,155,255)
+					love.graphics.print("TEAL WINS!!", Renderer.offset_x-200, Renderer.offset_y-90)
 				elseif gRemoteView.game.f == FLOW.WIN_1 then
+					love.graphics.setFont(Fonts.title.font)
 					love.graphics.setColor(0,0,0,255)
-					love.graphics.print("PURPLE WINS!!", Renderer.offset_x+1, Renderer.offset_y+1)
-					love.graphics.setColor(255,255,255,255)
-					love.graphics.print("PURPLE WINS!!", Renderer.offset_x, Renderer.offset_y)
+					love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250+1, Renderer.offset_y-90+1)
+					love.graphics.setColor(155,55,255,255)
+					love.graphics.print("PURPLE WINS!!", Renderer.offset_x-250, Renderer.offset_y-90)
 				end
 
-				local instructions = "W, LMB = Thrust | Space, RMB = Shoot | A,D,Mouse = Aim | F = Attach!!"
+				local instructions = {
+									"Instructions:",
+									"W, LMB = Thrust",
+									"Space, RMB = Shoot",
+									"A,D,Mouse = Aim",
+									"F = Attach!!"
+								}
+				local instructionstring = table.concat(instructions,"          ")
+
+				love.graphics.setFont(Fonts.info.font)
 				love.graphics.setColor(0,0,0,255)
-				love.graphics.print(instructions, 30+1, love.graphics.getHeight() - 30+1)
+				love.graphics.print(instructionstring, 30+1, love.graphics.getHeight() - 30+1)
 				love.graphics.setColor(255,255,255,255)
-				love.graphics.print(instructions, 30, love.graphics.getHeight() - 30)
+				love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)
 
 			end
 			
