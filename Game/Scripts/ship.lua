@@ -91,7 +91,6 @@ function Ship:HandleInput( )
 			self.tryDetach = true
 		end
 	end
-
 	if self.input["lshift"] == 1 then
 		self.tryBoost = true
 	end

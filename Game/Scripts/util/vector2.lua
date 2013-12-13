@@ -72,6 +72,10 @@ function Vector2:IsVector2( )
     return true
 end
 
+function Vector2:Dot(b)
+    return (self.x * b.x) + (self.y * b.y)
+end
+
 function Vector2:ToVector2( obj, y )
     if not obj then
         return
