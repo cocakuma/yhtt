@@ -11,6 +11,7 @@ return
 		MAX_ATTACH_DISTANCE = 90,
 		MAX_AMMO_CLIP = 10,
 		RELOAD_SPEED = 1,
+		RESPAWN_TIME = 3.0,
 	},
 	BULLET =
 	{

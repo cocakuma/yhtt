@@ -37,6 +37,7 @@ function Ship:init(x, y, angle, team)
 	self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
 	self.shotoffset = Vector2(0, 4)
 
+	self:Respawn()
 end
 
 function Ship:ReloadClip(dt)
@@ -183,4 +184,36 @@ end
 
 function Ship:TakeDamage(damage)
 	self.health = math.max(0, self.health - damage)
+	if self.health == 0 then
+		self:Die()
+	end
+end
+
+function Ship:Die()
+	self:Detach()
+	bodies[self.ID] = nil
+	to_respawn[self.ID] = {ship=self, remaining=TUNING.SHIP.RESPAWN_TIME}
+end
+
+function Ship:TryRespawn(dt)
+	to_respawn[self.ID].remaining = to_respawn[self.ID].remaining - dt
+	if to_respawn[self.ID].remaining <= 0 then
+		self:Respawn()
+	end
+end
+
+function Ship:Respawn()
+	self.health = 1
+	bodies[self.ID] = self
+	to_respawn[self.ID] = nil
+
+	if self.team == 0 then
+		self.position.x = 40
+	else
+		self.position.x = arena.width - 40
+	end
+	self.position.y = math.random() * arena.height
+
+	self.velocity.x = 0
+	self.velocity.y = 0
 end

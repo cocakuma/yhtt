@@ -140,7 +140,12 @@ function client_draw()
 				else
 					love.graphics.setColor(255,0,0,255)
 				end
+
+				if k == gRemoteID then
+					love.graphics.setLineWidth(2)
+				end
 				love.graphics.circle("line", ship.x, ship.y, ship.r)
+				love.graphics.setLineWidth(prevWidth)
 				
 				-- thrusters
 				if ship.it == 1 then -- TODO: detect whether or not a ship is thrusting!

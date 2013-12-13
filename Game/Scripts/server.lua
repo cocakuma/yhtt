@@ -16,6 +16,7 @@ gServer = nil
 
 arena = nil
 bodies = {} --ships, payloads, etc
+to_respawn = {}
 bullets = {}
 obstacles = {}
 
@@ -37,7 +38,9 @@ function receiveinput(client)
 			client.ID = ship.ID	
 			send(client, tostring(client.ID), 'ID')
 		end
-		bodies[client.ID].input = input
+		if bodies[client.ID] then
+			bodies[client.ID].input = input
+		end
 	end	
 end
 
@@ -56,6 +59,10 @@ function server_update(dt)
 
 	-- pre-update
 	-- check input and synchronize states
+	for k,info in pairs(to_respawn) do
+		info.ship:TryRespawn(dt)
+	end
+
 	for k,ship in pairs(bodies) do
 		if ship.HandleInput then
 			ship:HandleInput()
@@ -130,6 +137,7 @@ function server_update(dt)
 		b:Destroy()
 	end
 
+
 	package()
 	updateserver(gServer)
 	gFrameID = gFrameID + 1
@@ -190,13 +198,13 @@ function GenerateLevel()
 
 	arena = Arena(1600, 1600)
 
-	for i=1,2 do
+	for i=1,32 do
 		local ship = Ship(100+20*i, 100, 0)
 		ship.input = defaultinput()
 	end
 
 	for i=1,3 do
-		local pl = Payload(math.random() * 640, math.random() * 860)
+		local pl = Payload(arena.width/2, i*arena.height/4)
 	end	
 
 	local mirror = math.random() < 0.5
