@@ -22,3 +22,7 @@ function sumThrusts(tbl)
 
 	return t
 end
+
+function lerp (a, b, t)
+        return a + (b - a) * t
+end

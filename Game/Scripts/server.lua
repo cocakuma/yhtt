@@ -21,6 +21,7 @@ to_respawn = {}
 bullets = {}
 obstacles = {}
 goals = {}
+explosions = {}
 
 gFrameID = 0
 

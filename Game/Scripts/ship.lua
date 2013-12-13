@@ -1,6 +1,7 @@
 require("util/vector2")
 require("util/class")
 require("bullet")
+require("explosion")
 require("attachable")
 
 class("Ship", Attachable)
@@ -61,6 +62,15 @@ function Ship:Shoot()
 	local bullet = Bullet(self)
 	self.currentAmmoClip = self.currentAmmoClip - 1
 	self.shotoffset = self.shotoffset * -1
+	
+	local data =
+	{
+		pos = deepcopy(self.position),
+		exp_type = 1,
+		team = self.team,
+	}
+
+	Explosion(data)
 end
 
 function Ship:HandleInput( )

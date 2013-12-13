@@ -87,6 +87,7 @@ function client_draw()
 		gRemoteView = unpack(1, message)
 	end
 
+
 	
 	if gRemoteView then
 		Renderer:Draw(function()		
@@ -213,10 +214,26 @@ function client_draw()
 				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)				
 			end
 
+			for k,expl in pairs(explosions) do
+				if expl.team == 0 then
+					love.graphics.setColor(55,255,155,expl.alpha)
+				else
+					love.graphics.setColor(155,55,255,expl.alpha)
+				end
+
+				for k,v in pairs(expl.particles) do
+					love.graphics.rectangle("fill", v.pos.x, v.pos.y, expl.size, expl.size)
+				end
+			end
+
 			for k,obstacle in pairs(gRemoteView.obs) do
 				love.graphics.setColor(155,155,155,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)				
 			end
+
+
+
+
 		end)
 	end
 
@@ -234,7 +251,12 @@ function client_load()
 	Renderer:Load()	
 end
 
-function client_update()
+function client_update(dt)
 	sendinput(gClient)
 	updateclient(gClient)	
+	for k,expl in pairs(explosions) do
+		expl:Update(dt)
+	end
 end
+
+
