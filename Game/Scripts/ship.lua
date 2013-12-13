@@ -7,12 +7,15 @@ require("attachable")
 class("Ship", Attachable)
 
 
+local nextTeamID = 0
+
 
 function Ship:init(x, y, angle, team, ID)
 	self.ID = ID -- in reset the game overrides this ID
 	self._base.init(self, x, y, 8, 1)
 
-	self.team = self.ID % 2
+	self.team = nextTeamID % 2
+	nextTeamID = nextTeamID + 1
 	self.particle_type = 1
 	self.mouse = nil
 

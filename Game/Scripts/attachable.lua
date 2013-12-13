@@ -259,9 +259,16 @@ function Attachable:Attach()
 	for k,v in pairs(bodies) do
 		if v and v ~= self and v:IsOnTeam(self.team) and not v:IsChildOf(self) then
 			local distsq = pos:DistSq(v.position)
-			if distsq <= dist then
-				best = v
-				dist = distsq
+			if v._classname == "Payload" then
+				if distsq <= TUNING.SHIP.MAX_ATTACH_DISTANCE^2 then
+					best = v
+					dist = distsq
+				end
+			elseif not best or best._classname ~= "Payload" then
+				if distsq <= dist then
+					best = v
+					dist = distsq
+				end
 			end
 		end
 	end
