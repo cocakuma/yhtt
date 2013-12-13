@@ -107,10 +107,14 @@ function server_update(dt)
 		end
 		local oob = arena:OOB( body.position )
 		if oob then
+			local impactVel = body.velocity:Length()
 			local parent = body:GetTrueParent()
 			parent:SetVelocities(body.velocity * -1)
 			parent.position = body.position + oob + (parent.position - body.position)
 			parent:ClampOffsets()
+			if body._classname == "Ship" then
+				body:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK )
+			end
 		end
 
 		for n,otherbody in pairs(bodies) do
