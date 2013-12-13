@@ -85,12 +85,13 @@ function client_draw()
 		print('Client State: '..gClientState )
 	end
 
+	local target_queue = 3
 	if gClientState == 'ahead' then
-		if message_count > 2 then 
+		if message_count > target_queue - 1 then 
 			gClientState = 'ok'
 		end
 	elseif gClientState == 'behind' then
-		while message_count > 3 do		
+		while message_count > target_queue do		
 			nextmessage(gClient, 'view')
 			message_count = messagecount(gClient, 'view')
 		end
