@@ -17,7 +17,7 @@ gClient = nil
 local gRemoteView = nil
 local gRemoteID = "0"
 
-local gRenderDt = 0
+gRenderDt = 0
 
 
 local lastMouse = Vector2(0,0)
@@ -52,6 +52,7 @@ function sendinput(client)
 	send(client, pkg, 'input')
 end
 
+gQueuedFrames = 0
 function client_draw()
 	local start_time = socket.gettime()
 
@@ -64,7 +65,7 @@ function client_draw()
 	
 	local message_count = messagecount(gClient, 'view')
 	local message = nextmessage(gClient, 'view')
-
+	gQueuedFrames = message_count - 1
 	if message == nil then
 		print('FPS: Running ahead!')
 		while message_count < 2 do
@@ -226,12 +227,6 @@ function client_draw()
 	if gRemoteView then
 		remote_frame_id = gRemoteView.frame_id
 	end
-	local x = 1100
-	local y = 50
-	local y_delta = 15
-	love.graphics.print("Render Dt: "..gRenderDt, x, y)
-	y = y + y_delta
-
 end
 
 function client_load()

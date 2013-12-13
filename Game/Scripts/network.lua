@@ -251,3 +251,8 @@ function round(val)
 	local roundness = 100
 	return math.floor(val*roundness+0.5)/roundness
 end
+
+function round3(val)
+	local roundness = 1000
+	return math.floor(val*roundness+0.5)/roundness
+end

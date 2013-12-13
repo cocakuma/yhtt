@@ -17,4 +17,12 @@ function love.draw()
 	end
 	last_tick = socket.gettime()
 	client_draw()
+
+	local x = 1100
+	local y = 50
+	local y_delta = 15
+	love.graphics.print("Queued Frames: "..gQueuedFrames, x, y)
+	y = y + y_delta	
+	love.graphics.print("Render Dt: "..round3(gRenderDt), x, y)
+	y = y + y_delta	
 end

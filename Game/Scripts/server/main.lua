@@ -25,13 +25,13 @@ function love.draw()
 	local x = 500
 	local y = 50
 	local y_delta = 15
-	love.graphics.print("Tick: "..tick_time, x, y)
+	love.graphics.print("Tick: "..round3(tick_time), x, y)
 	y = y + y_delta
-	love.graphics.print("Dt: "..gDt, x, y)
+	love.graphics.print("Dt: "..round3(gDt), x, y)
 	y = y + y_delta
-	love.graphics.print("Update: "..gUpdate, x, y)
+	love.graphics.print("Update: "..round3(gUpdate), x, y)
 	y = y + y_delta	
-	love.graphics.print("Package: "..gPackageDT, x, y)
+	love.graphics.print("Package: "..round3(gPackageDT), x, y)
 	y = y + y_delta		
 end
 
