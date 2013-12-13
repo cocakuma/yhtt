@@ -266,13 +266,17 @@ function client_draw()
 				love.graphics.setLineWidth(prevWidth)
 				
 				-- thrusters
-				if ship.it == 1 then -- TODO: detect whether or not a ship is thrusting!
+				if ship.it == 1 then
 					local flameLen = math.random()*0.8+0.2
 					if ship.se_bst then
 						flameLen  = flameLen * 2
+						love.graphics.setColor(55,90,255,255)
+						DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
+					else
+						love.graphics.setColor(255,90,10,255)
+						DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
+
 					end
-					love.graphics.setColor(255,190,100,255)
-					DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
 					love.graphics.setColor(255,255,255,255)
 					DrawTriangle(20*flameLen, 4, ship.x, ship.y, ship.a-math.pi, 10*flameLen+5, 0)
 				end

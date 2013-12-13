@@ -6,19 +6,19 @@ class("Explosion")
 local bullet = 
 {
 	size = 3,
-	speed = 15,
-	speed_var = 14,
+	speed = 150,
+	speed_var = 104,
 	num = 20,
-	lifetime = 1,
+	lifetime = .5,
 }
 
 local ship =
 {
 	size = 6,
-	speed = 30,
-	speed_var = 25,
+	speed = 230,
+	speed_var = 205,
 	num = 30,
-	lifetime = 2,
+	lifetime = .52,
 }
 
 function Explosion:init(data)
