@@ -27,11 +27,19 @@ function Bullet:init(ship)
 	self.velocity = Vector2(0,0)
 	self.radius = 3
 	self.turnSpeed = 1
+
+	self.target = self:LookForTarget()
 	
+	if self.target then
+		self.angle =  math.atan2(self.target.position.y - self.position.y, self.target.position.x - self.position.x)
+	end
+
 	local directionVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 	local dir = directionVector * self.speed
 	self.velocity = directionVector * self.speed
 	self.velocity = ship.velocity + self.velocity
+
+
 
 	self.search_Timer = 0.33	
 	if ship.killname then
@@ -41,7 +49,7 @@ end
 
 function Bullet:LookForTarget()
 	local bestTar = nil
-	local bestDist = 300^2
+	local bestDist = 200^2
 	local bestDot = 0.73
 	
 	for k,v in pairs(bodies) do
