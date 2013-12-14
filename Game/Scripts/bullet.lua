@@ -25,15 +25,13 @@ function Bullet:init(ship)
 	self.position = Vector2(ship.position.x or 0, ship.position.y or 0)
 	self.position = self.position + offset
 	self.velocity = Vector2(0,0)
-	self.radius = 0
-	self.turnSpeed = 3
+	self.radius = 3
+	self.turnSpeed = 1
 	
 	local directionVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 	local dir = directionVector * self.speed
 	self.velocity = directionVector * self.speed
 	self.velocity = ship.velocity + self.velocity
-
-	self.target = self:LookForTarget()
 
 	self.search_Timer = 0.33	
 	if ship.killname then
@@ -72,6 +70,8 @@ function Bullet:SearchTimer(dt)
 		self.search_Timer = 0.5
 
 		if self.target then
+
+
 			local toTar = self.target.position - self.position
 			local vec = Vector2(math.cos(self.angle), math.sin(self.angle))
 			local dot = vec:Dot(toTar)
@@ -83,6 +83,7 @@ function Bullet:SearchTimer(dt)
 
 		end
 		if not self.target then
+
 			self.target = self:LookForTarget()
 		end
 	end
@@ -94,9 +95,10 @@ function Bullet:Update(dt)
 
 	if self.target then		
 
-		local targetAngle =  math.atan2(self.target.position.y - self.position.y, self.target.position.x - self.position.x)
-		local delta = (self.angle - targetAngle) * 8
+		self.thrustForce = TUNING.BULLET.THRUSTFORCE * 3
 
+		local targetAngle =  math.atan2(self.target.position.y - self.position.y, self.target.position.x - self.position.x)
+		local delta = (self.angle - targetAngle)
 		delta = math.min(delta, math.pi)
 		delta = math.max(delta, -math.pi)
 
@@ -111,7 +113,7 @@ function Bullet:Update(dt)
 	local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
 	local thrust = thrustVector * self.thrustForce
 	self.thrust = thrust * dt
-
+	self.thrustForce = TUNING.BULLET.THRUSTFORCE
 	self.velocity = self.velocity + self.thrust
 
 	self.position = self.position + (self.velocity * dt)
