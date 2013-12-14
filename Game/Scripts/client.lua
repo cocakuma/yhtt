@@ -247,7 +247,7 @@ function client_draw()
 					end
 					if gShipSounds[k] then 
 						gShipSounds[k]:SetVolumeScale(sound_scale)
-					else
+					elseif k == gRemoteID then
 						local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", sound_scale )
 						if snd then
 							gShipSounds[k] = snd
