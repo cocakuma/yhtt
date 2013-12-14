@@ -1,7 +1,7 @@
 function love.conf(t)
 
-	t.title = "TRI - Server"
-	t.screen.width = 300
-	t.screen.height = 250
+	t.title = "Server"
+	t.window.width = 300
+	t.window.height = 250
 
 end
