@@ -9,6 +9,10 @@ function Payload:init(x, y)
 
 	self.team = -1
 	self.killname = 'Payload'
+
+	self.health = TUNING.PAYLOAD.HEALTH
+	self.regenRate = TUNING.PAYLOAD.REGEN_RATE
+	self.pulseCooldown = TUNING.PAYLOAD.PULSE_COOLDOWN
 end
 
 function Payload:OnAttached(other)
@@ -18,7 +22,7 @@ function Payload:OnAttached(other)
 end
 
 function Payload:OnDetached(other)
-	print(self.ID,"resetting payload team to")
+	print(self.ID,"resetting payload team")
 	self.team = -1
 	for k,v in pairs(self.children) do
 		self.team = v.child.team
