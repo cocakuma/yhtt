@@ -211,8 +211,7 @@ function Ship:Collide(other)
 	diff.y = diff.y + math.random()*0.002-0.001
 
 	local parent = self:GetTrueParent()
-	parent.velocity = self.velocity + (diff:GetNormalized() * 20)/self:GetMass()
-
+	parent.velocity = parent.velocity + (diff:GetNormalized() * 20)/parent:GetMass()
 	local impactVel = self.velocity:Length()
 	if other.velocity then impactVel = impactVel + other.velocity:Length() end
 
@@ -225,7 +224,8 @@ end
 
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
-	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/self:GetMass()
+	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/parent:GetMass()
+	print("Mass:", parent:GetMass())
 	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP, bullet )
 end
 
