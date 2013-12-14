@@ -30,7 +30,7 @@ return
 	DAMAGE = 
 	{
 		SHIP_ON_SHIP = 0.001, -- damage per unit of speed
-		BULLET_ON_SHIP = 1/5, -- damage per bullet
+		BULLET_ON_SHIP = 1/8, -- damage per bullet
 		SHIP_ON_ROCK = 0.01,  -- ship hitting obstacle
 		BULLET_ON_PAYLOAD = 1,
 		PAYLOAD_ON_ROCK = 0.01,

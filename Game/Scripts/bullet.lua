@@ -101,10 +101,7 @@ function Bullet:Update(dt)
 
 	self:SearchTimer(dt)
 
-	if self.target then		
-
-		self.thrustForce = TUNING.BULLET.THRUSTFORCE * 3
-
+	if self.target then
 		local targetAngle =  math.atan2(self.target.position.y - self.position.y, self.target.position.x - self.position.x)
 		local delta = (self.angle - targetAngle)
 		delta = math.min(delta, math.pi)
@@ -115,7 +112,6 @@ function Bullet:Update(dt)
 		else
 			self.angle = self.angle - self.turnSpeed * dt
 		end
-
 	end
 
 	local thrustVector = Vector2(math.cos(self.angle), math.sin(self.angle))
@@ -123,6 +119,12 @@ function Bullet:Update(dt)
 	self.thrust = thrust * dt
 	self.thrustForce = TUNING.BULLET.THRUSTFORCE
 	self.velocity = self.velocity + self.thrust
+
+	if self.target then 
+		local speed = self.velocity:Length() + self.thrust:Length()
+		local vel = self.thrust:Normalize()
+		self.velocity = vel * speed
+	end
 
 	self.position = self.position + (self.velocity * dt)
 end
