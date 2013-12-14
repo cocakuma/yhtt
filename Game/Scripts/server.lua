@@ -235,6 +235,7 @@ function ResetGame(warmup)
 	global("particlesystems")
 	particlesystems = {}
 
+	gKillList = {}
 
 	GenerateLevel()
 end

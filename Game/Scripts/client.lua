@@ -418,10 +418,6 @@ function client_draw()
 					end					
 
 				end
-				for k,v in pairs(gRemoteView.kills) do
-					print(v.usr)
-				end
-
 
 				if gRemoteView.game.f == FLOW.WARMUP then
 					if gGameSong then 
@@ -508,31 +504,22 @@ function client_draw()
 				love.graphics.setColor(255,255,255,255)
 				love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)
 
-				local fakelog = {
-					"bob|Payload",
-					"bob|tim",
-					"tim|bob",
-					"bob|Border",
-					"bob|Rock",
-					"bob|fred",
-				}
-
-				for i,log in ipairs(fakelog) do
+				for i,log in pairs(gRemoteView.kills) do
 					local names = {}
-					for n1,n2 in string.gmatch(log, "(%w+)|(%w+)") do
+					for n1,n2 in string.gmatch(log.usr, "(%w+)|(%w+)") do
 						names[1] = n1
 						names[2] = n2
 					end
-					local s = string.format("%s was killed by %s", names[1], names[2])
+					local s = string.format("%s was killed by %s", names[2], names[1])
 
 					love.graphics.setFont(Fonts.info.font)
 					love.graphics.setColor(0,0,0,255)
 					love.graphics.print(s, 30+1, love.graphics.getHeight() -60+1 - 30*i)
-					if names[1] == "tim" or names[2] == "tim" then
+					if names[1] == gUser or names[2] == gUser then
 						love.graphics.setColor(255,255,55,255)
-					elseif names[2] == "Rock" then
+					elseif names[2] == "Obstacle" then
 						love.graphics.setColor(115,115,115,255)
-					elseif names[2] == "Border" then
+					elseif names[2] == "Arena" then
 						love.graphics.setColor(135,115,115,255)
 					elseif names[2] == "Payload" then
 						love.graphics.setColor(115,115,135,255)
