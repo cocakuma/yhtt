@@ -1,2 +1,2 @@
 cd Game\Scripts
-start ..\..\Love\love.exe --console client user=%USERNAME%
+start ..\..\Love\win\love.exe --console client user=%USERNAME%

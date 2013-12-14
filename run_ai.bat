@@ -1,2 +1,2 @@
 cd Game\Scripts
-start ..\..\Love\love.exe --console ai
+start ..\..\Love\win\love.exe --console ai
