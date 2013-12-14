@@ -130,7 +130,7 @@ function client_draw()
 			for k,ship in pairs(gRemoteView.ships) do
 				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
 				if ship.se_sht then
-					--SOUNDS:PlaySound("sfx.ingame.ship.shoot", sound_scale)
+					SOUNDS:PlaySound("sfx.ingame.ship.shoot", sound_scale)
 				end
 				if ship.se_atch then
 					SOUNDS:PlaySound("sfx.ingame.ship.attach", sound_scale)
@@ -162,9 +162,9 @@ function client_draw()
 					}
 					Explosion(data)
 					if ptcl.typ == 1 then
-						--SOUNDS:PlaySound("sfx.ingame.explosions.ship", 1.0)
+						SOUNDS:PlaySound("sfx.ingame.explosions.ship", 1.0)
 					else
-						--SOUNDS:PlaySound("sfx.ingame.explosions.missile", 1.0)
+						SOUNDS:PlaySound("sfx.ingame.explosions.missile", 1.0)
 					end
 				end
 			end	
@@ -261,10 +261,10 @@ function client_draw()
 					if gShipSounds[k] then 
 						gShipSounds[k]:SetVolumeScale(sound_scale)
 					elseif k == gRemoteID then
-						-- local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", sound_scale )
-						-- if snd then
-						-- 	gShipSounds[k] = snd
-						-- end						
+						local snd = SOUNDS:PlaySound("sfx.ingame.ship.thrust", sound_scale )
+						if snd then
+						 	gShipSounds[k] = snd
+						end						
 					end
 				end
 
@@ -438,7 +438,7 @@ function client_draw()
 						gGameSong = nil
 					end
 					if not gWarmupSong then
-						--gWarmupSong = SOUNDS:PlaySound("music.warmup", 0.3)
+						gWarmupSong = SOUNDS:PlaySound("music.warmup", 0.3)
 					end
 
 					love.graphics.setFont(Fonts.header.font)
@@ -463,7 +463,7 @@ function client_draw()
 						gWarmupSong = nil
 					end		
 					if not gGameSong then 
-						--gGameSong = SOUNDS:PlaySound("music.game", 0.3)
+						gGameSong = SOUNDS:PlaySound("music.game", 0.3)
 					end			
 
 					for i=1,gRemoteView.game.st do
