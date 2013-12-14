@@ -27,3 +27,8 @@ function lerp (a, b, t)
         return a + (b - a) * t
 end
 
+function math.clamp(num, min, max)
+	num = math.max(min, num)
+	num = math.min(max, num)
+	return num
+end

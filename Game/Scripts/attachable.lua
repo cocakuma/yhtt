@@ -218,6 +218,10 @@ function Attachable:AttachCooldown(dt)
 	end
 end
 
+function Attachable:CanAttach()
+	return self.canAttach
+end
+
 function Attachable:Attach()
 	if not self.canAttach then
 		return
@@ -229,7 +233,7 @@ function Attachable:Attach()
 	local dist = TUNING.SHIP.MAX_ATTACH_DISTANCE^2
 
 	for k,v in pairs(bodies) do
-		if v and v ~= self and v:IsOnTeam(self.team) and not v:IsChildOf(self) then
+		if v and v ~= self and v:IsOnTeam(self.team) and not v:IsChildOf(self) and v:CanAttach() then
 			local distsq = pos:DistSq(v.position)
 			if v._classname == "Payload" then
 				if distsq <= TUNING.SHIP.MAX_ATTACH_DISTANCE^2 then
@@ -252,7 +256,7 @@ function Attachable:Attach()
 			local vec = self.position - best.position
 			vec = vec:Normalize()
 			offset = vec * totalSize
-			print("Moving back a bit.")
+			print(self.ID, "was inside when it attached. Moving back a bit.")
 			self.position = best.position + offset
 		end
 
@@ -300,6 +304,36 @@ function Attachable:Detach()
 	end
 
 	print(self._classname, self.ID, "has detached!")
+end
+
+function Attachable:ExplosiveDetach(force)
+	for k,v in pairs(self.children) do
+
+		local vec = v.child.position - self.position
+		vec = vec:Normalize()
+
+		v.child.velocity = v.child.velocity + (vec * force)
+
+		self:RemoveChild(v.child)
+		if self.OnDetached then
+			self:OnDetached(v.child)
+		end
+		if v.child.OnDetached then
+			v.child:OnDetached(self)
+		end
+	end
+
+	if self.parent then
+		local parent = self.parent
+		self.parent:RemoveChild(self)
+		
+		if parent.OnDetached then
+			parent:OnDetached(self)
+		end
+		if self.OnDetached then
+			self:OnDetached(parent)
+		end
+	end
 end
 
 function Attachable:HasParent()

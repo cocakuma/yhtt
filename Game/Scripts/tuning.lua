@@ -22,15 +22,19 @@ return
 	PAYLOAD =
 	{
 		MASS = 30,
-		HEALTH = 20,
-		REGEN_RATE = 1,
+		HEALTH = 10,
+		REGEN_RATE = 0.33,
 		PULSE_COOLDOWN = 10, --Can't be dragged during this time!
+		DETACH_FORCE = 500,
 	},
 	DAMAGE = 
 	{
 		SHIP_ON_SHIP = 0.001, -- damage per unit of speed
 		BULLET_ON_SHIP = 1/5, -- damage per bullet
 		SHIP_ON_ROCK = 0.01,  -- ship hitting obstacle
+		BULLET_ON_PAYLOAD = 1,
+		PAYLOAD_ON_ROCK = 0.01,
+		PAYLOAD_ON_SHIP = 0.01,
 	},
 	GAME = 
 	{

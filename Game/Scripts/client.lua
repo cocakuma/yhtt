@@ -212,8 +212,9 @@ function client_draw()
 
 				love.graphics.setColor(255*(1-forcefield_scale),255*(1-forcefield_scale),255*forcefield_scale,255)
 				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+
 				if payload.t == 0 then
-					love.graphics.setColor(95,255,195,255)
+					love.graphics.setColor(55,255,155,255)
 				elseif payload.t == 1 then
 					love.graphics.setColor(195,95,255,255)
 				else
@@ -227,6 +228,18 @@ function client_draw()
 				for k,v in pairs(payload.l) do
 					love.graphics.line(payload.x, payload.y, v.x, v.y)
 				end
+
+				if payload.h < TUNING.PAYLOAD.HEALTH then
+					local maxRad = PAYLOAD_SIZE.rad - 3
+					local rad = maxRad
+					if payload.ht >= TUNING.PAYLOAD.PULSE_COOLDOWN then
+						rad = lerp(maxRad, 0, payload.h/TUNING.PAYLOAD.HEALTH)
+					end
+					love.graphics.setColor(255,0,0,255)
+
+					love.graphics.circle("fill", payload.x, payload.y, rad, PAYLOAD_SIZE.segs)
+				end
+
 				love.graphics.setLineWidth(prevWidth)
 			end
 
