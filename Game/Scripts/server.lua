@@ -146,9 +146,13 @@ function server_update(dt)
 		if not hit then
 			for k, body in pairs(bodies) do
 				if bullet.ship ~= body and bullet.ship.team ~= body.team and circles_overlap(bullet, body) then
-					body:Hit(bullet)
-					table.insert(bulletToRemove, bullet)
-					hit = true
+					if not body.shielded then
+						body:Hit(bullet)
+						table.insert(bulletToRemove, bullet)
+						hit = true
+					else
+						body:ShieldedHit(bullet)
+					end
 				end
 			end
 		end

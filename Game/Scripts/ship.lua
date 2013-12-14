@@ -24,22 +24,41 @@ function Ship:init(x, y, angle, team, ID)
 	self:Respawn()
 end
 
-function Ship:CanBoost()
-	return not self.boosting and self.numBoosts > 0
+function Ship:PowerActive()
+	return self.boosting or self.berserking or self.shielded
 end
 
-function Ship:BoostTimer(dt)
-	self.boostDuration_timer = self.boostDuration_timer - dt
-	if self.boostDuration_timer <= 0 then
-		self.boostDuration_timer = self.boostDuration
+function Ship:CanUsePower()
+	return not self:PowerActive() and self.numPowers > 0
+end
+
+function Ship:PowerTimer(dt)
+	self.powerDuration_timer = self.powerDuration_timer - dt
+	if self.powerDuration_timer <= 0 then
+		self.powerDuration_timer = self.powerDuration
 		self.boosting = false
-		self.numBoosts = self.numBoosts - 1
+		self.shielded = false
+		self.berserking = false
+		self.numPowers = self.numPowers - 1
 	end
 end
 
 function Ship:StartBoost()
-	if self:CanBoost() then
+	if self:CanUsePower() then
 		self.boosting = true
+	end
+end
+
+function Ship:StartBerserk()
+	if self:CanUsePower() then
+		self.berserking = true
+		self.currentAmmoClip = self.maxAmmoClip
+	end
+end
+
+function Ship:StartShield()
+	if self:CanUsePower() then
+		self.shielded = true
 	end
 end
 
@@ -55,7 +74,7 @@ function Ship:ShootCooldown(dt)
 	self.canShoot_timer = self.canShoot_timer - dt
 	if self.canShoot_timer <= 0 then
 		self.canShoot = true
-		self.canShoot_timer = TUNING.SHIP.SHOOT_COOLDOWN
+		self.canShoot_timer = self.canShootCooldown
 	end
 end
 
@@ -95,6 +114,14 @@ function Ship:HandleInput( )
 		self.tryBoost = true
 	end
 
+	if self.input["q"] == 1 then
+		self.tryShield = true
+	end
+
+	if self.input["e"] == 1 then
+		self.tryBerserk = true
+	end
+
 	if self.input['m_x'] then
 		self.mouse = Vector2(self.input['m_x'] or 0, self.input['m_y'] or 0)
 	else
@@ -122,14 +149,29 @@ function Ship:Update(dt)
 
 	if self.tryBoost then
 		self:StartBoost()
+	elseif self.tryBerserk then
+		self:StartBerserk()
+	elseif self.tryShield then
+		self:StartShield()
+	end
+
+	if self:PowerActive() then
+		self:PowerTimer(dt)
 	end
 
 	if self.boosting then
-		self:BoostTimer(dt)
-		self.thrustForce = 1000
+		self.thrustForce = TUNING.SHIP.BOOST_THRUST
 		self.thrusting = true
 	else
-		self.thrustForce = 100
+		self.thrustForce = TUNING.SHIP.THRUST
+	end
+
+	if self.berserking then
+		self.canShootCooldown = TUNING.SHIP.BERSERK_SHOOT_COOLDOWN
+		self.reloadSpeed = TUNING.SHIP.BERSERK_RELOAD_SPEED
+	else
+		self.canShootCooldown = TUNING.SHIP.SHOOT_COOLDOWN
+		self.reloadSpeed = TUNING.SHIP.RELOAD_SPEED
 	end
 
 	if self.turnLeft then
@@ -164,6 +206,8 @@ function Ship:Update(dt)
 	
 	self.shoot = false
 	self.tryBoost = false
+	self.tryShield = false
+	self.tryBerserk = false
 
 	self._base.Update(self, dt)
 end
@@ -172,8 +216,8 @@ function Ship:Pack(pkg)
 	pkg = self._base.Pack(self, pkg)
 	pkg = pack(pkg, 'ammo', self.currentAmmoClip)
 	pkg = pack(pkg, 'rl', self.reload_timer)
-	pkg = pack(pkg, 'b', self.numBoosts)
-	pkg = pack(pkg, 'bt', self.boostDuration_timer)
+	pkg = pack(pkg, 'b', self.numPowers)
+	pkg = pack(pkg, 'bt', self.powerDuration_timer)
 	pkg = pack(pkg, 'a', self.angle)
 	pkg = pack(pkg, 'h', self.health)
 	pkg = pack(pkg, 'it', self.didThrust and 1 or 0) --"input: thrust"
@@ -192,6 +236,15 @@ function Ship:Pack(pkg)
 	if self.boosting then
 		pkg = pack(pkg, 'se_bst', 1)
 	end	
+	if self.berserking then
+		pkg = pack(pkg, 'se_bsk', 1)
+	end
+	if self.shielded then
+		pkg = pack(pkg, 'se_sld', 1)
+	end
+	if self:PowerActive() then
+		pkg = pack(pkg, 'pwr', 1)
+	end
 	self.didThrust = false;
 	return pkg
 end
@@ -222,6 +275,19 @@ function Ship:Collide(other)
 	end
 end
 
+function Ship:ShieldedHit(bullet)
+	bullet.target = nil
+	bullet.angle = bullet.angle + math.pi
+	bullet.velocity = bullet.velocity * -1
+	bullet.team = self.team
+	bullet.target = bullet:LookForTarget()
+	bullet.ship = self
+
+	if bullet.target then
+		bullet.angle =  math.atan2(bullet.target.position.y - bullet.position.y, bullet.target.position.x - bullet.position.x)
+	end
+end
+
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
 	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/parent:GetMass()
@@ -230,10 +296,16 @@ function Ship:Hit(bullet)
 end
 
 function Ship:TakeDamage(damage, source)
+	if self.shielded then return end
 	self.health = math.max(0, self.health - damage)
 	if self.health == 0 then
 		self:Die(source)
 	end
+end
+
+function Ship:GainPower()
+	self.numPowers = self.numPowers + 1
+	self.numPowers = math.clamp(self.numPowers, 0, TUNING.SHIP.POWER_POINTS)
 end
 
 gKillList = {}
@@ -246,6 +318,10 @@ function Ship:Die(source)
 
 	if source and source.killname and self.killname then
 		table.insert( gKillList, 1, source.killname..'|'..self.killname )
+	end
+
+	if source.ship then
+		source.ship:GainPower()
 	end
 
 	while table.getn( gKillList ) > 5 do
@@ -282,12 +358,21 @@ function Ship:ResetShip()
 	self.turnLeft = false
 	self.turnRight = false
 
-	self.numBoosts = 3
+
+	---SHIP PLAYER POWERS
+
+	self.numPowers = TUNING.SHIP.POWER_POINTS
+	self.powerDuration = TUNING.SHIP.POWER_DURATION
+	self.powerDuration_timer = self.powerDuration
+
 	self.tryBoost = false
 	self.boosting = false
-	
-	self.boostDuration = 3
-	self.boostDuration_timer = self.boostDuration
+
+	self.tryBerserk = false
+	self.berserking = false
+
+	self.tryShield = false
+	self.shielded = false	
 
 	self.maxAmmoClip = TUNING.SHIP.MAX_AMMO_CLIP
 	self.minAmmoClip = 0

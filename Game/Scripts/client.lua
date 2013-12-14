@@ -267,7 +267,20 @@ function client_draw()
 					end
 				end
 
+				if ship.se_bsk == 1 then
 
+					love.graphics.setColor(255,0,0,125)
+					local time = ship.bt
+					local a1 = lerp(0, math.pi * 2, time/2)
+					local a2 = lerp(0, -math.pi * 3, time)
+					local a3 = lerp(0, math.pi * 2, time*2)
+					local sizeX = 20
+					local sizeY = 20
+					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a1, nil, nil, "line")
+					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a2, nil, nil, "line")
+					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a3, nil, nil, "line")
+
+				end
 
 				--team color
 				if ship.t == 0 then
@@ -315,6 +328,16 @@ function client_draw()
 					love.graphics.setColor(255,255,255,255)
 					DrawTriangle(20*flameLen, 4, ship.x, ship.y, ship.a-math.pi, 10*flameLen+5, 0)
 				end
+
+				if ship.se_sld == 1 then
+					if ship.t == 0 then
+						love.graphics.setColor(55,255,155,100)
+					else
+						love.graphics.setColor(155,55,255,100)
+					end
+					love.graphics.circle("fill", ship.x, ship.y, ship.r + 3)
+				end
+
 
 				if k == gRemoteID and not gSpectatorMode then
 					Renderer:SetCameraPos(ship.x, ship.y)
@@ -405,15 +428,15 @@ function client_draw()
 						local yOffset = Renderer.offset_y + (Renderer.offset_y - 75)
 						local xOffset = Renderer.offset_x
 						local boost_Rad = 10
-						xOffset = xOffset - (boost_Rad * 3)
-						for i = 1, 3 do
+						xOffset = xOffset - (boost_Rad * TUNING.SHIP.POWER_POINTS)
+						for i = 1, TUNING.SHIP.POWER_POINTS do
 							love.graphics.setColor(255,255,255,255)
 							love.graphics.circle("line", xOffset, yOffset, boost_Rad)
 
 							if i <= ship.b then
 								local a = maxAlpha
-								if i == ship.b and ship.se_bst then
-									a = lerp(0, maxAlpha, ship.bt/3)
+								if i == ship.b and ship.pwr then
+									a = lerp(0, maxAlpha, ship.bt/TUNING.SHIP.POWER_DURATION)
 								end
 								if ship.t == 0 then
 									love.graphics.setColor(55,255,155,a)
@@ -500,21 +523,21 @@ function client_draw()
 					end
 				end
 
-				local instructions = {
-									"Instructions:",
-									"W, LMB = Thrust",
-									"Space, RMB = Shoot",
-									"A,D,Mouse = Aim",
-									"F = Attach!!",
-									"L Shift = Boost!"
+				local instructions = {									
+									"Mouse = Move, Aim, Shoot",
+									"F = Attach",
+									"L Shift = Boost",
+									"Q = Shield",
+									"E = Berserk"
 								}
 				local instructionstring = table.concat(instructions,"          ")
 
+				local xPos = 250
 				love.graphics.setFont(Fonts.info.font)
 				love.graphics.setColor(0,0,0,255)
-				love.graphics.print(instructionstring, 30+1, love.graphics.getHeight() - 30+1)
+				love.graphics.print(instructionstring, xPos+1, love.graphics.getHeight() - 30+1)
 				love.graphics.setColor(255,255,255,255)
-				love.graphics.print(instructionstring, 30, love.graphics.getHeight() - 30)
+				love.graphics.print(instructionstring, xPos, love.graphics.getHeight() - 30)
 
 				for i,log in pairs(gRemoteView.kills) do
 					local names = {}

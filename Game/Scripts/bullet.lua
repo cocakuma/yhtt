@@ -121,7 +121,7 @@ function Bullet:Update(dt)
 	self.velocity = self.velocity + self.thrust
 
 	if self.target then 
-		local speed = self.velocity:Length() + self.thrust:Length()
+		local speed = self.velocity:Length()
 		local vel = self.thrust:Normalize()
 		self.velocity = vel * speed
 	end
