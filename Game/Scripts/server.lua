@@ -113,7 +113,7 @@ function server_update(dt)
 			parent.position = body.position + oob + (parent.position - body.position)
 			parent:ClampOffsets()
 			if body._classname == "Ship" then
-				body:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK )
+				body:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK, arena )
 			end
 		end
 
@@ -245,6 +245,7 @@ function package_world()
 	pkg = arena:Pack(pkg)
 	pkg = endpacktable(pkg)	
 
+
 	pkg = beginpacktable(pkg, 'obs')
 	for k,obs in pairs(obstacles) do
 		pkg = beginpacktable(pkg, k)
@@ -281,6 +282,13 @@ function package()
 	pkg = pack(pkg, 'st', GAMESTATE.pointsToWin)
 	pkg = endpacktable(pkg)
 
+	pkg = beginpacktable(pkg,'kills')
+	for k,v in pairs(gKillList) do
+		pkg = beginpacktable(pkg,k)
+		pkg = pack(pkg, 'usr', v)
+		pkg = endpacktable(pkg)
+	end
+	pkg = endpacktable(pkg)
 
 	pkg = beginpacktable(pkg, 'ptcl')
 	for k,obs in pairs(particlesystems) do

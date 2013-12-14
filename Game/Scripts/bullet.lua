@@ -35,8 +35,10 @@ function Bullet:init(ship)
 
 	self.target = self:LookForTarget()
 
-	self.search_Timer = 0.33
-
+	self.search_Timer = 0.33	
+	if ship.killname then
+		self.killname = ship.killname
+	end
 end
 
 function Bullet:LookForTarget()

@@ -8,6 +8,7 @@ function Arena:init(width, height)
 
 	self.width = width
 	self.height = height
+	self.killname = 'Arena'
 end
 
 function Arena:Pack(pkg)

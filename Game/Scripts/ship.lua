@@ -107,6 +107,9 @@ function Ship:HandleInput( )
 	if self.input["m_r"] == 1 then
 		self.shoot = true
 	end
+	if self.input and self.input.usr then
+		self.killname = self.input.usr
+	end
 end
 
 function Ship:Update(dt)
@@ -214,31 +217,40 @@ function Ship:Collide(other)
 	if other.velocity then impactVel = impactVel + other.velocity:Length() end
 
 	if other.obstacle then
-		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK )
+		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_ROCK, other )
 	else
-		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_SHIP )
+		self:TakeDamage( impactVel * TUNING.DAMAGE.SHIP_ON_SHIP, other )
 	end
 end
 
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
 	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/self:GetMass()
-	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP )
+	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP, bullet )
 end
 
-function Ship:TakeDamage(damage)
+function Ship:TakeDamage(damage, source)
 	self.health = math.max(0, self.health - damage)
 	if self.health == 0 then
-		self:Die()
+		self:Die(source)
 	end
 end
 
-function Ship:Die()
+gKillList = {}
+function Ship:Die(source)
 	ParticleSystem(self)	
 	self:Detach()
 	self:ResetShip()
 	bodies[self.ID] = nil
 	to_respawn[self.ID] = {ship=self, remaining= TUNING.SHIP.RESPAWN_TIME}
+
+	if source and source.killname and self.killname then
+		table.insert( gKillList, 1, source.killname..'|'..self.killname )
+	end
+
+	while table.getn( gKillList ) > 5 do
+		gKillList[#gKillList] = nil
+	end
 end
 
 function Ship:TryRespawn(dt)

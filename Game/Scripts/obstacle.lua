@@ -12,6 +12,7 @@ function Obstacle:init(x, y, radius)
 	self.radius = radius
 	
 	self.position = Vector2(x, y)
+	self.killname = 'Obstacle'
 end
 
 function Obstacle:Pack(pkg)

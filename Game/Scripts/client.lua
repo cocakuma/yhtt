@@ -416,7 +416,12 @@ function client_draw()
 
 						love.graphics.setLineWidth(prevWidth)
 					end					
+
 				end
+				for k,v in pairs(gRemoteView.kills) do
+					print(v.usr)
+				end
+
 
 				if gRemoteView.game.f == FLOW.WARMUP then
 					if gGameSong then 

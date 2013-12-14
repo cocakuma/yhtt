@@ -8,6 +8,7 @@ function Payload:init(x, y)
 	self._base.init(self, x, y, PAYLOAD_SIZE.rad, TUNING.PAYLOAD.MASS)
 
 	self.team = -1
+	self.killname = 'Payload'
 end
 
 function Payload:OnAttached(other)
