@@ -2,8 +2,8 @@ local gMessageStart = ':>>'
 local gMessageEnd = '<<:' 
 local gMessageTypeDelim = '|' 
 gIsServer = false
-gTickTime = 1 / 30
-
+gFps = 30
+gTickTime = 1 / gFps
 
 function sendmessages(node)
 	local message = node.out_messages[#node.out_messages]

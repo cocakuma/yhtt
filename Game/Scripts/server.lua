@@ -331,6 +331,7 @@ function package()
 	pkg = endpacktable(pkg)
 
 	pkg = pack(pkg, 'frame_id', gFrameID)
+	pkg = pack(pkg, 'fps', gFps)
 	pkg = endpack(pkg)
 	for i,client in pairs(gServer.clients) do
 		if not client.has_world then
@@ -390,5 +391,10 @@ end
 function love.keypressed(key)
 	if key == 'f5' then
 		ResetGame(false)
+	elseif key == 'f9' then 
+		gFps = gFps * 2
+	elseif key == 'f10' then
+		gFps = gFps / 2
 	end
+	gTickTime = 1 / gFps
 end

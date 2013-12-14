@@ -387,6 +387,9 @@ function client_draw()
 		function()
 			if gRemoteView.game then
 
+				gFps = gRemoteView.fps
+				gTickTime = 1 / gFps
+
 				for k,ship in pairs(gRemoteView.ships) do
 					if k == gRemoteID then	--PERSONAL SHIP HUD. AMMO/ BOOSTS
 						--This is your ship, get info from it
