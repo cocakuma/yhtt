@@ -53,9 +53,11 @@ function Renderer:Draw(worldcb, hudcb)
 	self.offset_x = love.graphics.getWidth()/2
 	self.offset_y = love.graphics.getHeight()/2
 
+	local res_scale = love.graphics.getWidth() / 1280
+
 	love.graphics.push()
 	love.graphics.translate(self.offset_x, self.offset_y)
-	love.graphics.scale(self.camera.zoom.current)
+	love.graphics.scale(self.camera.zoom.current * res_scale)
 	love.graphics.translate(-self.camera.pos.x, -self.camera.pos.y)
 	love.graphics.setLineWidth(self:getZoomedLineWidth(self.default_line_width))
 	-- now drawing in WORLD space
