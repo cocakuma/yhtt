@@ -95,7 +95,6 @@ function Bullet:Update(dt)
 	if self.target then		
 
 		local targetAngle =  math.atan2(self.target.position.y - self.position.y, self.target.position.x - self.position.x)
-		print(self.angle - targetAngle)
 		local delta = (self.angle - targetAngle) * 8
 
 		delta = math.min(delta, math.pi)
