@@ -21,8 +21,8 @@ function love.update()
 end
 
 function love.draw()
-	local x = 500
-	local y = 50
+	local x = love.graphics.getWidth() - 100
+	local y = 10
 	local y_delta = 20
 	love.graphics.print("Tick: "..round3(gTickTime), x, y)
 	y = y + y_delta
@@ -35,7 +35,9 @@ function love.draw()
 
 	local instructions = {
 			"Instructions:",
-			"F5 = Reset Game" }
+			"F5 = Reset Game",
+			"F9 = Double Fps",
+			"F10 = Half Fps" }
 	local instructionstring = table.concat(instructions,"          ")
   	
   	love.graphics.setColor(0,0,0,255)
