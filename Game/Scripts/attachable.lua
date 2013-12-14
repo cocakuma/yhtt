@@ -203,7 +203,7 @@ function Attachable:GetChild(child, offset)
 end
 
 function Attachable:RemoveChild(child)	
-	print(self.ID, "Remove Child: ", child.ID)
+	print(self.ID, "removed child: ", child.ID)
 	child.canAttach = false
 	child.wantsToDetach = false
 	child.parent = nil
@@ -247,6 +247,15 @@ function Attachable:Attach()
 
 	if best then
 		local offset = pos - best.position
+		local totalSize = self.radius + best.radius + 1
+		if offset:Length() <= totalSize then
+			local vec = self.position - best.position
+			vec = vec:Normalize()
+			offset = vec * totalSize
+			print("Moving back a bit.")
+			self.position = best.position + offset
+		end
+
 		self.se_attach = true
 		best:GetChild(self, offset)
 		if best.OnAttached then
