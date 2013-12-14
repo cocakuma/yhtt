@@ -15,7 +15,7 @@
 			"file": "run_ai.bat",
 			"settings":
 			{
-				"buffer_size": 54,
+				"buffer_size": 39,
 				"line_ending": "Windows"
 			}
 		},
@@ -23,7 +23,7 @@
 			"file": "Game/Scripts/main.lua",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 8451,
 				"line_ending": "Windows"
 			}
 		},
@@ -31,7 +31,7 @@
 			"file": "Game/Scripts/network.lua",
 			"settings":
 			{
-				"buffer_size": 6114,
+				"buffer_size": 4885,
 				"line_ending": "Windows"
 			}
 		},
@@ -48,7 +48,7 @@
 			"file": "run_yog.bat",
 			"settings":
 			{
-				"buffer_size": 91,
+				"buffer_size": 59,
 				"line_ending": "Windows"
 			}
 		}
@@ -220,15 +220,15 @@
 					"file": "run_ai.bat",
 					"settings":
 					{
-						"buffer_size": 54,
+						"buffer_size": 39,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								39,
+								39
 							]
 						],
 						"settings":
@@ -246,15 +246,15 @@
 					"file": "Game/Scripts/main.lua",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 8451,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								597,
+								569
 							]
 						],
 						"settings":
@@ -273,15 +273,15 @@
 					"file": "Game/Scripts/network.lua",
 					"settings":
 					{
-						"buffer_size": 6114,
+						"buffer_size": 4885,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1851,
+								1851
 							]
 						],
 						"settings":
@@ -326,15 +326,15 @@
 					"file": "run_yog.bat",
 					"settings":
 					{
-						"buffer_size": 91,
+						"buffer_size": 59,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								59,
+								59
 							]
 						],
 						"settings":
