@@ -55,7 +55,6 @@ function sendinput(client)
 	else
 		local x, y, n = love.joystick.getAxes( gInputId )
 		local dist = Vector2(x,y)
-		print( dist:Length() )
 		if dist:Length() > 0.5 then
 			pkg = pack(pkg, 'm_x', x)
 			pkg = pack(pkg, 'm_y', y)
