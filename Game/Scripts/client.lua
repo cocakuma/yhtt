@@ -555,13 +555,18 @@ function client_draw()
 					end
 				end
 
-				local instructions = {									
-									"Mouse = Move, Aim, Shoot",
-									"F = Attach",
-									"L Shift = Boost",
-									"Q = Shield",
-									"E = Berserk"
-								}
+				local controls = require('controls')
+				local instructions = {} 
+				local control_type = 'KeyboardKey'
+				if gInputId > 0 then
+					control_type = 'GamepadButton'
+				end
+				for k,action in pairs(controls) do
+					local control = action[control_type]
+					if control then 
+						table.insert(instructions, action.Instruction..'=\''..string.upper(control)..'\'')
+					end
+				end
 				local instructionstring = table.concat(instructions,"          ")
 
 				local xPos = 250
