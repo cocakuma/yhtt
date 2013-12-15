@@ -387,7 +387,18 @@ function client_draw()
 				love.graphics.setColor(255,190,100,255)
 				DrawTriangle(15*flameLen, 3, bullet.x, bullet.y, bullet.a-math.pi, 7.2*flameLen+5, 0)
 				love.graphics.setColor(255,255,255,255)
-				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)				
+				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)	
+
+				if bullet.tx then
+					print("Draw Line")
+					if bullet.t == 0 then
+						love.graphics.setColor(55,255,155,255)
+					else
+						love.graphics.setColor(155,55,255,255)
+					end
+					love.graphics.line(bullet.x, bullet.y, bullet.tx, bullet.ty)
+				end
+
 			end
 
 			for k,expl in pairs(explosions) do
@@ -401,7 +412,6 @@ function client_draw()
 					love.graphics.rectangle("fill", v.position.x, v.position.y, expl.size, expl.size)
 				end
 			end
-
 			
 			for k,obstacle in pairs(gRemoteWorldView.obs) do
 				love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)

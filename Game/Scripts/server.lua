@@ -343,11 +343,31 @@ function package()
 	gPackageDT = socket.gettime() - start_time
 end
 
+function CountTeams()
+	local num = 0
+	for k,v in pairs(gServer.clients) do		
+		num = num + 1
+	end
+	return num
+end
+
+function ScaleToFit()
+	local numShips = CountTeams()
+	local t = numShips/TUNING.GAME.MAX_SHIPS
+	local arenaSize = round(lerp(TUNING.GAME.MIN_ARENA_SIZE, TUNING.GAME.MAX_ARENA_SIZE, t),0)
+	local payloadMass = numShips * TUNING.GAME.PAYLOAD_MASS_FACTOR + TUNING.PAYLOAD.BASE_MASS
+	local numObstacles = round(lerp(8, 20, t))
+	return {sz = arenaSize, plm = payloadMass, obs = numObstacles}
+end
+
 function GenerateLevel()
 	print('Generating Level.')
+	local gen = ScaleToFit()
+	print(gen.sz, gen.pts, gen.plm)
 
-	arena = Arena(1600, 1600)
-
+	TUNING.PAYLOAD.MASS = gen.plm
+	
+	arena = Arena(gen.sz, gen.sz)
 	goals = {
 		Goal(0, Vector2(20,arena.height/2), 40, 600),
 		Goal(1, Vector2(arena.width-20,arena.height/2), 40, 600),
@@ -356,13 +376,13 @@ function GenerateLevel()
 	for i,client in pairs(gServer.clients) do
 		Ship(0,0,0,0,client.ID)
 	end		
-
+	
 	for i=1,GAMESTATE.pointsToWin*2 - 1 do
 		local pl = Payload(arena.width/2, i*arena.height/(GAMESTATE.pointsToWin*2))
 	end	
 
 	local mirror = math.random() < 0.5
-	for i=1,10 do
+	for i=1,gen.obs do
 		local rad = math.random()*100+40
 		local x = (40+rad)+(math.random()*((arena.width/2)-80-rad-rad))
 		local pos = Vector2(x, math.random()*arena.height)

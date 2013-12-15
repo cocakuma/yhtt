@@ -26,10 +26,12 @@ return
 		SPEED = 10,
 		THRUSTFORCE = 150,
 		RAND = 0.2,
+		TURNSPEED = 1.5,
 	},
 	PAYLOAD =
 	{
-		MASS = 30,
+		MASS = 10,
+		BASE_MASS = 10,
 		HEALTH = 10,
 		REGEN_RATE = 0.33,
 		PULSE_COOLDOWN = 10, --Can't be dragged during this time!
@@ -49,6 +51,10 @@ return
 		WARMUP_TIME = 1,
 		VICTORY_TIME = 10,
 		POINTS_TO_WIN = 2,
+		MIN_ARENA_SIZE = 1000,
+		MAX_ARENA_SIZE = 3000,
+		PAYLOAD_MASS_FACTOR = 2,
+		MAX_SHIPS = 64
 	},
 
 }
