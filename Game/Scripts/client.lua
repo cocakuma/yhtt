@@ -21,31 +21,39 @@ local gRemoteView = nil
 local gRemoteID = "0"
 
 gRenderDt = 0
+gInputId = 0
 explosions = {}
 
 local lastMouse = Vector2(0,0)
 
 function sendinput(client)
+ 	gInputId = gInputId % ( love.joystick.getNumJoysticks() + 1 )
+
 	local input = defaultinput()
 	local pkg = beginpack()
-	for k,v in pairs(input) do
-		if love.keyboard.isDown(k) then
-			pkg = pack(pkg, k, 1)
-		end
-	end
-	
-	local mouse = Vector2(love.mouse.getX(), love.mouse.getY())
-	if (lastMouse - mouse):Length() > 2.0 then
-		pkg = pack(pkg, 'm_x', love.mouse.getX() - Renderer.offset_x)
-		pkg = pack(pkg, 'm_y', love.mouse.getY() - Renderer.offset_y)
-	end
-	lastMouse = mouse
 
-	if love.mouse.isDown("r") then
-		pkg = pack(pkg, 'm_r', 1)
-	end
-	if love.mouse.isDown("l") then
-		pkg = pack(pkg, 'm_l', 1)
+	if gInputId == 0 then		
+		for k,v in pairs(input) do
+			if love.keyboard.isDown(k) then
+				pkg = pack(pkg, k, 1)
+			end
+		end		
+		
+		local mouse = Vector2(love.mouse.getX(), love.mouse.getY())
+		if (lastMouse - mouse):Length() > 2.0 then
+			pkg = pack(pkg, 'm_x', love.mouse.getX() - Renderer.offset_x)
+			pkg = pack(pkg, 'm_y', love.mouse.getY() - Renderer.offset_y)
+		end
+		lastMouse = mouse
+
+		if love.mouse.isDown("r") then
+			pkg = pack(pkg, 'm_r', 1)
+		end
+		if love.mouse.isDown("l") then
+			pkg = pack(pkg, 'm_l', 1)
+		end
+	else
+		--local x,y,n = love.joystick.getAxes( gInputId )
 	end
 
 	pkg = pack(pkg, 'cid', gRemoteID)
@@ -620,14 +628,15 @@ gSpectatorMode = false
 function love.keypressed(key)
 	if key == 'f2' then
 		gShowProfiling = not gShowProfiling
-	end
-	if key == 'f10' then
+	elseif key == 'f10' then
 		gSpectatorMode = not gSpectatorMode
 		if gSpectatorMode then
 			Renderer:ZoomOut()
 		else
 			Renderer:ZoomIn()
 		end
+	elseif key == 'f3' then
+		gInputId = gInputId + 1
 	end
 end
 
