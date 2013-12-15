@@ -34,7 +34,6 @@ function sendinput(client)
 	if gInputId == 0 then	
 		for k,action in pairs(controls) do
 			if action.KeyboardKey and love.keyboard.isDown(action.KeyboardKey) then
-				print('packing'..action.Id)
 				pkg = pack(pkg, action.Id, 1)
 			end
 		end		
