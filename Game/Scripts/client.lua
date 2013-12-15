@@ -53,7 +53,29 @@ function sendinput(client)
 			pkg = pack(pkg, 'm_l', 1)
 		end
 	else
-		--local x,y,n = love.joystick.getAxes( gInputId )
+		local x, y, n = love.joystick.getAxes( gInputId )
+		local dist = Vector2(x,y)
+		print( dist:Length() )
+		if dist:Length() > 0.5 then
+			pkg = pack(pkg, 'm_x', x)
+			pkg = pack(pkg, 'm_y', y)
+		end
+
+		local joystick_buttons = 
+		{
+			{ button=1, kb='w' },
+			{ button=2, kb='q' },
+			{ button=3, kb=' ' },
+			{ button=4, kb='e' },
+			{ button=5, kb='f' },
+			{ button=6, kb='lshift' }
+		}
+
+		for i,button in pairs(joystick_buttons) do
+			if love.joystick.isDown( gInputId, button.button ) then
+				pkg = pack(pkg, button.kb, 1)
+			end
+		end
 	end
 
 	pkg = pack(pkg, 'cid', gRemoteID)
