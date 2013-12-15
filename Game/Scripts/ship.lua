@@ -4,6 +4,8 @@ require("bullet")
 
 require("attachable")
 
+local controls = require('controls')
+
 class("Ship", Attachable)
 
 
@@ -91,34 +93,34 @@ function Ship:HandleInput( )
 		return
 	end
 	
-	if self.input["d"] == 1 then
+	if self.input[controls.TurnLeft.Id] == 1 then
 		self.turnLeft = true
 	end
-	if self.input["a"] == 1 then
+	if self.input[controls.TurnRight.Id] == 1 then
 		self.turnRight = true
 	end
-	if self.input["w"] == 1 then
+	if self.input[controls.Thrust.Id] == 1 then
 		self.thrusting = true
 	end
-	if self.input[" "] == 1 then
+	if self.input[controls.Shoot.Id] == 1 then
 		self.shoot = true
 	end
-	if self.input["f"] == 1 then
+	if self.input[controls.Attach.Id] == 1 then
 		if not self.parent and not next(self.children) then
 			self.tryAttach = true
 		else
 			self.tryDetach = true
 		end
 	end
-	if self.input["lshift"] == 1 then
+	if self.input[controls.Boost.Id] == 1 then
 		self.tryBoost = true
 	end
 
-	if self.input["q"] == 1 then
+	if self.input[controls.Shield.Id] == 1 then
 		self.tryShield = true
 	end
 
-	if self.input["e"] == 1 then
+	if self.input[controls.Berserk.Id] == 1 then
 		self.tryBerserk = true
 	end
 

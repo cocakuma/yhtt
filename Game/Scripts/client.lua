@@ -8,10 +8,11 @@ require("payload")
 require("obstacle")
 require("render")
 require("network")
-require("input")
 require("explosion")
 require("gamestate")
 require("soundsystem")
+
+local controls = require('controls')
 TUNING = require("tuning")
 
 gClient = nil
@@ -28,14 +29,13 @@ local lastMouse = Vector2(0,0)
 
 function sendinput(client)
  	gInputId = gInputId % ( love.joystick.getNumJoysticks() + 1 )
-
-	local input = defaultinput()
+	
 	local pkg = beginpack()
-
-	if gInputId == 0 then		
-		for k,v in pairs(input) do
-			if love.keyboard.isDown(k) then
-				pkg = pack(pkg, k, 1)
+	if gInputId == 0 then	
+		for k,action in pairs(controls) do
+			if action.KeyboardKey and love.keyboard.isDown(action.KeyboardKey) then
+				print('packing'..action.Id)
+				pkg = pack(pkg, action.Id, 1)
 			end
 		end		
 		
@@ -60,21 +60,11 @@ function sendinput(client)
 			pkg = pack(pkg, 'm_y', y)
 		end
 
-		local joystick_buttons = 
-		{
-			{ button=1, kb='w' },
-			{ button=2, kb='q' },
-			{ button=3, kb=' ' },
-			{ button=4, kb='e' },
-			{ button=5, kb='f' },
-			{ button=6, kb='lshift' }
-		}
-
-		for i,button in pairs(joystick_buttons) do
-			if love.joystick.isDown( gInputId, button.button ) then
-				pkg = pack(pkg, button.kb, 1)
+		for k,action in pairs(controls) do
+			if action.GamepadButton and love.keyboard.isDown(action.GamepadButton) then
+				pkg = pack(pkg, action.Id, 1)
 			end
-		end
+		end	
 	end
 
 	pkg = pack(pkg, 'cid', gRemoteID)

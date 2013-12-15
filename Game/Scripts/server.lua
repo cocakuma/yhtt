@@ -9,7 +9,6 @@ require("obstacle")
 require("render")
 require("network")
 require("arena")
-require("input")
 require("gamestate")
 TUNING = require("tuning")
 
@@ -28,6 +27,7 @@ end
 function receiveinput(client)
 	local message = nextmessage(client, 'input')
 	while message do
+		print(message)
 		local input = unpack(1, message)
 		message = nextmessage(client, 'input')
 		if bodies[input.cid] then
