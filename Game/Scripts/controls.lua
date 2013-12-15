@@ -34,14 +34,14 @@ return
 	{
 		Id 				= 	NextActionId(),
 		KeyboardKey 	= 	'd',
-		Instruction 	= 	'Turn Left'
+		Instruction 	= 	'Turn Right'
 	},		
 
 	TurnRight = 
 	{
 		Id 				= 	NextActionId(),
 		KeyboardKey 	= 	'a',
-		Instruction 	= 	'Turn Right'
+		Instruction 	= 	'Turn Left'
 	},	
 
 	Boost = 

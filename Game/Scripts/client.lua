@@ -558,13 +558,15 @@ function client_draw()
 				local controls = require('controls')
 				local instructions = {} 
 				local control_type = 'KeyboardKey'
+				local control_names = require('keyboard')
 				if gInputId > 0 then
 					control_type = 'GamepadButton'
+					control_names = require('gamepad')
 				end
 				for k,action in pairs(controls) do
 					local control = action[control_type]
 					if control then 
-						table.insert(instructions, action.Instruction..'=\''..string.upper(control)..'\'')
+						table.insert(instructions, action.Instruction..'='..control_names[control])
 					end
 				end
 				local instructionstring = table.concat(instructions,"          ")
