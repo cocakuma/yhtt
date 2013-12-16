@@ -177,6 +177,8 @@ function client_draw(dt)
 			table.remove(gFrameQueue, 1)
 		end
 	end
+
+	gQueuedFrames = #gFrameQueue
 	
 	if gRemoteView and gRemoteWorldView then
 		local blend = ( gClientTime - gRemoteView.time ) / ( gFrameQueue[1].time - gRemoteView.time )
