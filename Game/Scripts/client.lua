@@ -82,6 +82,14 @@ function lerp_position(a,b,l)
 	end
 end
 
+function lerp_angle(a,b,l)
+	if not b then
+		return a.a
+	else
+		return lerp(a.a, b.a, l)
+	end
+end
+
 gLocalSoundScale = 1.0
 gRemoteSoundScale = 0.4
 
@@ -390,18 +398,19 @@ function client_draw(dt)
 			end
 
 			for k,bullet in pairs(gRemoteView.blts) do
-				local bullet_x, bullet_y = lerp_position(bullet, gRemoteView.blts[k], blend)
+				local bullet_x, bullet_y = lerp_position(bullet, gFrameQueue[1].blts[k], blend)
+				local bullet_a = lerp_angle(bullet, gFrameQueue[1].blts[k], blend)
 				if bullet.t == 0 then
 					love.graphics.setColor(55,255,155,255)
 				else
 					love.graphics.setColor(155,55,255,255)
 				end
-				DrawRectangle(5,2,bullet.x, bullet.y, bullet.a)
+				DrawRectangle(5,2,bullet_x, bullet_y, bullet_a)
 				local flameLen = math.random()*0.7+0.2
 				love.graphics.setColor(255,190,100,255)
-				DrawTriangle(15*flameLen, 3, bullet_x, bullet_y, bullet.a-math.pi, 7.2*flameLen+5, 0)
+				DrawTriangle(15*flameLen, 3, bullet_x, bullet_y, bullet_a-math.pi, 7.2*flameLen+5, 0)
 				love.graphics.setColor(255,255,255,255)
-				DrawTriangle(10*flameLen, 2, bullet_x, bullet_y, bullet.a-math.pi, 5*flameLen+5, 0)	
+				DrawTriangle(10*flameLen, 2, bullet_x, bullet_y, bullet_a-math.pi, 5*flameLen+5, 0)	
 
 				if bullet.tx then
 					print("Draw Line")
