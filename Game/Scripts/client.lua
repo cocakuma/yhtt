@@ -132,7 +132,7 @@ function client_draw(dt)
 		if queued_frame_count == 0 or not gRemoteView or gClientTime >= gFrameQueue[#gFrameQueue].time then
 			print('Client ahead!')
 			gClientState = 'ahead'			
-		elseif gFrameQueue[1].time > gClientTime + target_latency then
+		elseif queued_frame_count > target_queued_frames + 1 then
 			print('Client behind!')
 			gClientState = 'behind'			
 		end
