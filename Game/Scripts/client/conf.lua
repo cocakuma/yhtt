@@ -1,8 +1,8 @@
 function love.conf(t)
 
 	t.title = "TRI"
-	t.screen.width = 1920
-	t.screen.height = 1080
+	t.screen.width = 1600
+	t.screen.height = 900
 	t.screen.fsaa = 4
 
 	t.modules.physics = false
