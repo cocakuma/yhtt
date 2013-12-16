@@ -340,8 +340,12 @@ function client_draw(dt)
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
-				for k,v in pairs(ship.l) do
-					love.graphics.line(ship_x, ship_y, v.x, v.y)
+				for i,v in pairs(ship.l) do
+					local end_x, end_y = v.x, v.y
+					if gFrameQueue[1].ships[k] then
+						end_x, end_y = lerp_position(v, gFrameQueue[1].ships[k].l[i], blend)
+					end
+					love.graphics.line(ship_x, ship_y, end_x, end_y)
 				end
 				love.graphics.setLineWidth(prevWidth)
 
