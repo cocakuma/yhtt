@@ -437,14 +437,14 @@ function client_draw(dt)
 					love.graphics.rectangle("fill", v.position.x, v.position.y, expl.size, expl.size)
 				end
 			end
-			
+
+			love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)
 			for k,obstacle in pairs(gRemoteWorldView.obs) do
-				love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)
 			end
 
-			for k,obstacle in pairs(gRemoteWorldView.obs) do
-				love.graphics.setColor(155,155,155,255)
+			love.graphics.setColor(155,155,155,255)
+			for k,obstacle in pairs(gRemoteWorldView.obs) do	
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r-5)
 			end			
 		end,
