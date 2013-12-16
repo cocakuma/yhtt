@@ -17,6 +17,7 @@ gServer = nil
 
 gFrameID = 0
 gWorldPackage = nil
+gServerTime = 0
 
 ENT_ID = 0
 function NextID()
@@ -49,9 +50,11 @@ function server_load()
 	ResetGame(true)
 end
 
-function server_update(dt)
+gTimeScale = 1
+function server_update(dt, real_dt)
+	gTimeScale = dt / real_dt
 	local start_time = socket.gettime()
-
+	gServerTime = gServerTime + dt
 	for i,client in pairs(gServer.clients) do
 		receiveinput(client)		
 	end		
@@ -331,6 +334,8 @@ function package()
 
 	pkg = pack(pkg, 'frame_id', gFrameID)
 	pkg = pack(pkg, 'fps', gFps)
+	pkg = pack(pkg, 'time', gServerTime)
+	pkg = pack(pkg, 'time_scale', gTimeScale)
 	pkg = endpack(pkg)
 	for i,client in pairs(gServer.clients) do
 		if not client.has_world then
@@ -410,10 +415,5 @@ end
 function love.keypressed(key)
 	if key == 'f5' then
 		ResetGame(false)
-	elseif key == 'f9' then 
-		gFps = gFps * 2
-	elseif key == 'f10' then
-		gFps = gFps / 2
 	end
-	gTickTime = 1 / gFps
 end

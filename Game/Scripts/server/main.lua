@@ -16,7 +16,7 @@ function love.update()
 	gDt = this_tick - last_tick
 	last_tick = this_tick
 	local sim_start = this_tick
-	server_update(gTickTime)
+	server_update(gTickTime, gDt)
 	gUpdate = socket.gettime() - sim_start
 end
 
@@ -35,9 +35,7 @@ function love.draw()
 
 	local instructions = {
 			"Instructions:",
-			"F5 = Reset Game",
-			"F9 = Double Fps",
-			"F10 = Half Fps" }
+			"F5 = Reset Game" }
 	local instructionstring = table.concat(instructions,"          ")
   	
   	love.graphics.setColor(0,0,0,255)

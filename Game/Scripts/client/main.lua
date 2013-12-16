@@ -11,14 +11,14 @@ end
 
 local gDt = 0
 local last_tick = socket.gettime()
-function love.draw()	
-	while socket.gettime() - last_tick < gTickTime do	
-		updateclient(gClient)		
-	end
+function love.draw()
+
 	local this_tick = socket.gettime()
 	gDt = this_tick - last_tick
 	last_tick = this_tick
-	client_draw()
+
+	updateclient(gClient)		
+	client_draw(gDt)
 
 	if gShowProfiling then 
 		local x = 1100

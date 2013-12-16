@@ -24,6 +24,7 @@ local gRemoteID = "0"
 gRenderDt = 0
 gInputId = 0
 explosions = {}
+gTimeScale = 1
 
 local lastMouse = Vector2(0,0)
 
@@ -73,6 +74,14 @@ function sendinput(client)
 	send(client, pkg, 'input')
 end
 
+function lerp_position(a,b,l)
+	if not b then
+		return a.x,a.y
+	else
+		return lerp(a.x, b.x, l),  lerp(a.y, b.y, l)
+	end
+end
+
 gLocalSoundScale = 1.0
 gRemoteSoundScale = 0.4
 
@@ -82,7 +91,9 @@ gPlayCountdown = true
 gQueuedFrames = 0
 gClientState = 'ok'
 gShipSounds = {}
-function client_draw()
+gClientTime = 0
+gFrameQueue = {}
+function client_draw(dt)	
 	local start_time = socket.gettime()
 
 	local id_message = nextmessage(gClient, 'ID')
@@ -97,71 +108,80 @@ function client_draw()
 		gRemoteWorldView = unpack(1, world_view_message)
 	end
 	
-	local message_count = messagecount(gClient, 'view')
-	gQueuedFrames = message_count - 1
-	if message_count == 0 then
-		gClientState = 'ahead'
-	elseif message_count > 4 then
-		gClientState = 'behind'
+	local frame_message = nextmessage(gClient, 'view')
+	while frame_message do
+		gFrameQueue[#gFrameQueue + 1] = unpack(1, frame_message)
+		frame_message = nextmessage(gClient, 'view')
 	end
 
-	if gClientState ~= 'ok' then
-		print('Client State: '..gClientState )
-	end
-
-	local target_queue = 3
-	if gClientState == 'ahead' then
-		if message_count > target_queue - 1 then 
-			gClientState = 'ok'
-		end
-	elseif gClientState == 'behind' then
-		while message_count > target_queue do		
-			nextmessage(gClient, 'view')
-			message_count = messagecount(gClient, 'view')
-		end
-		gClientState = 'ok'
-	end	
+	local target_queued_frames = 3
+	local target_latency = gTickTime * target_queued_frames
+	local queued_frame_count = #gFrameQueue
 
 	if gClientState == 'ok' then
-		local message = nextmessage(gClient, 'view')
-		if message then
-			local check_score = gRemoteView and gRemoteView.game
-			local score_0 = 0
-			local score_1 = 0
-			if check_score then
-				score_0 = gRemoteView.game.s0
-				score_1 = gRemoteView.game.s1				
+		gClientTime = gClientTime + dt * gTimeScale
+		
+		if queued_frame_count == 0 or not gRemoteView or gClientTime >= gFrameQueue[#gFrameQueue].time then
+			print('Client ahead!')
+			gClientState = 'ahead'			
+		elseif gFrameQueue[1].time > gClientTime + target_latency then
+			print('Client behind!')
+			gClientState = 'behind'			
+		end
+	else 
+		if gClientState == 'ahead' then
+			if queued_frame_count >= target_queued_frames then
+				gClientState = 'ok'
+				gClientTime = gFrameQueue[1].time
 			end
+		elseif gClientState == 'behind' then
+			gClientState = 'ok'
+			gClientTime = gFrameQueue[#gFrameQueue - target_queued_frames].time
+		end
+	end
 
-			gRemoteView = unpack(1, message)
-
-			if check_score then
-				if score_0 < gRemoteView.game.s0 then
+	if gClientState == 'ok' then		
+		while gClientTime >= gFrameQueue[1].time do
+			local new_frame = gFrameQueue[1]
+			if gRemoteView and gRemoteView.game then
+				if gRemoteView.game.s0 < new_frame.game.s0 then
 					SOUNDS:PlaySound("sfx.ingame.score_point", 2.0)
 				end
-				if score_1 < gRemoteView.game.s1 then
-					SOUNDS:PlaySound("sfx.ingame.score_point", 2.0)
-				end				
-			end
-			
-			for k,ship in pairs(gRemoteView.ships) do
-				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
-				if ship.se_sht then
-					SOUNDS:PlaySound("sfx.ingame.ship.shoot", sound_scale * 0.35)
+				if gRemoteView.game.s1 < new_frame.game.s1 then
+					SOUNDS:PlaySound("sfx.ingame.score_point", 2.0)					
 				end
-				if ship.se_atch then
-					SOUNDS:PlaySound("sfx.ingame.ship.attach", sound_scale)
+				
+				for k,ship in pairs(new_frame.ships) do
+					local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
+					if ship.se_sht then
+						SOUNDS:PlaySound("sfx.ingame.ship.shoot", sound_scale * 0.35)
+					end
+					if ship.se_atch then
+						SOUNDS:PlaySound("sfx.ingame.ship.attach", sound_scale)
+					end
+					if ship.se_dtch then
+						SOUNDS:PlaySound("sfx.ingame.ship.release", sound_scale)
+					end	
 				end
-				if ship.se_dtch then
-					SOUNDS:PlaySound("sfx.ingame.ship.release", sound_scale)
-				end	
-			end
+			end							
+			gRemoteView = new_frame
+			gTimeScale = gRemoteView.time_scale
+			table.remove(gFrameQueue, 1)
 		end
 	end
 	
 	if gRemoteView and gRemoteWorldView then
-		Renderer:Draw(function()	
+		local blend = ( gClientTime - gRemoteView.time ) / ( gFrameQueue[1].time - gRemoteView.time )
+		for k,ship in pairs(gRemoteView.ships) do
+			local ship_x, ship_y = lerp_position( ship, gFrameQueue[1].ships[k], blend)
+			if k == gRemoteID and not gSpectatorMode then
+				Renderer:SetCameraPos(ship_x,ship_y)
+			elseif gSpectatorMode then
+				Renderer:SetCameraPos(arena.w / 2, arena.h/2)
+			end
+		end
 
+		Renderer:Draw(function()
 			for k,ptcl in pairs(gRemoteView.ptcl) do
 				local makeNew = true
 				for k,v in pairs(explosions) do
@@ -227,8 +247,10 @@ function client_draw()
 
 			for k,payload in pairs(gRemoteView.plds) do
 
+				local payload_x, payload_y = lerp_position(payload, gFrameQueue[1].plds[k], blend)
+
 				love.graphics.setColor(255*(1-forcefield_scale),255*(1-forcefield_scale),255*forcefield_scale,255)
-				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
+				love.graphics.circle("fill", payload_x, payload_y, PAYLOAD_SIZE.rad, PAYLOAD_SIZE.segs )
 
 				if payload.t == 0 then
 					love.graphics.setColor(55,255,155,255)
@@ -237,13 +259,13 @@ function client_draw()
 				else
 					love.graphics.setColor(255,255,255,255)
 				end
-				love.graphics.circle("fill", payload.x, payload.y, PAYLOAD_SIZE.rad - 3, PAYLOAD_SIZE.segs )				
+				love.graphics.circle("fill", payload_x, payload_y, PAYLOAD_SIZE.rad - 3, PAYLOAD_SIZE.segs )				
 				
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
 				for k,v in pairs(payload.l) do
-					love.graphics.line(payload.x, payload.y, v.x, v.y)
+					love.graphics.line(payload_x, payload_y, v.x, v.y)
 				end
 
 				if payload.h < TUNING.PAYLOAD.HEALTH then
@@ -254,7 +276,7 @@ function client_draw()
 					end
 					love.graphics.setColor(255,0,0,255)
 
-					love.graphics.circle("fill", payload.x, payload.y, rad, PAYLOAD_SIZE.segs)
+					love.graphics.circle("fill", payload_x, payload_y, rad, PAYLOAD_SIZE.segs)
 				end
 
 				love.graphics.setLineWidth(prevWidth)
@@ -269,6 +291,7 @@ function client_draw()
 			end
 			for k,ship in pairs(gRemoteView.ships) do
 
+				local ship_x, ship_y = lerp_position( ship, gFrameQueue[1].ships[k], blend)
 				local sound_scale = k == gRemoteID and gLocalSoundScale or gRemoteSoundScale
 				if ( ship.it == 1 or ship.se_bst ) then
 					local sound_scale = 0.15 * sound_scale
@@ -294,9 +317,9 @@ function client_draw()
 					local a3 = lerp(0, math.pi * 2, time*2)
 					local sizeX = 20
 					local sizeY = 20
-					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a1, nil, nil, "line")
-					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a2, nil, nil, "line")
-					DrawTriangle(sizeX, sizeY, ship.x, ship.y, a3, nil, nil, "line")
+					DrawTriangle(sizeX, sizeY, ship_x, ship_y, a1, nil, nil, "line")
+					DrawTriangle(sizeX, sizeY, ship_x, ship_y, a2, nil, nil, "line")
+					DrawTriangle(sizeX, sizeY, ship_x, ship_y, a3, nil, nil, "line")
 
 				end
 
@@ -306,15 +329,15 @@ function client_draw()
 				else
 					love.graphics.setColor(155,55,255,255)
 				end
-				
+
 				-- the ship
-				DrawTriangle(10, 6, ship.x, ship.y, ship.a)
+				DrawTriangle(10, 6, ship_x, ship_y, ship.a)
 
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
 				for k,v in pairs(ship.l) do
-					love.graphics.line(ship.x, ship.y, v.x, v.y)
+					love.graphics.line(ship_x, ship_y, v.x, v.y)
 				end
 				love.graphics.setLineWidth(prevWidth)
 
@@ -325,10 +348,11 @@ function client_draw()
 					love.graphics.setColor(255,0,0,255)
 				end
 
+				
 				if k == gRemoteID then
 					love.graphics.setLineWidth(2)
 				end
-				love.graphics.circle("line", ship.x, ship.y, ship.r, 6)
+				love.graphics.circle("line", ship_x, ship_y, ship.r, 6)
 				love.graphics.setLineWidth(prevWidth)
 				
 				-- thrusters
@@ -337,14 +361,14 @@ function client_draw()
 					if ship.se_bst then
 						flameLen  = flameLen * 2
 						love.graphics.setColor(55,90,255,255)
-						DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
+						DrawTriangle(30*flameLen, 6, ship_x, ship_y, ship.a-math.pi, 15*flameLen+5, 0)
 					else
 						love.graphics.setColor(255,90,10,255)
-						DrawTriangle(30*flameLen, 6, ship.x, ship.y, ship.a-math.pi, 15*flameLen+5, 0)
+						DrawTriangle(30*flameLen, 6, ship_x, ship_y, ship.a-math.pi, 15*flameLen+5, 0)
 
 					end
 					love.graphics.setColor(255,255,255,255)
-					DrawTriangle(20*flameLen, 4, ship.x, ship.y, ship.a-math.pi, 10*flameLen+5, 0)
+					DrawTriangle(20*flameLen, 4, ship_x, ship_y, ship.a-math.pi, 10*flameLen+5, 0)
 				end
 
 				if ship.se_sld == 1 then
@@ -353,18 +377,12 @@ function client_draw()
 					else
 						love.graphics.setColor(155,55,255,100)
 					end
-					love.graphics.circle("fill", ship.x, ship.y, ship.r + 3)
-				end
-
-
-				if k == gRemoteID and not gSpectatorMode then
-					Renderer:SetCameraPos(ship.x, ship.y)
-				elseif gSpectatorMode then
-					Renderer:SetCameraPos(arena.w / 2, arena.h/2)
+					love.graphics.circle("fill", ship_x, ship_y, ship.r + 3)
 				end
 			end
 
 			for k,bullet in pairs(gRemoteView.blts) do
+				local bullet_x, bullet_y = lerp_position(bullet, gRemoteView.blts[k], blend)
 				if bullet.t == 0 then
 					love.graphics.setColor(55,255,155,255)
 				else
@@ -373,9 +391,9 @@ function client_draw()
 				DrawRectangle(5,2,bullet.x, bullet.y, bullet.a)
 				local flameLen = math.random()*0.7+0.2
 				love.graphics.setColor(255,190,100,255)
-				DrawTriangle(15*flameLen, 3, bullet.x, bullet.y, bullet.a-math.pi, 7.2*flameLen+5, 0)
+				DrawTriangle(15*flameLen, 3, bullet_x, bullet_y, bullet.a-math.pi, 7.2*flameLen+5, 0)
 				love.graphics.setColor(255,255,255,255)
-				DrawTriangle(10*flameLen, 2, bullet.x, bullet.y, bullet.a-math.pi, 5*flameLen+5, 0)	
+				DrawTriangle(10*flameLen, 2, bullet_x, bullet_y, bullet.a-math.pi, 5*flameLen+5, 0)	
 
 				if bullet.tx then
 					print("Draw Line")
@@ -384,7 +402,7 @@ function client_draw()
 					else
 						love.graphics.setColor(155,55,255,255)
 					end
-					love.graphics.line(bullet.x, bullet.y, bullet.tx, bullet.ty)
+					love.graphics.line(bullet_x, bullet_y, bullet.tx, bullet.ty)
 				end
 
 			end
