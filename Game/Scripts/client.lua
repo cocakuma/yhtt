@@ -264,8 +264,12 @@ function client_draw(dt)
 				-- attachments
 				local prevWidth = love.graphics.getLineWidth()
 				love.graphics.setLineWidth(2)
-				for k,v in pairs(payload.l) do
-					love.graphics.line(payload_x, payload_y, v.x, v.y)
+				for i,v in pairs(payload.l) do	
+					local end_x, end_y = v.x, v.y
+					if gFrameQueue[1].plds[k] then
+						end_x, end_y = lerp_position(v, gFrameQueue[1].plds[k].l[i], blend)
+					end				
+					love.graphics.line(payload_x, payload_y, end_x, end_y)
 				end
 
 				if payload.h < TUNING.PAYLOAD.HEALTH then
