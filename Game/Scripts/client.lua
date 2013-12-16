@@ -19,7 +19,7 @@ gClient = nil
 
 local gRemoteWorldView = nil
 local gRemoteView = nil
-local gRemoteID = "0"
+local gRemoteID = 0
 
 gRenderDt = 0
 gInputId = 0
