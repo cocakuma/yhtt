@@ -34,6 +34,12 @@ Fonts = {
 	}
 }
 
+Effects = {
+	inscribed_circle = {
+		file = 'effects/inscribed_circle'
+	},
+}
+
 
 function Renderer:Load()
 	self.default_line_width = love.graphics.getLineWidth()
@@ -42,6 +48,10 @@ function Renderer:Load()
 	for k,v in pairs(Fonts) do
     	v.font = love.graphics.newFont(v.file, v.size)
 		print("Loaded font", k, v.file, v.size)
+	end
+
+	for k,v in pairs(Effects) do
+		v.effect = love.graphics.newPixelEffect(require(v.file))
 	end
 end
 
