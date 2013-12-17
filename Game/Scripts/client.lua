@@ -122,7 +122,7 @@ function client_draw(dt)
 		frame_message = nextmessage(gClient, 'view')
 	end
 
-	local target_queued_frames = 3
+	local target_queued_frames = 2
 	local target_latency = gTickTime * target_queued_frames
 	local queued_frame_count = #gFrameQueue
 
@@ -144,7 +144,7 @@ function client_draw(dt)
 			end
 		elseif gClientState == 'behind' then
 			gClientState = 'ok'
-			gClientTime = gFrameQueue[#gFrameQueue - target_queued_frames].time
+			gClientTime = gFrameQueue[#gFrameQueue - target_queued_frames + 1].time
 		end
 	end
 
