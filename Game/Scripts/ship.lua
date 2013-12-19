@@ -293,7 +293,7 @@ end
 function Ship:Hit(bullet)
 	local parent = self:GetTrueParent()
 	parent.velocity = parent.velocity + (bullet.velocity:GetNormalized() * 20)/parent:GetMass()
-	print("Mass:", parent:GetMass())
+	--print("Mass:", parent:GetMass())
 	self:TakeDamage( TUNING.DAMAGE.BULLET_ON_SHIP, bullet )
 end
 
