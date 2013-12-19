@@ -438,15 +438,23 @@ function client_draw(dt)
 				end
 			end
 
-			love.graphics.setColor(155 + 100*forcefield_scale,0,0,255)
+			local obstacle_effect = Effects.inset_circle.effect
+			local square_image = love.graphics.newImage('square.png')
+			obstacle_effect:send('outset_color', {0.6 + 0.4*forcefield_scale,0,0,1})
+			obstacle_effect:send('inset_color', {0.6,0.6,0.6,1})
+			obstacle_effect:send('inset_radius_sq', 0.95 * 0.95)
+
 			for k,obstacle in pairs(gRemoteWorldView.obs) do
-				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r)
+				love.graphics.setPixelEffect(obstacle_effect)
+				local quad = love.graphics.newQuad(0,0, obstacle.r * 2, obstacle.r * 2, obstacle.r * 2, obstacle.r * 2)
+				love.graphics.drawq(square_image, quad, obstacle.x - obstacle.r, obstacle.y - obstacle.r)
 			end
 
-			love.graphics.setColor(155,155,155,255)
+			love.graphics.setPixelEffect(obstacle_effect)
 			for k,obstacle in pairs(gRemoteWorldView.obs) do	
-				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r-5)
-			end			
+				--love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r-5)
+			end	
+			love.graphics.setPixelEffect()
 		end,
 		
 		function()
