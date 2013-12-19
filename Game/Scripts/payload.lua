@@ -33,13 +33,13 @@ function Payload:Pack(pkg)
 end
 
 function Payload:OnAttached(other)
-	print(self._classname, other._classname)
-	print(self.ID,"Setting payload team to", other.team)
+	--print(self._classname, other._classname)
+	--print(self.ID,"Setting payload team to", other.team)
 	self.team = other.team
 end
 
 function Payload:OnDetached(other)
-	print(self.ID,"resetting payload team")
+	--print(self.ID,"resetting payload team")
 	self.team = -1
 	for k,v in pairs(self.children) do
 		self.team = v.child.team
