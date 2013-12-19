@@ -190,7 +190,7 @@ end
 
 function Attachable:GetChild(child, offset)
 
-	print(self.ID, "got new child", child.ID)
+	--print(self.ID, "got new child", child.ID)
 
 	local newVel = self:CombineVelocities(child)
 
@@ -203,7 +203,7 @@ function Attachable:GetChild(child, offset)
 end
 
 function Attachable:RemoveChild(child)	
-	print(self.ID, "removed child: ", child.ID)
+	--print(self.ID, "removed child: ", child.ID)
 	child.canAttach = false
 	child.wantsToDetach = false
 	child.parent = nil
