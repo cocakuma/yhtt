@@ -6,5 +6,6 @@ function love.conf(t)
 	t.screen.fsaa = 2
 
 	t.modules.physics = false
+	t.modules.image = false
 
 end

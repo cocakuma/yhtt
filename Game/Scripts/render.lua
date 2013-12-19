@@ -35,8 +35,8 @@ Fonts = {
 }
 
 Effects = {
-	inset_circle = {
-		file = 'effects/inset_circle'
+	inscribed_circle = {
+		file = 'effects/inscribed_circle'
 	},
 }
 
