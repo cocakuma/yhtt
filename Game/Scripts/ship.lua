@@ -248,6 +248,10 @@ function Ship:Pack(pkg)
 		pkg = pack(pkg, 'pwr', 1)
 	end
 	self.didThrust = false;
+
+	if self.input and self.input.usr then
+		pkg = pack(pkg, 'u', self.input.usr)
+	end
 	return pkg
 end
 

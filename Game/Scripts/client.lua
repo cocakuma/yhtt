@@ -447,6 +447,21 @@ function client_draw(dt)
 			for k,obstacle in pairs(gRemoteWorldView.obs) do	
 				love.graphics.circle("fill", obstacle.x, obstacle.y, obstacle.r-5)
 			end			
+
+  			love.graphics.setFont(Fonts.names.font)
+			for k,ship in pairs(gRemoteView.ships) do
+				if ship.u and k ~= gRemoteID then
+					if ship.t == 0 then
+						love.graphics.setColor(55,255,155,255)
+					else
+						love.graphics.setColor(155,55,255,255)
+					end
+
+					local ship_x, ship_y = lerp_position( ship, gFrameQueue[1].ships[k], blend)
+					love.graphics.print(ship.u, ship_x - 5, ship_y - 25)
+				end
+			end
+
 		end,
 		
 		function()

@@ -31,7 +31,11 @@ Fonts = {
 	info = {
         file = "Fonts/coolvetica.ttf",
         size = 20,
-	}
+	},
+	names = {
+        file = "Fonts/coolvetica.ttf",
+        size = 12,
+	}	
 }
 
 Effects = {
