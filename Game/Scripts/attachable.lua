@@ -279,7 +279,7 @@ function Attachable:IsOnTeam(otherteam)
 end
 
 function Attachable:Detach()
-	print(self._classname, self.ID, "wants to detach")
+	--print(self._classname, self.ID, "wants to detach")
 
 	for k,v in pairs(self.children) do
 		self:RemoveChild(v.child)
@@ -303,7 +303,7 @@ function Attachable:Detach()
 		end
 	end
 
-	print(self._classname, self.ID, "has detached!")
+	--print(self._classname, self.ID, "has detached!")
 end
 
 function Attachable:ExplosiveDetach(force)
