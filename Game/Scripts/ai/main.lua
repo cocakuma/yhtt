@@ -1,6 +1,7 @@
 local network = require('network')
 local client = require('client')
 local controls = require('controls')
+local socket = require 'socket'
 local gClients = {}
 
 function sendaiinput(client)
@@ -15,14 +16,21 @@ function sendaiinput(client)
 end
 
 function love.load()
-	for i=1,32 do
+	for i=1,16 do
 		gClients[i] = {}
 		gClients[i].id = 0
 		gClients[i].client = startclient(getip(), getport())
 	end
 end
 
-function love.update( dt)
+local last_tick = socket.gettime()
+function love.update(dt)
+	while socket.gettime() - last_tick < 1 / 30 do
+		for i,v in pairs(gClients) do
+			updateclient(v.client)
+		end
+	end 
+	last_tick = socket.gettime()	
 	for i,v in pairs(gClients) do
 		sendaiinput(v)
 		updateclient(v.client)
