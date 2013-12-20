@@ -99,13 +99,17 @@ function Bullet:Update(dt)
 		local pos = self.position
 		local targetAngle =  math.atan2(tarPos.y - pos.y, tarPos.x - pos.x)
 		local myAng = self.angle
-		if myAng < 0 then
-			myAng = (2*math.pi) + myAng
-		end
-		if targetAngle < 0 then
-			targetAngle = (2*math.pi) + targetAngle
-		end
+
 		local delta = myAng - targetAngle
+		
+		while delta > math.pi do
+			delta = delta - (2*math.pi)
+		end
+
+		while delta < -math.pi do
+			delta = delta + (2*math.pi)
+		end
+
 		if delta < 0 then
 			self.angle = self.angle+self.turnSpeed * dt
 		elseif delta > 0 then

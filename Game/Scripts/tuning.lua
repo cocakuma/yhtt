@@ -34,7 +34,7 @@ return
 		BASE_MASS = 10,
 		HEALTH = 10,
 		REGEN_RATE = 0.33,
-		PULSE_COOLDOWN = 10, --Can't be dragged during this time!
+		PULSE_COOLDOWN = 5, --Can't be dragged during this time!
 		DETACH_FORCE = 500,
 	},
 	DAMAGE = 
