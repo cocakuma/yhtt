@@ -61,6 +61,7 @@ end
 function Ship:StartShield()
 	if self:CanUsePower() then
 		self.shielded = true
+		self.powerDuration_timer = self.powerDuration - (self.powerDuration * 0.66)
 	end
 end
 
