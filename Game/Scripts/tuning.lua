@@ -48,7 +48,7 @@ return
 	},
 	GAME = 
 	{
-		WARMUP_TIME = 1,
+		WARMUP_TIME = 15,
 		VICTORY_TIME = 10,
 		POINTS_TO_WIN = 2,
 		MIN_ARENA_SIZE = 1000,
