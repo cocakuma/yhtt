@@ -265,7 +265,7 @@ function getip()
 end
 
 function getport()
-	return '7500'
+	return '15000'
 end
 
 function round(val)
